@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">StudyApp</string>
+    <string name="topics_search">topics search</string>
+    <string name="menu">menu</string>
 </resources>
