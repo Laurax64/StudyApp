@@ -2,4 +2,10 @@
     <string name="app_name">StudyApp</string>
     <string name="topics_search">topics search</string>
     <string name="menu">menu</string>
+    <string name="share">Share</string>
+    <string name="delete">Delete</string>
+    <string name="create">Create</string>
+    <string name="create_topic">Create Topic</string>
+    <string name="title">Title</string>
+    <string name="cancel">Cancel</string>
 </resources>
