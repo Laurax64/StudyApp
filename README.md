@@ -1,5 +1,5 @@
 # Under Development
 An Android app to showcase my skills in 
-* Persisting data using Room
+* Saving data in a local database using Room
 * Creating a widget with Glance
 * ...
