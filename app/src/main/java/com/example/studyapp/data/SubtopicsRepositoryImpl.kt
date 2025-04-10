@@ -2,7 +2,7 @@ package com.example.studyapp.data
 
 import kotlinx.coroutines.flow.Flow
 
-class OfflineSubtopicsRepository(private val subtopicDao: SubtopicDao) : SubtopicsRepository {
+class SubtopicsRepositoryImpl(private val subtopicDao: SubtopicDao) : SubtopicsRepository {
     override suspend fun insertSubtopic(subtopic: Subtopic) =
         subtopicDao.insert(subtopic = subtopic)
 

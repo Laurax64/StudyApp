@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
 }
 
@@ -64,6 +65,9 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
+    ksp(libs.room.runtime)
+    ksp(libs.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
