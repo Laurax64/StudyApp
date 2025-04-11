@@ -15,7 +15,7 @@ The type-safe navigation has been implemented by creating a [navigation controll
 ## App Architecture
 <img width="500" alt="image" src="https://github.com/user-attachments/assets/79ca51cb-ae7a-42e8-ada4-c085367edba1" />
 
-[Single sources of truth](https://developer.android.com/topic/architecture#single-source-of-truth) 
+[Single Sources of Truth](https://developer.android.com/topic/architecture#single-source-of-truth) 
 * Each data type has a SSOT assigned to it.
 * Only the SSOT can modify or mutate the data.
 * The SSOT exposes the data using an immutable type, and to modify the data, the SSOT exposes functions or receives events.
