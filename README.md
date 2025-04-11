@@ -19,5 +19,12 @@
 * [Unidirectional Data Flow](https://developer.android.com/topic/architecture#unidirectional-data-flow)
   * State flows in only one direction.
   * The events that modify the data flow in the opposite direction.
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
 ## Widget 
 * [Glance](https://developer.android.com/codelabs/glance?hl=en#0)
