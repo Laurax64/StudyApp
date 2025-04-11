@@ -25,7 +25,7 @@ class TopicsViewModel @Inject constructor(
 
     fun createTopic(title: String) {
         viewModelScope.launch {
-            topicsRepository.insertTopic(Topic(title = title))
+            topicsRepository.insertTopic(Topic(title = title, checked = false))
         }
     }
 

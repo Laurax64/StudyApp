@@ -21,7 +21,7 @@ class SubtopicsViewModel @Inject constructor(
 ) : ViewModel() {
     private val topicId: Int = savedStateHandle["topicId"] ?: -1
     var topic by mutableStateOf(
-        Topic(title = "")
+        Topic(title = "", checked = false)
     )
         private set
 
