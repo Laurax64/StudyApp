@@ -19,6 +19,7 @@ The type-safe navigation has been implemented by creating a [navigation controll
 * Each data type has a SSOT assigned to it.
 * Only the SSOT can modify or mutate the data.
 * The SSOT exposes the data using an immutable type, and to modify the data, the SSOT exposes functions or receives events.
+
 [Unidirectional Data Flow](https://developer.android.com/topic/architecture#unidirectional-data-flow)
 * State flows in only one direction.
 * The events that modify the data flow in the opposite direction.
