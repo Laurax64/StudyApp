@@ -9,6 +9,6 @@
 ## Dependency injection 
 * [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en)
 ## Data Storage 
-* [Local database using Room](https://developer.android.com/training/data-storage/room?hl=en)
+* [Room](https://developer.android.com/training/data-storage/room?hl=en)
 ## Widget 
 * [Glance](https://developer.android.com/codelabs/glance?hl=en#0)
