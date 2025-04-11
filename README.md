@@ -6,7 +6,7 @@
 
 [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 ## Navigation 
-The type-safe navigation has been implemented by creating a [navigation controller](https://developer.android.com/guide/navigation/navcontroller) and [navigation graph](https://developer.android.com/guide/navigation/use-graph/design) and then, using the navigation graph, to [navigate to destinations](https://developer.android.com/guide/navigation/navigate).
+The type-safe navigation has been implemented by creating a [navigation controller](https://developer.android.com/guide/navigation/navcontroller) and [navigation graph](https://developer.android.com/guide/navigation/design) and then, using the navigation graph, to [navigate to destinations](https://developer.android.com/guide/navigation/navigate).
 ## Dependency injection 
 [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en)
 ## Data Storage 
