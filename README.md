@@ -1,7 +1,7 @@
 # Under Development
 ## UI Design
 ### [Figma](https://www.figma.com/files/team/1227960222597739086/recents-and-sharing?fuid=1227960214312908777)
-* [StudyApp](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&p=f&t=qOTDjU1W84mwlSDv-0)
+* [StudyApp design file](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&p=f&t=qOTDjU1W84mwlSDv-0)
 ### [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en)
 ### [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 ## Navigation 
