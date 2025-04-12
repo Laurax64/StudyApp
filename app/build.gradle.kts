@@ -68,6 +68,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.glance.appwidget)
+    implementation(libs.glance.material)
     ksp(libs.hilt.compiler)
     ksp(libs.room.runtime)
     ksp(libs.room.compiler)
