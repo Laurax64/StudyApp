@@ -5,5 +5,8 @@ import androidx.compose.ui.Modifier
 import com.example.studyapp.ui.viewmodels.SubtopicViewModel
 
 @Composable
-fun SubtopicScreen(subtopicViewModel: SubtopicViewModel, modifier: Modifier = Modifier) {
+fun SubtopicScreen(
+    subtopicViewModel: SubtopicViewModel,
+    modifier: Modifier = Modifier
+) {
 }

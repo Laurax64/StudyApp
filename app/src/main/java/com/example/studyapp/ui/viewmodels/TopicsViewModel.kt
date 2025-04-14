@@ -23,14 +23,31 @@ class TopicsViewModel @Inject constructor(
                 initialValue = listOf<Topic>()
             )
 
+
     fun createTopic(title: String) {
         viewModelScope.launch {
             topicsRepository.insertTopic(Topic(title = title, checked = false))
         }
     }
 
-    suspend fun deleteTopic(topicToDelete: Topic) {
-        topicsRepository.deleteTopic(topic = topicToDelete)
+    fun deleteTopic(topic: Topic) {
+        viewModelScope.launch {
+            topicsRepository.deleteTopic(topic = topic)
+        }
+    }
+
+    fun updateChecked(topic: Topic, checked: Boolean) {
+        viewModelScope.launch {
+            topicsRepository.updateTopic(
+                topic = topic.copy(checked = checked)
+            )
+        }
+    }
+
+    fun updateTopic(topic: Topic) {
+        viewModelScope.launch {
+            topicsRepository.updateTopic(topic = topic)
+        }
     }
 
 

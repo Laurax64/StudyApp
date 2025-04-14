@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 object TopicsRoute
 
 @Serializable
-object SubtopicsRoute
+data class SubtopicsRoute(val topicId: Int)
 
 @Serializable
 object SubtopicRoute

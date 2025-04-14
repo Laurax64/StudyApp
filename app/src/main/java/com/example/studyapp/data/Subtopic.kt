@@ -9,5 +9,6 @@ data class Subtopic(
     val id: Int = 0,
     val title: String,
     val description: String,
+    val checked: Boolean,
     val imageUri: String?
 )

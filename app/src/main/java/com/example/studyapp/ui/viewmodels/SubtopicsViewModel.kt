@@ -1,16 +1,18 @@
 package com.example.studyapp.ui.viewmodels
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.studyapp.data.Subtopic
+import com.example.studyapp.data.SubtopicsRepository
 import com.example.studyapp.data.Topic
 import com.example.studyapp.data.TopicsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,36 +20,71 @@ import javax.inject.Inject
 class SubtopicsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val topicsRepository: TopicsRepository,
+    private val subtopicsRepository: SubtopicsRepository,
 ) : ViewModel() {
     private val topicId: Int = savedStateHandle["topicId"] ?: -1
-    var topic by mutableStateOf(
-        Topic(title = "", checked = false)
-    )
-        private set
+    val topic: StateFlow<Topic?> =
+        topicsRepository.getTopic(id = topicId)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = null,
+            )
+    val subtopics: StateFlow<List<Subtopic>> =
+        subtopicsRepository.getAllSubtopics()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = listOf<Subtopic>()
+            )
 
-    init {
+    fun createSubtopic(
+        title: String,
+        description: String,
+        imageUri: String?
+    ) {
         viewModelScope.launch {
-            topic = topicsRepository.getTopic(id = topicId)
-                .filterNotNull()
-                .first()
+            subtopicsRepository.insertSubtopic(
+                Subtopic(
+                    title = title,
+                    checked = false,
+                    description = description,
+                    imageUri = imageUri
+                )
+            )
         }
     }
 
-    suspend fun updateTopic(updatedTopic: Topic) {
+    fun updateTopic(updatedTopic: Topic) {
         if (validateInput(updatedTopic)) {
-            topicsRepository.updateTopic(updatedTopic)
+            viewModelScope.launch {
+                topicsRepository.updateTopic(updatedTopic)
+            }
         }
     }
 
-    suspend fun deleteTopic() {
-        topicsRepository.deleteTopic(topic)
+    fun updateChecked(subtopic: Subtopic, checked: Boolean) {
+        viewModelScope.launch {
+            subtopicsRepository.updateSubtopic(
+                subtopic = subtopic.copy(checked = checked)
+            )
+        }
     }
 
-    suspend fun deleteSubtopic() {
-        topicsRepository.deleteTopic(topic)
+    fun deleteTopic() {
+        viewModelScope.launch {
+            topic.first()?.let {
+                topicsRepository.deleteTopic(topic = it)
+            }
+        }
     }
 
-    private fun validateInput(updatedTopic: Topic): Boolean {
+    fun deleteSubtopic() {
+        /* TODO implement */
+    }
+
+    @VisibleForTesting
+    fun validateInput(updatedTopic: Topic): Boolean {
         return with(updatedTopic) {
             topicId == id && title.isNotBlank()
         }

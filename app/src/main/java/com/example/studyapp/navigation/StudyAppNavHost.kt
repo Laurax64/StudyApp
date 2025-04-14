@@ -15,17 +15,24 @@ import com.example.studyapp.ui.viewmodels.TopicsViewModel
 
 @Composable
 fun StudyAppNavHost(modifier: Modifier = Modifier) {
+    val navController = rememberNavController()
     NavHost(
-        navController = rememberNavController(),
-        startDestination = TopicsRoute,
-        modifier = modifier
+        navController = navController, startDestination = TopicsRoute, modifier = modifier
     ) {
         composable<TopicsRoute> {
-            TopicsScreen(topicsViewModel = hiltViewModel<TopicsViewModel>())
+            TopicsScreen(
+                topicsViewModel = hiltViewModel<TopicsViewModel>(),
+                navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) }
+            )
         }
 
         composable<SubtopicsRoute> {
-            SubtopicsScreen(subtopicsViewModel = hiltViewModel<SubtopicsViewModel>())
+            SubtopicsScreen(
+                subtopicsViewModel = hiltViewModel<SubtopicsViewModel>(),
+                navigateToSubtopic = {
+                    navController.navigate(route = SubtopicRoute)
+                }
+            )
         }
 
         composable<SubtopicRoute> {

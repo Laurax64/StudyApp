@@ -24,6 +24,7 @@ class SubtopicViewModel @Inject constructor(
         Subtopic(
             title = "",
             description = "",
+            checked = false,
             imageUri = null
         )
     )
@@ -42,6 +43,7 @@ class SubtopicViewModel @Inject constructor(
             subtopicsRepository.updateSubtopic(updatedSubtopic)
         }
     }
+
 
     suspend fun deleteSubtopic() {
         subtopicsRepository.deleteSubtopic(subtopic)

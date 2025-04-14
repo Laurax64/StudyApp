@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.AlertDialog
@@ -45,12 +44,18 @@ import com.example.studyapp.ui.viewmodels.TopicsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopicsScreen(topicsViewModel: TopicsViewModel, modifier: Modifier = Modifier) {
+fun TopicsScreen(
+    topicsViewModel: TopicsViewModel,
+    navigateToTopic: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     TopicsScaffold(
         topics = topicsViewModel.topics.collectAsState().value,
         createTopic = { title ->
             topicsViewModel.createTopic(title)
         },
+        navigateToTopic = navigateToTopic,
+        updateChecked = topicsViewModel::updateChecked,
         modifier = modifier
     )
 
@@ -61,6 +66,8 @@ fun TopicsScreen(topicsViewModel: TopicsViewModel, modifier: Modifier = Modifier
 private fun TopicsScaffold(
     topics: List<Topic>,
     createTopic: (String) -> Unit,
+    updateChecked: (Topic, Boolean) -> Unit,
+    navigateToTopic: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -69,7 +76,7 @@ private fun TopicsScaffold(
             CenterAlignedTopAppBar(
                 navigationIcon = {
                     Icon(
-                        painter = painterResource(R.drawable.baseline_arrow_back_24),
+                        painter = painterResource(R.drawable.baseline_search_24),
                         tint = MaterialTheme.colorScheme.onSurface,
                         contentDescription = stringResource(R.string.topics_search),
                         modifier = Modifier.size(24.dp)
@@ -79,6 +86,7 @@ private fun TopicsScaffold(
                 title = {
                     Text(text = stringResource(R.string.app_name))
                 },
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
         },
         floatingActionButton = {
@@ -87,10 +95,11 @@ private fun TopicsScaffold(
     ) { innerPadding ->
         LazyColumn(Modifier.padding(innerPadding)) {
             items(topics.size) { index ->
+                val topic = topics[index]
                 TopicListItem(
-                    topic = topics[index],
-                    modifier = Modifier
-                        .clickable { /* TODO Implement */ }
+                    topic = topic,
+                    updateChecked = { checked -> updateChecked(topic, checked) },
+                    modifier = Modifier.clickable { navigateToTopic(topic.id) }
                 )
             }
         }
@@ -98,14 +107,18 @@ private fun TopicsScaffold(
 }
 
 @Composable
-private fun TopicListItem(topic: Topic, modifier: Modifier) {
+private fun TopicListItem(
+    topic: Topic,
+    updateChecked: (Boolean) -> Unit,
+    modifier: Modifier
+) {
     ListItem(
         headlineContent = { Text(topic.title) },
         modifier = modifier,
         trailingContent = {
             Checkbox(
                 checked = topic.checked,
-                onCheckedChange = { /* TODO Implement */ },
+                onCheckedChange = updateChecked,
                 modifier = Modifier.padding(8.dp)
             )
         }
@@ -153,8 +166,10 @@ private fun CreateTopicFAB(onCreate: (String) -> Unit, modifier: Modifier = Modi
     var showDialog by rememberSaveable { mutableStateOf(false) }
     FloatingActionButton(onClick = { showDialog = true }, modifier = modifier) {
         Icon(
-            imageVector = Icons.Outlined.Create,
-            contentDescription = stringResource(R.string.create)
+            painter = painterResource(R.drawable.baseline_add_24),
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            contentDescription = stringResource(R.string.create_topic),
+            modifier = Modifier.size(24.dp)
         )
     }
     if (showDialog) {
@@ -217,7 +232,9 @@ private fun SubtopicScreenPreview() {
                 Topic(2, "Topic 2", true),
                 Topic(3, "Topic 3", false)
             ),
-            createTopic = {}
+            navigateToTopic = {},
+            createTopic = {},
+            updateChecked = { _, _ -> }
         )
     }
 }
