@@ -11,4 +11,5 @@
     <string name="title">Title</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
+    <string name="go_back_to_topics">Go back to topics</string>
 </resources>
