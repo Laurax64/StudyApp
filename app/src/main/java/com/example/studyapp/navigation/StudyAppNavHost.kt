@@ -31,7 +31,8 @@ fun StudyAppNavHost(modifier: Modifier = Modifier) {
                 subtopicsViewModel = hiltViewModel<SubtopicsViewModel>(),
                 navigateToSubtopic = {
                     navController.navigate(route = SubtopicRoute)
-                }
+                },
+                navigateBack = navController::popBackStack
             )
         }
 
