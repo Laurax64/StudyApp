@@ -23,5 +23,8 @@ The type-safe navigation has been implemented by creating a [navigation controll
 [Unidirectional Data Flow](https://developer.android.com/topic/architecture#unidirectional-data-flow)
 * State flows in only one direction.
 * The events that modify the data flow in the opposite direction.
+
+## Searchbar
 ## Widget 
 [Glance](https://developer.android.com/codelabs/glance?hl=en#0)
+## Accessibility
