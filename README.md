@@ -28,3 +28,4 @@ The type-safe navigation has been implemented by creating a [navigation controll
 ## Widget 
 [Glance](https://developer.android.com/codelabs/glance?hl=en#0)
 ## Accessibility
+* Content descriptions for [TalkBack](https://developer.android.com/guide/topics/ui/accessibility/testing#talkback)
