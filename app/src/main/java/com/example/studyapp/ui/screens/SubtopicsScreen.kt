@@ -1,7 +1,10 @@
 package com.example.studyapp.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +15,7 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,11 +38,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
+import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.SubtopicsViewModel
 
@@ -49,8 +55,10 @@ fun SubtopicsScreen(
     navigateToSubtopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val topic by subtopicsViewModel.topic.collectAsState()
+    val subtopics by subtopicsViewModel.subtopics.collectAsState()
     SubtopicsScaffold(
-        subtopics = subtopicsViewModel.subtopics.collectAsState().value,
+        subtopics = subtopics ?: emptyList(),
         createSubtopic = { title, description, imageUri ->
             subtopicsViewModel.createSubtopic(
                 title = title,
@@ -60,54 +68,63 @@ fun SubtopicsScreen(
         },
         navigateToSubtopic = navigateToSubtopic,
         updateChecked = subtopicsViewModel::updateChecked,
-        modifier = modifier
+        topic = topic ?: return,
+        modifier = modifier.fillMaxWidth()
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SubtopicsScaffold(
-    subtopics: List<Subtopic>,
+    subtopics: List<Subtopic>?,
+    topic: Topic?,
     createSubtopic: (String, String, String?) -> Unit,
     updateChecked: (Subtopic, Boolean) -> Unit,
     navigateToSubtopic: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            CenterAlignedTopAppBar(
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_search_24),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        contentDescription = stringResource(R.string.subtopics_search),
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable {
-                            }
-                    )
-                },
-                actions = { MoreActionsMenu() },
-                title = {
-                    Text(text = stringResource(R.string.app_name))
-                },
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        },
-        floatingActionButton = {
-            CreateSubtopicFAB(onCreate = createSubtopic)
+    if (topic == null || subtopics == null) {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
-    ) { innerPadding ->
-        LazyColumn(Modifier.padding(innerPadding)) {
-            items(subtopics.size) { index ->
-                val subtopic = subtopics[index]
-                SubtopicListItem(
-                    subtopic = subtopic,
-                    updateChecked = { checked -> updateChecked(subtopic, checked) },
-                    modifier = Modifier.clickable { navigateToSubtopic(subtopic.id) }
+    } else {
+        Scaffold(
+            modifier = modifier,
+            topBar = {
+                CenterAlignedTopAppBar(
+                    navigationIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_search_24),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            contentDescription = stringResource(R.string.subtopics_search),
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                }
+                        )
+                    },
+                    actions = { MoreActionsMenu() },
+                    title = { Text(text = topic.title) },
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
+            },
+            floatingActionButton = {
+                CreateSubtopicFAB(onCreate = createSubtopic)
+            }
+        ) { innerPadding ->
+            LazyColumn(Modifier.padding(paddingValues = innerPadding)) {
+                items(subtopics.size) { index ->
+                    val subtopic = subtopics[index]
+                    SubtopicListItem(
+                        subtopic = subtopic,
+                        updateChecked = { checked -> updateChecked(subtopic, checked) },
+                        modifier = Modifier.clickable { navigateToSubtopic(subtopic.id) }
+                    )
+                }
+
             }
         }
     }
@@ -234,7 +251,7 @@ private fun CreateSubtopicDialog(
 @PreviewDynamicColors
 @PreviewLightDark
 @Composable
-private fun SubtopicScreenPreview() {
+private fun SubtopicsScreenPreview() {
     StudyAppTheme {
         SubtopicsScaffold(
             subtopics = listOf(
@@ -260,6 +277,25 @@ private fun SubtopicScreenPreview() {
                     imageUri = null
                 )
             ),
+            topic = Topic(
+                id = 1,
+                title = "Topic 1",
+                checked = false
+            ),
+            navigateToSubtopic = {},
+            createSubtopic = { _, _, _ -> },
+            updateChecked = { _, _ -> }
+        )
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+private fun SubtopicsScreenProgressIndicatorPreview() {
+    StudyAppTheme {
+        SubtopicsScaffold(
+            subtopics = null,
+            topic = null,
             navigateToSubtopic = {},
             createSubtopic = { _, _, _ -> },
             updateChecked = { _, _ -> }

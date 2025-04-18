@@ -10,7 +10,6 @@ import com.example.studyapp.data.Topic
 import com.example.studyapp.data.TopicsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -23,19 +22,19 @@ class SubtopicsViewModel @Inject constructor(
     private val subtopicsRepository: SubtopicsRepository,
 ) : ViewModel() {
     private val topicId: Int = savedStateHandle["topicId"] ?: -1
-    val topic: StateFlow<Topic?> =
+    val topic =
         topicsRepository.getTopic(id = topicId)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(),
                 initialValue = null,
             )
-    val subtopics: StateFlow<List<Subtopic>> =
+    val subtopics =
         subtopicsRepository.getAllSubtopics()
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(),
-                initialValue = listOf<Subtopic>()
+                initialValue = null
             )
 
     fun createSubtopic(
