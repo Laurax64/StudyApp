@@ -31,7 +31,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
@@ -58,8 +58,8 @@ fun SubtopicsScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val topic by subtopicsViewModel.topic.collectAsState()
-    val subtopics by subtopicsViewModel.subtopics.collectAsState()
+    val topic by subtopicsViewModel.topic.collectAsStateWithLifecycle()
+    val subtopics by subtopicsViewModel.subtopics.collectAsStateWithLifecycle()
     SubtopicsScaffold(
         subtopics = subtopics ?: emptyList(),
         createSubtopic = { title, description, imageUri ->
@@ -70,6 +70,7 @@ fun SubtopicsScreen(
             )
         },
         navigateToSubtopic = navigateToSubtopic,
+        navigateBack = navigateBack,
         updateChecked = subtopicsViewModel::updateChecked,
         topic = topic ?: return,
         modifier = modifier.fillMaxWidth()
@@ -84,6 +85,7 @@ private fun SubtopicsScaffold(
     createSubtopic: (String, String, String?) -> Unit,
     updateChecked: (Subtopic, Boolean) -> Unit,
     navigateToSubtopic: (Int) -> Unit,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (topic == null || subtopics == null) {
@@ -103,9 +105,9 @@ private fun SubtopicsScaffold(
                             painter = painterResource(id = R.drawable.baseline_arrow_back_24),
                             tint = MaterialTheme.colorScheme.onSurface,
                             contentDescription = stringResource(R.string.go_back_to_topics),
-                            modifier = modifier
+                            modifier = Modifier
                                 .size(24.dp)
-                                .clickable {/*TODO*/ }
+                                .clickable { navigateBack() }
                         )
                     },
                     actions = {
@@ -164,7 +166,9 @@ private fun SubtopicListItem(
             Checkbox(
                 checked = subtopic.checked,
                 onCheckedChange = updateChecked,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(size = 24.dp)
             )
         }
     )
@@ -304,6 +308,7 @@ private fun SubtopicsScreenPreview() {
                 checked = false
             ),
             navigateToSubtopic = {},
+            navigateBack = {},
             createSubtopic = { _, _, _ -> },
             updateChecked = { _, _ -> }
         )
@@ -312,12 +317,13 @@ private fun SubtopicsScreenPreview() {
 
 @Preview(showSystemUi = true)
 @Composable
-private fun SubtopicsScreenProgressIndicatorPreview() {
+private fun LoadingScreenPreview() {
     StudyAppTheme {
         SubtopicsScaffold(
             subtopics = null,
             topic = null,
             navigateToSubtopic = {},
+            navigateBack = {},
             createSubtopic = { _, _, _ -> },
             updateChecked = { _, _ -> }
         )

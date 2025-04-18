@@ -6,7 +6,6 @@ import com.example.studyapp.data.Topic
 import com.example.studyapp.data.TopicsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,12 +14,12 @@ import javax.inject.Inject
 class TopicsViewModel @Inject constructor(
     private val topicsRepository: TopicsRepository,
 ) : ViewModel() {
-    val topics: StateFlow<List<Topic>> =
+    val topics =
         topicsRepository.getAllTopics()
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(),
-                initialValue = listOf<Topic>()
+                initialValue = null
             )
 
 
@@ -49,6 +48,4 @@ class TopicsViewModel @Inject constructor(
             topicsRepository.updateTopic(topic = topic)
         }
     }
-
-
 }

@@ -1,7 +1,9 @@
 package com.example.studyapp.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +14,7 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,11 +24,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,9 +38,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.theme.StudyAppTheme
@@ -49,25 +55,37 @@ fun TopicsScreen(
     navigateToTopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showSearchBar by rememberSaveable { mutableStateOf(false) }
+    val topics by topicsViewModel.topics.collectAsStateWithLifecycle(initialValue = listOf())
+    if (showSearchBar) {
+        TopicsSearchBar(
+            modifier = modifier,
+            updateChecked = topicsViewModel::updateChecked,
+            navigateToTopic = navigateToTopic,
+            closeSearchBar = { showSearchBar = false },
+            topics = topics
+        )
+    }
     TopicsScaffold(
-        topics = topicsViewModel.topics.collectAsState().value,
+        topics = topics,
         createTopic = { title ->
             topicsViewModel.createTopic(title)
         },
         navigateToTopic = navigateToTopic,
         updateChecked = topicsViewModel::updateChecked,
+        openSearchBar = { showSearchBar = true },
         modifier = modifier
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopicsScaffold(
-    topics: List<Topic>,
+    topics: List<Topic>?,
     createTopic: (String) -> Unit,
     updateChecked: (Topic, Boolean) -> Unit,
     navigateToTopic: (Int) -> Unit,
+    openSearchBar: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -79,10 +97,14 @@ private fun TopicsScaffold(
                         painter = painterResource(R.drawable.baseline_search_24),
                         tint = MaterialTheme.colorScheme.onSurface,
                         contentDescription = stringResource(R.string.topics_search),
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { openSearchBar() }
                     )
                 },
-                actions = { MoreActionsMenu() },
+                actions = {
+                    MoreActionsMenu()
+                },
                 title = {
                     Text(text = stringResource(R.string.app_name))
                 },
@@ -93,17 +115,89 @@ private fun TopicsScaffold(
             CreateTopicFAB(onCreate = createTopic)
         }
     ) { innerPadding ->
-        LazyColumn(Modifier.padding(innerPadding)) {
-            items(topics.size) { index ->
-                val topic = topics[index]
-                TopicListItem(
-                    topic = topic,
-                    updateChecked = { checked -> updateChecked(topic, checked) },
-                    modifier = Modifier.clickable { navigateToTopic(topic.id) }
-                )
+        if (topics == null) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(Modifier.padding(innerPadding)) {
+                items(topics.size) { index ->
+                    val topic = topics[index]
+                    TopicListItem(
+                        topic = topic,
+                        updateChecked = { checked -> updateChecked(topic, checked) },
+                        modifier = Modifier.clickable { navigateToTopic(topic.id) }
+                    )
+                }
             }
         }
     }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopicsSearchBar(
+    modifier: Modifier = Modifier,
+    updateChecked: (Topic, Boolean) -> Unit,
+    navigateToTopic: (Int) -> Unit,
+    topics: List<Topic>?,
+    closeSearchBar: () -> Unit
+) {
+    var query by rememberSaveable { mutableStateOf("") }
+    var filteredTopics by rememberSaveable { mutableStateOf(topics) }
+    SearchBar(
+        inputField = {
+            SearchBarDefaults.InputField(
+                query = query,
+                onQueryChange = { query = it },
+                onSearch = {
+                    filteredTopics = topics?.filter { topic ->
+                        topic.title.contains(query, ignoreCase = true)
+                    }
+                },
+                expanded = true,
+                onExpandedChange = {},
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_arrow_back_24),
+                        contentDescription = stringResource(R.string.close_search),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { closeSearchBar() }
+                    )
+                }
+            )
+        },
+        expanded = true,
+        onExpandedChange = {},
+        modifier = modifier,
+        content = {
+            if (topics == null) {
+                Box(
+                    modifier = modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                LazyColumn {
+                    items(topics.size) { index ->
+                        val topic = topics[index]
+                        TopicListItem(
+                            topic = topic,
+                            updateChecked = { checked -> updateChecked(topic, checked) },
+                            modifier = Modifier.clickable { navigateToTopic(topic.id) }
+                        )
+                    }
+                }
+            }
+        }
+    )
 }
 
 @Composable
@@ -119,7 +213,9 @@ private fun TopicListItem(
             Checkbox(
                 checked = topic.checked,
                 onCheckedChange = updateChecked,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(size = 24.dp)
             )
         }
     )
@@ -224,7 +320,7 @@ private fun CreateTopicDialog(
 @PreviewDynamicColors
 @PreviewLightDark
 @Composable
-private fun SubtopicScreenPreview() {
+private fun TopicsScreenPreview() {
     StudyAppTheme {
         TopicsScaffold(
             topics = listOf(
@@ -233,6 +329,21 @@ private fun SubtopicScreenPreview() {
                 Topic(3, "Topic 3", false)
             ),
             navigateToTopic = {},
+            openSearchBar = {},
+            createTopic = {},
+            updateChecked = { _, _ -> }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LoadingScreenPreview() {
+    StudyAppTheme {
+        TopicsScaffold(
+            topics = null,
+            navigateToTopic = {},
+            openSearchBar = {},
             createTopic = {},
             updateChecked = { _, _ -> }
         )
