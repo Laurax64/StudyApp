@@ -1,6 +1,7 @@
 package com.example.studyapp.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,26 +26,28 @@ fun FullScreenDialog(
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
     confirmButtonStringRes: Int = R.string.save,
-    dismissIconRes: Int? = R.drawable.baseline_close_24,
-    content: @Composable (Modifier) -> Unit,
+    dismissIconRes: Int = R.drawable.baseline_close_24,
+    content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = titleRes)) },
+                title = {
+                    Text(
+                        text = stringResource(id = titleRes),
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                },
                 navigationIcon = {
                     Icon(
-                        painter = painterResource(id = R.drawable.baseline_close_24),
+                        painter = painterResource(id = dismissIconRes),
                         tint = MaterialTheme.colorScheme.onSurface,
                         contentDescription = stringResource(R.string.cancel),
-                        modifier = modifier
+                        modifier = Modifier
                             .size(24.dp)
                             .clickable { onDismiss() }
                     )
                 },
-                modifier = Modifier
-                    .size(56.dp)
-                    .padding(horizontal = 24.dp),
                 actions = {
                     TextButton(onClick = onConfirm) { Text(stringResource(id = confirmButtonStringRes)) }
                 }
@@ -52,6 +55,6 @@ fun FullScreenDialog(
         },
         modifier = modifier,
     ) {
-        content(Modifier.padding(it))
+        content(it)
     }
 }

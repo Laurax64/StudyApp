@@ -13,4 +13,6 @@
     <string name="save">Save</string>
     <string name="go_back_to_topics">Go back to topics</string>
     <string name="close_search">Close search</string>
+    <string name="description">Description</string>
+    <string name="image">Image</string>
 </resources>
