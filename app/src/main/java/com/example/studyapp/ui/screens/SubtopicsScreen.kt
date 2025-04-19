@@ -253,20 +253,32 @@ private fun SubtopicInputFields(
     pickImageUri: () -> String,
     modifier: Modifier = Modifier
 ) {
+    var title by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var imageUri by rememberSaveable { mutableStateOf("") }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         TextField(
-            value = "",
-            onValueChange = updateTitle,
+            value = title,
+            onValueChange = {
+                title = it
+                updateTitle(title)
+            },
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.title)) })
         TextField(
-            value = "",
-            onValueChange = updateDescription,
+            value = description,
+            onValueChange = {
+                description = it
+                updateDescription(description)
+            },
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.description)) })
         TextField(
-            value = "",
-            onValueChange = updateImageUri,
+            value = imageUri,
+            onValueChange = {
+                imageUri = it
+                updateImageUri(imageUri)
+            },
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 Icon(
