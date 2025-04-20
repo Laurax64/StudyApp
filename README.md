@@ -17,8 +17,7 @@ The type-safe navigation has been implemented by creating a [navigation controll
 A [photo picker](https://developer.android.com/training/data-storage/shared/photopicker) has been used to let the user pick an image for the subtopic.
 The [AsyncImage](https://developer.android.com/develop/ui/compose/graphics/images/loading) composable has been used to load the images from the file storage.
 ### Accessibility
-[TalkBack](https://developer.android.com/guide/topics/ui/accessibility/testing#talkback)
-*  Content descriptions
+Content descriptions for non-decorative icons and images have been added so that users can use the app with [TalkBack](https://developer.android.com/guide/topics/ui/accessibility/testing#talkback).
 ## Dependency injection 
 [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en)
 ## Data Storage 
