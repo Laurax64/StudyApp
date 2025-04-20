@@ -1,11 +1,8 @@
 # Under Development
 ## User Interface
 ### Design
-[Figma](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1)
-   
-[Material 3 Guidelines](https://developer.android.com/design/ui?hl=en)
+The UI has been designed using [Figma](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1) in accordance to the [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en). [Previews](https://developer.android.com/develop/ui/compose/tooling/previews) for different screen sizes, themes and backgrounds have been used to check the UI during development.
 
-[Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 ### Adaptive layout
 Layout for different screen sizes 
 ### Navigation 
