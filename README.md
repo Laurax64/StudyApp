@@ -1,14 +1,21 @@
 # Under Development
-## UI Design
+## User Interface
+### Design
 [Figma](https://www.figma.com/files/team/1227960222597739086/recents-and-sharing?fuid=1227960214312908777)
    
 [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en)
 
 [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
-## Adaptive layout
+### Adaptive layout
 Layout for different screen sizes 
-## Navigation 
+### Navigation 
 The type-safe navigation has been implemented by creating a [navigation controller](https://developer.android.com/guide/navigation/navcontroller) and [navigation graph](https://developer.android.com/guide/navigation/design) and then, using the navigation graph, to [navigate to destinations](https://developer.android.com/guide/navigation/use-graph/navigate).
+### [Searchbar](https://developer.android.com/develop/ui/compose/components/search-bar)
+### Widget 
+[Glance](https://developer.android.com/codelabs/glance?hl=en#0)
+### Accessibility
+[TalkBack](https://developer.android.com/guide/topics/ui/accessibility/testing#talkback)
+*  Content descriptions
 ## Dependency injection 
 [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en)
 ## Data Storage 
@@ -26,11 +33,5 @@ The type-safe navigation has been implemented by creating a [navigation controll
 * State flows in only one direction.
 * The events that modify the data flow in the opposite direction.
 
-## [Searchbar](https://developer.android.com/develop/ui/compose/components/search-bar)
-## Widget 
-[Glance](https://developer.android.com/codelabs/glance?hl=en#0)
-## Accessibility
-[TalkBack](https://developer.android.com/guide/topics/ui/accessibility/testing#talkback)
-*  Content descriptions
 ## Code Style 
 ...
