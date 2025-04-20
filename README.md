@@ -13,6 +13,8 @@ The type-safe navigation has been implemented by creating a [navigation controll
 ### [Searchbar](https://developer.android.com/develop/ui/compose/components/search-bar)
 ### Widget 
 [Glance](https://developer.android.com/codelabs/glance?hl=en#0)
+### Images
+[Photo picker](https://developer.android.com/training/data-storage/shared/photopicker)
 ### Accessibility
 [TalkBack](https://developer.android.com/guide/topics/ui/accessibility/testing#talkback)
 *  Content descriptions
