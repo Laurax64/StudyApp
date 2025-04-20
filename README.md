@@ -14,7 +14,8 @@ The type-safe navigation has been implemented by creating a [navigation controll
 ### Widget 
 [Glance](https://developer.android.com/codelabs/glance?hl=en#0)
 ### Images
-[Photo picker](https://developer.android.com/training/data-storage/shared/photopicker)
+A [photo picker](https://developer.android.com/training/data-storage/shared/photopicker) has been used to let the user pick an image for the subtopic.
+The [AsyncImage](https://developer.android.com/develop/ui/compose/graphics/images/loading) composable has been used to load the images from the file storage.
 ### Accessibility
 [TalkBack](https://developer.android.com/guide/topics/ui/accessibility/testing#talkback)
 *  Content descriptions
