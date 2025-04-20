@@ -1,7 +1,7 @@
 # Under Development
 ## User Interface
 ### Design
-[Figma](https://www.figma.com/files/team/1227960222597739086/recents-and-sharing?fuid=1227960214312908777)
+[Figma](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1)
    
 [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en)
 
