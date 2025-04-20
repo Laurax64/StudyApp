@@ -19,7 +19,7 @@ The [AsyncImage](https://developer.android.com/develop/ui/compose/graphics/image
 ### Accessibility
 Content descriptions for non-decorative icons and images have been added so that users can use the app with [TalkBack](https://developer.android.com/guide/topics/ui/accessibility/testing#talkback).
 ## Dependency injection 
-[Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en)
+For assisted and non-assisted dependency injection, [Dagger](https://developer.android.com/training/dependency-injection/dagger-android#assisted-injection) including [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en) has been used.
 ## Data Storage 
 [Room](https://developer.android.com/training/data-storage/room?hl=en)
 ## States
