@@ -123,13 +123,17 @@ private fun TopicsScaffold(
                 CircularProgressIndicator()
             }
         } else {
-            LazyColumn(Modifier.padding(innerPadding)) {
+            LazyColumn(Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 8.dp)) {
                 items(topics.size) { index ->
                     val topic = topics[index]
                     TopicListItem(
                         topic = topic,
                         updateChecked = { checked -> updateChecked(topic, checked) },
-                        modifier = Modifier.clickable { navigateToTopic(topic.id) }
+                        modifier = Modifier
+                            .clickable { navigateToTopic(topic.id) }
+                            .padding(horizontal = 8.dp)
                     )
                 }
             }
@@ -226,7 +230,8 @@ private fun MoreActionsMenu(modifier: Modifier = Modifier) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     Column(modifier, horizontalAlignment = Alignment.End) {
         Icon(
-            imageVector = Icons.Default.MoreVert,
+            imageVector = Icons.Default.MoreVert, // TODO replace with M3 icon
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             contentDescription = stringResource(R.string.menu),
             modifier = Modifier.clickable { expanded = true }
         )
@@ -269,7 +274,6 @@ private fun CreateTopicFAB(onCreate: (String) -> Unit, modifier: Modifier = Modi
         )
     }
     if (showDialog) {
-        // ImagePicker()
         CreateTopicDialog(
             onDismiss = { showDialog = false },
             onCreate = onCreate

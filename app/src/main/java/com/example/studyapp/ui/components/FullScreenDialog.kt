@@ -14,6 +14,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.studyapp.R
@@ -64,7 +66,8 @@ fun FullScreenDialog(
                 },
                 actions = {
                     TextButton(onClick = onConfirm) { Text(stringResource(id = confirmButtonStringRes)) }
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
         },
         modifier = modifier,
@@ -81,30 +84,23 @@ fun SubtopicFullScreenDialog(
     modifier: Modifier = Modifier,
     subtopic: Subtopic? = null,
 ) {
-    var title by rememberSaveable { mutableStateOf("") }
-    var description by rememberSaveable { mutableStateOf("") }
-    var imageUri: String? by rememberSaveable { mutableStateOf(null) }
-    var saveData by rememberSaveable { mutableStateOf(false) }
-
-    if (saveData) {
-        saveSubtopic(title, description, imageUri)
-    }
+    var title by rememberSaveable { mutableStateOf(subtopic?.title ?: "") }
+    var description by rememberSaveable { mutableStateOf(subtopic?.description ?: "") }
+    var imageUri by rememberSaveable { mutableStateOf(subtopic?.imageUri ?: "") }
     FullScreenDialog(
         titleRes = titleRes,
         onDismiss = onDismiss,
-        onConfirm = { saveData = true },
-        modifier = modifier.padding(horizontal = 24.dp)
+        onConfirm = { saveSubtopic(title, description, imageUri) },
+        modifier = modifier.padding(horizontal = 16.dp)
     ) { innerPadding ->
         SubtopicInputFields(
             updateTitle = { title = it },
             updateDescription = { description = it },
             updateImageUri = { imageUri = it },
-            originalTitle = subtopic?.title ?: "",
-            originalDescription = subtopic?.description ?: "",
-            originalImageUri = subtopic?.imageUri ?: "",
-            modifier = Modifier
-                .padding(paddingValues = innerPadding)
-                .fillMaxWidth(),
+            title = title,
+            description = description,
+            imageUri = imageUri,
+            modifier = Modifier.padding(paddingValues = innerPadding),
         )
     }
 }
@@ -114,44 +110,44 @@ private fun SubtopicInputFields(
     updateTitle: (String) -> Unit,
     updateDescription: (String) -> Unit,
     updateImageUri: (String) -> Unit,
-    originalTitle: String,
-    originalDescription: String,
-    originalImageUri: String,
+    title: String,
+    description: String,
+    imageUri: String,
     modifier: Modifier = Modifier,
 ) {
-    var title by rememberSaveable { mutableStateOf(originalTitle) }
-    var description by rememberSaveable { mutableStateOf(originalDescription) }
-    var imageUri by rememberSaveable { mutableStateOf(originalImageUri) }
+
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
-        imageUri = uri.toString()
+        updateImageUri(uri.toString())
     }
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        TextField(value = title, onValueChange = {
-            title = it
-            updateTitle(title)
-        }, modifier = Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.title)) })
-        TextField(
+    Column(
+        modifier = modifier.padding(horizontal = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        OutlinedTextField(
+            value = title,
+            onValueChange = { updateTitle(it) },
+            modifier = Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.title)) })
+        OutlinedTextField(
             value = description,
-            onValueChange = {
-                description = it
-                updateDescription(description)
-            },
+            onValueChange = { updateDescription(it) },
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.description)) })
-        TextField(value = imageUri, onValueChange = {
-            imageUri = it
-            updateImageUri(imageUri)
-        }, modifier = Modifier.fillMaxWidth(), trailingIcon = {
-            Icon(
-                painter = painterResource(R.drawable.outline_image_24),
-                contentDescription = stringResource(R.string.image),
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable {
-                        pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
-                    }
-            )
-        }, label = { Text(stringResource(R.string.image)) })
+        OutlinedTextField(
+            value = imageUri,
+            onValueChange = { updateImageUri(it) },
+            modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.outline_image_24),
+                    contentDescription = stringResource(R.string.image),
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable {
+                            pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                        }
+                )
+            },
+            label = { Text(stringResource(R.string.image)) })
         AsyncImage(
             model = imageUri,
             contentDescription = null,
@@ -194,5 +190,16 @@ private fun CreateSubtopicDialog(
             }
         },
         modifier = modifier
+    )
+}
+
+@Composable
+@Preview(showSystemUi = true)
+private fun SubtopicFullScreenDialogPreview() {
+    SubtopicFullScreenDialog(
+        titleRes = R.string.create_subtopic,
+        onDismiss = { },
+        saveSubtopic = { _, _, _ -> },
+        subtopic = null
     )
 }

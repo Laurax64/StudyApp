@@ -132,7 +132,11 @@ private fun SubtopicsScaffold(
             }, floatingActionButton = {
                 CreateSubtopicFAB(onCreate = { showDialog = true })
             }) { innerPadding ->
-                LazyColumn(Modifier.padding(paddingValues = innerPadding)) {
+                LazyColumn(
+                    Modifier
+                        .padding(paddingValues = innerPadding)
+                        .padding(horizontal = 8.dp)
+                ) {
                     items(subtopics.size) { index ->
                         val subtopic = subtopics[index]
                         SubtopicListItem(
@@ -168,6 +172,7 @@ private fun MoreActionsMenu(modifier: Modifier = Modifier) {
     Column(modifier, horizontalAlignment = Alignment.End) {
         Icon(
             imageVector = Icons.Default.MoreVert,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             contentDescription = stringResource(R.string.menu),
             modifier = Modifier.clickable { expanded = true })
 
@@ -200,7 +205,6 @@ private fun CreateSubtopicFAB(
     FloatingActionButton(onClick = onCreate, modifier = modifier) {
         Icon(
             painter = painterResource(R.drawable.baseline_add_24),
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
             contentDescription = stringResource(R.string.create_subtopic),
             modifier = Modifier.size(24.dp)
         )

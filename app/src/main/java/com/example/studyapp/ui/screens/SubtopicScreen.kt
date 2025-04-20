@@ -1,14 +1,15 @@
 package com.example.studyapp.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -48,7 +50,7 @@ fun SubtopicScreen(
         subtopic = subtopic,
         updateSubtopic = subtopicViewModel::updateSubtopic,
         deleteSubtopic = subtopicViewModel::deleteSubtopic,
-        modifier = modifier,
+        modifier = modifier.padding(horizontal = 16.dp),
         navigateBack = navigateBack
     )
 }
@@ -83,6 +85,7 @@ private fun SubtopicScaffold(
                             imageUri = imageUri
                         )
                     )
+                    showDialog = false
                 },
                 modifier = modifier,
                 subtopic = subtopic,
@@ -90,42 +93,51 @@ private fun SubtopicScaffold(
         } else {
             Scaffold(
                 modifier = modifier,
-                {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                text = subtopic.title,
-                                modifier = Modifier.padding(start = 16.dp)
-                            )
-                        },
-                        navigationIcon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_arrow_back_24),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                contentDescription = stringResource(R.string.go_back_to_subtopics),
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .clickable { navigateBack() })
-                        },
-                        actions = {
-                            MoreActionsMenu(
-                                shareSubtopic = { /* TODO: Implement share functionality */ },
-                                editSubtopic = { /* TODO: Implement edit functionality */ },
-                                deleteSubtopic = {
-                                    deleteSubtopic()
-                                    navigateBack()
-                                }
-                            )
-                        }
-                    )
-                }
+                topBar =
+                    {
+                        TopAppBar(
+                            title = {
+                                Text(
+                                    text = subtopic.title,
+                                    modifier = Modifier.padding(start = 16.dp)
+                                )
+                            },
+                            navigationIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    contentDescription = stringResource(R.string.go_back_to_subtopics),
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clickable { navigateBack() })
+                            },
+                            actions = {
+                                MoreActionsMenu(
+                                    shareSubtopic = { /* TODO: Implement share functionality */ },
+                                    editSubtopic = { showDialog = true },
+                                    deleteSubtopic = {
+                                        deleteSubtopic()
+                                        navigateBack()
+                                    }
+                                )
+                            }
+                        )
+                    }
             ) { innerPadding ->
-                Column(modifier = Modifier.padding(paddingValues = innerPadding)) {
+                Column(
+                    modifier = Modifier
+                        .padding(paddingValues = innerPadding)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                     SubtopicImage(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .size(100.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         imageUri = subtopic.imageUri,
+                    )
+                    Text(
+                        text = subtopic.description,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -167,7 +179,9 @@ private fun MoreActionsMenu(
                 onClick = { shareSubtopic() },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Share, contentDescription = null
+                        imageVector = Icons.Outlined.Share, // TODO replace with material 3 icon
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        contentDescription = null
                     )
                 })
             HorizontalDivider()
@@ -176,7 +190,8 @@ private fun MoreActionsMenu(
                 onClick = editSubtopic,
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Delete, contentDescription = null
+                        painter = painterResource(R.drawable.baseline_create_24),
+                        contentDescription = null
                     )
                 })
             DropdownMenuItem(
@@ -184,9 +199,28 @@ private fun MoreActionsMenu(
                 onClick = { deleteSubtopic() },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Delete, contentDescription = null
+                        painter = painterResource(R.drawable.baseline_delete_outline_24),
+                        contentDescription = null // TODO: Add content description
                     )
                 })
         }
     }
+}
+
+@Composable
+@Preview(showSystemUi = true)
+private fun SubtopicScreenPreview() {
+    SubtopicScaffold(
+        subtopic = Subtopic(
+            id = 1,
+            title = "Subtopic Title",
+            description = "Subtopic Description",
+            checked = false,
+            topicId = 1,
+            imageUri = null
+        ),
+        updateSubtopic = {},
+        deleteSubtopic = {},
+        navigateBack = {}
+    )
 }
