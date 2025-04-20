@@ -167,6 +167,7 @@ private fun MoreActionsMenu(
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
+
     Column(modifier, horizontalAlignment = Alignment.End) {
         Icon(
             imageVector = Icons.Default.MoreVert,
@@ -193,7 +194,8 @@ private fun MoreActionsMenu(
                         painter = painterResource(R.drawable.baseline_create_24),
                         contentDescription = null
                     )
-                })
+                }
+            )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.delete)) },
                 onClick = { deleteSubtopic() },
@@ -202,7 +204,8 @@ private fun MoreActionsMenu(
                         painter = painterResource(R.drawable.baseline_delete_outline_24),
                         contentDescription = null // TODO: Add content description
                     )
-                })
+                }
+            )
         }
     }
 }

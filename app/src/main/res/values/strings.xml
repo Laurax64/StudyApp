@@ -5,7 +5,6 @@
     <string name="menu">menu</string>
     <string name="share">Share</string>
     <string name="delete">Delete</string>
-    <string name="create">Create</string>
     <string name="create_topic">Create Topic</string>
     <string name="create_subtopic">Create Subtopic</string>
     <string name="title">Title</string>
@@ -20,4 +19,8 @@
     <string name="edit_subtopic">Edit Subtopic</string>
     <string name="settings">Settings</string>
     <string name="open_settings">Open settings</string>
+    <string name="edit_topic">Edit topic</string>
+    <string name="delete_topic">Delete Topic</string>
+    <string name="delete_topic_dialog_title">Delete topic?</string>
+    <string name="delete_topic_dialog_description">The topic %s will be permanently removed from the app.</string>
 </resources>

@@ -11,7 +11,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,8 +26,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.components.FullScreenDialog
+import com.example.studyapp.ui.components.TopicDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.TopicsViewModel
 
@@ -70,7 +68,6 @@ fun TopicsScreen(
         if (showSearchBar) {
             TopicsSearchBar(
                 modifier = modifier,
-                updateChecked = topicsViewModel::updateChecked,
                 navigateToTopic = navigateToTopic,
                 closeSearchBar = { showSearchBar = false },
                 topics = topics
@@ -78,9 +75,8 @@ fun TopicsScreen(
         }
         TopicsScaffold(
             topics = topics,
-            createTopic = topicsViewModel::createTopic,
+            createTopic = topicsViewModel::saveTopic,
             navigateToTopic = navigateToTopic,
-            updateChecked = topicsViewModel::updateChecked,
             openSearchBar = { showSearchBar = true },
             openSettings = { showSettingsDialog = true },
             modifier = modifier
@@ -92,8 +88,7 @@ fun TopicsScreen(
 @Composable
 private fun TopicsScaffold(
     topics: List<Topic>?,
-    createTopic: (String) -> Unit,
-    updateChecked: (Topic, Boolean) -> Unit,
+    createTopic: (Topic) -> Unit,
     navigateToTopic: (Int) -> Unit,
     openSearchBar: () -> Unit,
     openSettings: () -> Unit,
@@ -125,7 +120,7 @@ private fun TopicsScaffold(
             )
         },
         floatingActionButton = {
-            CreateTopicFAB(onCreate = createTopic)
+            CreateTopicFAB(createTopic = createTopic)
         }
     ) { innerPadding ->
         if (topics == null) {
@@ -145,7 +140,6 @@ private fun TopicsScaffold(
                     val topic = topics[index]
                     TopicListItem(
                         topic = topic,
-                        updateChecked = { checked -> updateChecked(topic, checked) },
                         modifier = Modifier
                             .clickable { navigateToTopic(topic.id) }
                             .padding(horizontal = 8.dp)
@@ -161,7 +155,6 @@ private fun TopicsScaffold(
 @Composable
 private fun TopicsSearchBar(
     modifier: Modifier = Modifier,
-    updateChecked: (Topic, Boolean) -> Unit,
     navigateToTopic: (Int) -> Unit,
     topics: List<Topic>?,
     closeSearchBar: () -> Unit
@@ -209,7 +202,6 @@ private fun TopicsSearchBar(
                         val topic = topics[index]
                         TopicListItem(
                             topic = topic,
-                            updateChecked = { checked -> updateChecked(topic, checked) },
                             modifier = Modifier.clickable { navigateToTopic(topic.id) }
                         )
                     }
@@ -222,7 +214,6 @@ private fun TopicsSearchBar(
 @Composable
 private fun TopicListItem(
     topic: Topic,
-    updateChecked: (Boolean) -> Unit,
     modifier: Modifier
 ) {
     ListItem(
@@ -231,7 +222,8 @@ private fun TopicListItem(
         trailingContent = {
             Checkbox(
                 checked = topic.checked,
-                onCheckedChange = updateChecked,
+                enabled = false,
+                onCheckedChange = null,
                 modifier = Modifier
                     .padding(8.dp)
                     .size(size = 24.dp)
@@ -281,7 +273,7 @@ private fun MoreActionsMenu(
 }
 
 @Composable
-private fun CreateTopicFAB(onCreate: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun CreateTopicFAB(createTopic: (Topic) -> Unit, modifier: Modifier = Modifier) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
     FloatingActionButton(onClick = { showDialog = true }, modifier = modifier) {
         Icon(
@@ -292,50 +284,13 @@ private fun CreateTopicFAB(onCreate: (String) -> Unit, modifier: Modifier = Modi
         )
     }
     if (showDialog) {
-        CreateTopicDialog(
+        TopicDialog(
+            titleRes = R.string.create_topic,
             onDismiss = { showDialog = false },
-            onCreate = onCreate
+            topic = null,
+            onSave = createTopic
         )
     }
-}
-
-@Composable
-private fun CreateTopicDialog(
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit = { },
-    onCreate: (String) -> Unit = { }
-) {
-    var topicTitle by rememberSaveable { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = { Text(stringResource(R.string.create_topic)) },
-        text = {
-            TextField(
-                value = topicTitle,
-                onValueChange = { topicTitle = it }, // Update the state with new value
-                label = { Text(stringResource(R.string.title)) }
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onCreate(topicTitle)
-                    onDismiss()
-                }
-            ) {
-                Text(stringResource(R.string.create))
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = { onDismiss() }
-            ) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
-        modifier = modifier
-    )
 }
 
 @Composable
@@ -370,7 +325,6 @@ private fun TopicsScreenPreview() {
             openSearchBar = {},
             createTopic = {},
             openSettings = {},
-            updateChecked = { _, _ -> }
         )
     }
 }
@@ -385,7 +339,6 @@ private fun LoadingScreenPreview() {
             openSearchBar = {},
             createTopic = {},
             openSettings = {},
-            updateChecked = { _, _ -> }
         )
     }
 }

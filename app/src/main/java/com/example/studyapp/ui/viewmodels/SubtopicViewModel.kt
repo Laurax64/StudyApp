@@ -9,9 +9,11 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+// Could also use savedStateHandle.
 @HiltViewModel(assistedFactory = SubtopicViewModel.Factory::class)
 class SubtopicViewModel @AssistedInject constructor(
     private val subtopicsRepository: SubtopicsRepository,
@@ -26,33 +28,22 @@ class SubtopicViewModel @AssistedInject constructor(
     )
 
     fun updateSubtopic(updatedSubtopic: Subtopic) {
-        if (validateInput(updatedSubtopic)) {
-            viewModelScope.launch {
-                subtopicsRepository.updateSubtopic(updatedSubtopic)
-            }
+        viewModelScope.launch {
+            subtopicsRepository.updateSubtopic(subtopic = updatedSubtopic)
         }
     }
 
-
     fun deleteSubtopic() {
         viewModelScope.launch {
-            subtopic.value?.let {
+            subtopic.first()?.let {
                 subtopicsRepository.deleteSubtopic(subtopic = it)
             }
         }
     }
 
-    private fun validateInput(updatedSubtopic: Subtopic): Boolean {
-        return with(updatedSubtopic) {
-            subtopicId == id && title.isNotBlank() && description.isNotBlank()
-        }
-    }
-
     @AssistedFactory
     interface Factory {
-        fun create(
-            subtopicId: Int,
-        ): SubtopicViewModel
+        fun create(subtopicId: Int): SubtopicViewModel
     }
 }
 

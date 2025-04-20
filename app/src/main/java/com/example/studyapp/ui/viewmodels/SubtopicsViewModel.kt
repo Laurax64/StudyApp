@@ -1,6 +1,5 @@
 package com.example.studyapp.ui.viewmodels
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,8 +21,7 @@ class SubtopicsViewModel @Inject constructor(
     private val subtopicsRepository: SubtopicsRepository,
 ) : ViewModel() {
     private val topicId: Int = savedStateHandle["topicId"] ?: -1
-    val topic =
-        topicsRepository.getTopic(id = topicId)
+    val topic = topicsRepository.getTopic(id = topicId)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(),
@@ -56,17 +54,9 @@ class SubtopicsViewModel @Inject constructor(
     }
 
     fun updateTopic(updatedTopic: Topic) {
-        if (validateInput(updatedTopic)) {
-            viewModelScope.launch {
-                topicsRepository.updateTopic(updatedTopic)
-            }
-        }
-    }
-
-    fun updateChecked(subtopic: Subtopic, checked: Boolean) {
         viewModelScope.launch {
-            subtopicsRepository.updateSubtopic(
-                subtopic = subtopic.copy(checked = checked)
+            topicsRepository.updateTopic(
+                topic = updatedTopic
             )
         }
     }
@@ -76,17 +66,6 @@ class SubtopicsViewModel @Inject constructor(
             topic.first()?.let {
                 topicsRepository.deleteTopic(topic = it)
             }
-        }
-    }
-
-    fun deleteSubtopic() {
-        /* TODO implement */
-    }
-
-    @VisibleForTesting
-    fun validateInput(updatedTopic: Topic): Boolean {
-        return with(updatedTopic) {
-            topicId == id && title.isNotBlank()
         }
     }
 }

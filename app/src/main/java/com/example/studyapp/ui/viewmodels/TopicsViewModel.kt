@@ -14,27 +14,16 @@ import javax.inject.Inject
 class TopicsViewModel @Inject constructor(
     private val topicsRepository: TopicsRepository,
 ) : ViewModel() {
-    val topics =
-        topicsRepository.getAllTopics()
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(),
-                initialValue = null
-            )
+    val topics = topicsRepository.getAllTopics()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
+        )
 
-
-    fun createTopic(title: String) {
+    fun saveTopic(topic: Topic) {
         viewModelScope.launch {
-            topicsRepository.insertTopic(Topic(title = title, checked = false))
+            topicsRepository.insertTopic(topic = topic)
         }
     }
-
-    fun updateChecked(topic: Topic, checked: Boolean) {
-        viewModelScope.launch {
-            topicsRepository.updateTopic(
-                topic = topic.copy(checked = checked)
-            )
-        }
-    }
-
 }
