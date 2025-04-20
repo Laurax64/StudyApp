@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
+import com.example.studyapp.ui.components.FullScreenDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.TopicsViewModel
 
@@ -56,26 +57,35 @@ fun TopicsScreen(
     modifier: Modifier = Modifier
 ) {
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
-    val topics by topicsViewModel.topics.collectAsStateWithLifecycle(initialValue = listOf())
-    if (showSearchBar) {
-        TopicsSearchBar(
-            modifier = modifier,
-            updateChecked = topicsViewModel::updateChecked,
+    var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
+
+    if (showSettingsDialog) {
+        SettingsFullScreenDialog(
+            closeDialog = { showSettingsDialog = false },
+            saveSettings = { showSettingsDialog = false },
+            modifier = modifier
+        )
+    } else {
+        val topics by topicsViewModel.topics.collectAsStateWithLifecycle(initialValue = listOf())
+        if (showSearchBar) {
+            TopicsSearchBar(
+                modifier = modifier,
+                updateChecked = topicsViewModel::updateChecked,
+                navigateToTopic = navigateToTopic,
+                closeSearchBar = { showSearchBar = false },
+                topics = topics
+            )
+        }
+        TopicsScaffold(
+            topics = topics,
+            createTopic = topicsViewModel::createTopic,
             navigateToTopic = navigateToTopic,
-            closeSearchBar = { showSearchBar = false },
-            topics = topics
+            updateChecked = topicsViewModel::updateChecked,
+            openSearchBar = { showSearchBar = true },
+            openSettings = { showSettingsDialog = true },
+            modifier = modifier
         )
     }
-    TopicsScaffold(
-        topics = topics,
-        createTopic = { title ->
-            topicsViewModel.createTopic(title)
-        },
-        navigateToTopic = navigateToTopic,
-        updateChecked = topicsViewModel::updateChecked,
-        openSearchBar = { showSearchBar = true },
-        modifier = modifier
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,6 +96,7 @@ private fun TopicsScaffold(
     updateChecked: (Topic, Boolean) -> Unit,
     navigateToTopic: (Int) -> Unit,
     openSearchBar: () -> Unit,
+    openSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -103,7 +114,9 @@ private fun TopicsScaffold(
                     )
                 },
                 actions = {
-                    MoreActionsMenu()
+                    MoreActionsMenu(
+                        openSettings = openSettings,
+                    )
                 },
                 title = {
                     Text(text = stringResource(R.string.app_name))
@@ -123,9 +136,11 @@ private fun TopicsScaffold(
                 CircularProgressIndicator()
             }
         } else {
-            LazyColumn(Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 8.dp)) {
+            LazyColumn(
+                Modifier
+                    .padding(innerPadding)
+                    .padding(horizontal = 8.dp)
+            ) {
                 items(topics.size) { index ->
                     val topic = topics[index]
                     TopicListItem(
@@ -226,7 +241,10 @@ private fun TopicListItem(
 }
 
 @Composable
-private fun MoreActionsMenu(modifier: Modifier = Modifier) {
+private fun MoreActionsMenu(
+    openSettings: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     Column(modifier, horizontalAlignment = Alignment.End) {
         Icon(
@@ -242,19 +260,19 @@ private fun MoreActionsMenu(modifier: Modifier = Modifier) {
                 onClick = { /* TODO Implement */ },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Share,
-                        contentDescription = null
+                        imageVector = Icons.Outlined.Share, // TODO replace with material 3 icon
+                        contentDescription = null // TODO add content description
                     )
                 }
             )
             HorizontalDivider()
             DropdownMenuItem(
-                text = { Text(stringResource(R.string.delete)) },
-                onClick = { /* TODO Implement */ },
+                text = { Text(stringResource(R.string.settings)) },
+                onClick = openSettings,
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = null
+                        imageVector = Icons.Outlined.Settings, // TODO replace with material 3 icon
+                        contentDescription = stringResource(R.string.open_settings)
                     )
                 }
             )
@@ -320,6 +338,22 @@ private fun CreateTopicDialog(
     )
 }
 
+@Composable
+fun SettingsFullScreenDialog(
+    closeDialog: () -> Unit,
+    saveSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FullScreenDialog(
+        titleRes = R.string.settings,
+        onDismiss = closeDialog,
+        onConfirm = saveSettings,
+        modifier = modifier.padding(horizontal = 16.dp)
+    ) { innerPadding ->
+        // TODO: Add settings content here
+    }
+}
+
 
 @PreviewDynamicColors
 @PreviewLightDark
@@ -335,6 +369,7 @@ private fun TopicsScreenPreview() {
             navigateToTopic = {},
             openSearchBar = {},
             createTopic = {},
+            openSettings = {},
             updateChecked = { _, _ -> }
         )
     }
@@ -349,6 +384,7 @@ private fun LoadingScreenPreview() {
             navigateToTopic = {},
             openSearchBar = {},
             createTopic = {},
+            openSettings = {},
             updateChecked = { _, _ -> }
         )
     }

@@ -135,7 +135,7 @@ private fun SubtopicsScaffold(
                 LazyColumn(
                     Modifier
                         .padding(paddingValues = innerPadding)
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 16.dp)
                 ) {
                     items(subtopics.size) { index ->
                         val subtopic = subtopics[index]

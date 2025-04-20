@@ -29,12 +29,6 @@ class TopicsViewModel @Inject constructor(
         }
     }
 
-    fun deleteTopic(topic: Topic) {
-        viewModelScope.launch {
-            topicsRepository.deleteTopic(topic = topic)
-        }
-    }
-
     fun updateChecked(topic: Topic, checked: Boolean) {
         viewModelScope.launch {
             topicsRepository.updateTopic(
@@ -43,9 +37,4 @@ class TopicsViewModel @Inject constructor(
         }
     }
 
-    fun updateTopic(topic: Topic) {
-        viewModelScope.launch {
-            topicsRepository.updateTopic(topic = topic)
-        }
-    }
 }
