@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -27,8 +26,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,7 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
-import com.example.studyapp.ui.components.FullScreenDialog
+import com.example.studyapp.ui.components.SubtopicFullScreenDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.SubtopicsViewModel
 
@@ -90,15 +87,14 @@ private fun SubtopicsScaffold(
     if (topic == null || subtopics == null) {
         Box(
             modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
+        ) { CircularProgressIndicator() }
     } else {
         var showDialog by rememberSaveable { mutableStateOf(false) }
         if (showDialog) {
-            CreateSubtopicFullScreenDialog(
+            SubtopicFullScreenDialog(
+                titleRes = R.string.create_subtopic,
                 onDismiss = { showDialog = false },
-                createSubtopic = { title, description, imageUri ->
+                saveSubtopic = { title, description, imageUri ->
                     createSubtopic(title, description, imageUri)
                     showDialog = false
                 },
@@ -116,9 +112,7 @@ private fun SubtopicsScaffold(
                                 .size(24.dp)
                                 .clickable { navigateBack() })
                     }, actions = {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(24.dp)
-                        ) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
                             Icon(
                                 painter = painterResource(R.drawable.baseline_search_24),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -213,123 +207,6 @@ private fun CreateSubtopicFAB(
     }
 }
 
-
-@Composable
-private fun CreateSubtopicFullScreenDialog(
-    onDismiss: () -> Unit,
-    createSubtopic: (String, String, String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var title by rememberSaveable { mutableStateOf("") }
-    var description by rememberSaveable { mutableStateOf("") }
-    var imageUri by rememberSaveable { mutableStateOf("") }
-    var saveData by rememberSaveable { mutableStateOf(false) }
-    if (saveData) {
-        createSubtopic(title, description, imageUri)
-    }
-    FullScreenDialog(
-        titleRes = R.string.create_subtopic,
-        onDismiss = onDismiss,
-        onConfirm = { saveData = true },
-        modifier = modifier.padding(horizontal = 24.dp)
-    ) { innerPadding ->
-        SubtopicInputFields(
-            updateTitle = { title = it },
-            updateDescription = { description = it },
-            updateImageUri = { imageUri = it },
-            pickImageUri = { /* TODO implement */ "" },
-            modifier = Modifier
-                .padding(paddingValues = innerPadding)
-                .fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-private fun SubtopicInputFields(
-    updateTitle: (String) -> Unit,
-    updateDescription: (String) -> Unit,
-    updateImageUri: (String) -> Unit,
-    pickImageUri: () -> String,
-    modifier: Modifier = Modifier
-) {
-    var title by rememberSaveable { mutableStateOf("") }
-    var description by rememberSaveable { mutableStateOf("") }
-    var imageUri by rememberSaveable { mutableStateOf("") }
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        TextField(
-            value = title,
-            onValueChange = {
-                title = it
-                updateTitle(title)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.title)) })
-        TextField(
-            value = description,
-            onValueChange = {
-                description = it
-                updateDescription(description)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.description)) })
-        TextField(
-            value = imageUri,
-            onValueChange = {
-                imageUri = it
-                updateImageUri(imageUri)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            trailingIcon = {
-                Icon(
-                    painter = painterResource(R.drawable.outline_image_24),
-                    contentDescription = stringResource(R.string.image),
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable { updateImageUri(pickImageUri()) })
-            },
-            label = { Text(stringResource(R.string.image)) })
-    }
-}
-
-/* TODO add missing fields */
-@Composable
-private fun CreateSubtopicDialog(
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit = { },
-    onCreate: (String, String, String?) -> Unit
-) {
-    var subtopicTitle by rememberSaveable { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = { Text(stringResource(R.string.create_subtopic)) },
-        text = {
-            TextField(
-                value = subtopicTitle,
-                onValueChange = { subtopicTitle = it }, // Update the state with new value
-                label = { Text(stringResource(R.string.title)) })
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    //   onCreate(title = subtopicTitle, description = ) TODO
-                    onDismiss()
-                }) {
-                Text(stringResource(R.string.create))
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = { onDismiss() }) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
-        modifier = modifier
-    )
-}
-
-
 @PreviewDynamicColors
 @PreviewLightDark
 @Composable
@@ -339,18 +216,21 @@ private fun SubtopicsScreenPreview() {
             subtopics = listOf(
                 Subtopic(
                     id = 1,
+                    topicId = 0,
                     title = "Subtopic 1",
                     description = "Description 1",
                     checked = false,
                     imageUri = null
                 ), Subtopic(
                     id = 2,
+                    topicId = 0,
                     title = "Subtopic 2",
                     description = "Description 2",
                     checked = true,
                     imageUri = null
                 ), Subtopic(
                     id = 3,
+                    topicId = 0,
                     title = "Subtopic 3",
                     description = "Description 3",
                     checked = false,

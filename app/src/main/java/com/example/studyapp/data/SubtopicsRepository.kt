@@ -12,5 +12,5 @@ interface SubtopicsRepository {
 
     fun getSubtopic(id: Int): Flow<Subtopic>
 
-    fun getAllSubtopics(): Flow<List<Subtopic>>
+    fun getAllSubtopics(topicId: Int): Flow<List<Subtopic>>
 }

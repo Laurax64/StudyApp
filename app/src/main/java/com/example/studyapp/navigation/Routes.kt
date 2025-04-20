@@ -9,4 +9,4 @@ object TopicsRoute
 data class SubtopicsRoute(val topicId: Int)
 
 @Serializable
-object SubtopicRoute
+data class SubtopicRoute(val subtopicId: Int)

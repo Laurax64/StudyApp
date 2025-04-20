@@ -6,6 +6,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.studyapp.ui.screens.SubtopicScreen
 import com.example.studyapp.ui.screens.SubtopicsScreen
 import com.example.studyapp.ui.screens.TopicsScreen
@@ -29,15 +30,24 @@ fun StudyAppNavHost(modifier: Modifier = Modifier) {
         composable<SubtopicsRoute> {
             SubtopicsScreen(
                 subtopicsViewModel = hiltViewModel<SubtopicsViewModel>(),
-                navigateToSubtopic = {
-                    navController.navigate(route = SubtopicRoute)
+                navigateToSubtopic = { subtopicId ->
+                    navController.navigate(route = SubtopicRoute(subtopicId = subtopicId))
                 },
                 navigateBack = navController::popBackStack
             )
         }
 
-        composable<SubtopicRoute> {
-            SubtopicScreen(subtopicViewModel = hiltViewModel<SubtopicViewModel>())
+        composable<SubtopicRoute> { entry ->
+            val subtopicId = entry.toRoute<SubtopicRoute>().subtopicId
+            SubtopicScreen(
+                subtopicViewModel = hiltViewModel<SubtopicViewModel, SubtopicViewModel.Factory>(
+                    key = subtopicId.toString()
+                ) { factory ->
+                    factory.create(subtopicId)
+                },
+                navigateBack = navController::popBackStack
+            )
+
         }
     }
 }

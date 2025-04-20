@@ -30,7 +30,7 @@ class SubtopicsViewModel @Inject constructor(
                 initialValue = null,
             )
     val subtopics =
-        subtopicsRepository.getAllSubtopics()
+        subtopicsRepository.getAllSubtopics(topicId = topicId)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(),
@@ -48,7 +48,8 @@ class SubtopicsViewModel @Inject constructor(
                     title = title,
                     checked = false,
                     description = description,
-                    imageUri = imageUri
+                    imageUri = imageUri,
+                    topicId = topicId
                 )
             )
         }

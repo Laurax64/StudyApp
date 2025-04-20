@@ -15,4 +15,7 @@
     <string name="close_search">Close search</string>
     <string name="description">Description</string>
     <string name="image">Image</string>
+    <string name="go_back_to_subtopics">Go back to subtopics</string>
+    <string name="edit">Edit</string>
+    <string name="edit_subtopic">Edit Subtopic</string>
 </resources>

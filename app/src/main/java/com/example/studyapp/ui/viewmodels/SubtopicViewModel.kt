@@ -1,58 +1,58 @@
 package com.example.studyapp.ui.viewmodels
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.SubtopicsRepository
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class SubtopicViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val subtopicsRepository: SubtopicsRepository
+@HiltViewModel(assistedFactory = SubtopicViewModel.Factory::class)
+class SubtopicViewModel @AssistedInject constructor(
+    private val subtopicsRepository: SubtopicsRepository,
+    @Assisted val subtopicId: Int,
 ) : ViewModel() {
-    private val subtopicId: Int = savedStateHandle["subtopicId"] ?: -1
-    var subtopic by mutableStateOf(
-        Subtopic(
-            title = "",
-            description = "",
-            checked = false,
-            imageUri = null
-        )
+    var subtopic = subtopicsRepository.getSubtopic(
+        id = subtopicId.toInt()
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = null
     )
-        private set
 
-    init {
-        viewModelScope.launch {
-            subtopic = subtopicsRepository.getSubtopic(id = subtopicId)
-                .filterNotNull()
-                .first()
-        }
-    }
-
-    suspend fun updateSubtopic(updatedSubtopic: Subtopic) {
+    fun updateSubtopic(updatedSubtopic: Subtopic) {
         if (validateInput(updatedSubtopic)) {
-            subtopicsRepository.updateSubtopic(updatedSubtopic)
+            viewModelScope.launch {
+                subtopicsRepository.updateSubtopic(updatedSubtopic)
+            }
         }
     }
 
 
-    suspend fun deleteSubtopic() {
-        subtopicsRepository.deleteSubtopic(subtopic)
+    fun deleteSubtopic() {
+        viewModelScope.launch {
+            subtopic.value?.let {
+                subtopicsRepository.deleteSubtopic(subtopic = it)
+            }
+        }
     }
 
     private fun validateInput(updatedSubtopic: Subtopic): Boolean {
         return with(updatedSubtopic) {
             subtopicId == id && title.isNotBlank() && description.isNotBlank()
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            subtopicId: Int,
+        ): SubtopicViewModel
     }
 }
 
