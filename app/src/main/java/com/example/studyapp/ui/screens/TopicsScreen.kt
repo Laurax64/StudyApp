@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
@@ -15,10 +16,12 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,14 +31,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
-import com.example.studyapp.ui.components.TopicDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.TopicsViewModel
 
@@ -189,7 +193,7 @@ private fun TopicListItem(
     modifier: Modifier
 ) {
     ListItem(
-        headlineContent = { Text(topic.title) },
+        headlineContent = { Text(topic.title, overflow = TextOverflow.Ellipsis, maxLines = 1) },
         modifier = modifier,
         trailingContent = {
             Checkbox(
@@ -227,8 +231,7 @@ private fun CreateTopicFAB(saveTopic: (Topic) -> Unit, modifier: Modifier = Modi
         },
     )
     if (showDialog) {
-        TopicDialog(
-            titleRes = R.string.create_topic,
+        CreateTopicDialog(
             onDismiss = { showDialog = false },
             topic = null,
             onSave = saveTopic
@@ -236,8 +239,53 @@ private fun CreateTopicFAB(saveTopic: (Topic) -> Unit, modifier: Modifier = Modi
     }
 }
 
+@Composable
+fun CreateTopicDialog(
+    topic: Topic?,
+    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit,
+    onSave: (Topic) -> Unit
+) {
+    var topicTitle by rememberSaveable { mutableStateOf(topic?.title ?: "") }
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(stringResource(R.string.create_topic)) },
+        text = {
+            OutlinedTextField(
+                value = topicTitle,
+                onValueChange = { topicTitle = it },
+                label = { Text(stringResource(R.string.title)) }
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (topic != null) {
+                        onSave(topic.copy(title = topicTitle))
+                    } else {
+                        onSave(Topic(title = topicTitle, checked = false))
+                    }
+                    onDismiss()
+                }
+            ) {
+                Text(stringResource(R.string.save))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = { onDismiss() }
+            ) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        modifier = modifier
+    )
+}
+
 @PreviewDynamicColors
 @PreviewLightDark
+@PreviewScreenSizes
 @Composable
 private fun TopicsScreenPreview() {
     StudyAppTheme {

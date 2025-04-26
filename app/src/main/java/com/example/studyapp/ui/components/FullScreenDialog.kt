@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
-import com.example.studyapp.data.Topic
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,50 +76,7 @@ fun FullScreenDialog(
     }
 }
 
-@Composable
-fun TopicDialog(
-    titleRes: Int,
-    topic: Topic?,
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit,
-    onSave: (Topic) -> Unit
-) {
-    var topicTitle by rememberSaveable { mutableStateOf(topic?.title ?: "") }
 
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = { Text(stringResource(titleRes)) },
-        text = {
-            OutlinedTextField(
-                value = topicTitle,
-                onValueChange = { topicTitle = it }, // Update the state with new value
-                label = { Text(stringResource(R.string.title)) }
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    if (topic != null) {
-                        onSave(topic.copy(title = topicTitle))
-                    } else {
-                        onSave(Topic(title = topicTitle, checked = false))
-                    }
-                    onDismiss()
-                }
-            ) {
-                Text(stringResource(R.string.save))
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = { onDismiss() }
-            ) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
-        modifier = modifier
-    )
-}
 
 @Composable
 fun SubtopicFullScreenDialog(

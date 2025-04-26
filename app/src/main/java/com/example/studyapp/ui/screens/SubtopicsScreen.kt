@@ -24,6 +24,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,7 +47,6 @@ import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.components.SubtopicFullScreenDialog
-import com.example.studyapp.ui.components.TopicDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.SubtopicsViewModel
 
@@ -183,8 +183,7 @@ private fun MoreActionsMenu(
     var showEditDialog by rememberSaveable { mutableStateOf(false) }
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
     if (showEditDialog) {
-        TopicDialog(
-            titleRes = R.string.edit_topic,
+        EditTopicDialog(
             onDismiss = { showEditDialog = false },
             topic = topic,
             onSave = {
@@ -242,6 +241,50 @@ private fun MoreActionsMenu(
             )
         }
     }
+}
+
+@Composable
+fun EditTopicDialog(
+    topic: Topic?,
+    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit,
+    onSave: (Topic) -> Unit
+) {
+    var topicTitle by rememberSaveable { mutableStateOf(topic?.title ?: "") }
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(stringResource(R.string.edit_topic)) },
+        text = {
+            OutlinedTextField(
+                value = topicTitle,
+                onValueChange = { topicTitle = it },
+                label = { Text(stringResource(R.string.title)) }
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (topic != null) {
+                        onSave(topic.copy(title = topicTitle))
+                    } else {
+                        onSave(Topic(title = topicTitle, checked = false))
+                    }
+                    onDismiss()
+                }
+            ) {
+                Text(stringResource(R.string.save))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = { onDismiss() }
+            ) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        modifier = modifier
+    )
 }
 
 @Composable
