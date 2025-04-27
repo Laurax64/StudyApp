@@ -1,10 +1,15 @@
 # Under Development
 ## User Interface
 ### Design
-The UI has been designed using [Figma](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1) in accordance to the [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en). [Previews](https://developer.android.com/develop/ui/compose/tooling/previews) for different screen sizes, themes and backgrounds have been used to check the UI during development.
+[Figma](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1)
+[Material 3 Guidelines](https://developer.android.com/design/ui?hl=en)
+[Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 
-### Adaptive layout
-Layout for different screen sizes 
+### [Canonical layouts](https://m3.material.io/foundations/layout/canonical-layouts/list-detail)
+[Feed](https://m3.material.io/foundations/layout/canonical-layouts/overview#963d7d99-4f04-4685-b7bd-57a89607b514)
+[List-detail](https://developer.android.com/develop/ui/compose/layouts/adaptive/list-detail)
+[Supporting pane](https://m3.material.io/foundations/layout/canonical-layouts/overview#b01f6399-a0d3-4fd8-b78b-78a9ab663482)
+
 ### Navigation 
 The type-safe navigation has been implemented by creating a [navigation controller](https://developer.android.com/guide/navigation/navcontroller) and [navigation graph](https://developer.android.com/guide/navigation/design) and then, using the navigation graph, to [navigate to destinations](https://developer.android.com/guide/navigation/use-graph/navigate). 
 
