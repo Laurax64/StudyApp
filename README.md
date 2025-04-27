@@ -6,7 +6,9 @@ The UI has been designed using [Figma](https://www.figma.com/design/PFv6qgJRGjVo
 ### Adaptive layout
 Layout for different screen sizes 
 ### Navigation 
-The type-safe navigation has been implemented by creating a [navigation controller](https://developer.android.com/guide/navigation/navcontroller) and [navigation graph](https://developer.android.com/guide/navigation/design) and then, using the navigation graph, to [navigate to destinations](https://developer.android.com/guide/navigation/use-graph/navigate).
+The type-safe navigation has been implemented by creating a [navigation controller](https://developer.android.com/guide/navigation/navcontroller) and [navigation graph](https://developer.android.com/guide/navigation/design) and then, using the navigation graph, to [navigate to destinations](https://developer.android.com/guide/navigation/use-graph/navigate). 
+
+[NavigationSuiteScaffold](https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation)
 ### [Searchbar](https://developer.android.com/develop/ui/compose/components/search-bar)
 ### Widget 
 [Glance](https://developer.android.com/codelabs/glance?hl=en#0)
