@@ -9,6 +9,7 @@ Layout for different screen sizes
 The type-safe navigation has been implemented by creating a [navigation controller](https://developer.android.com/guide/navigation/navcontroller) and [navigation graph](https://developer.android.com/guide/navigation/design) and then, using the navigation graph, to [navigate to destinations](https://developer.android.com/guide/navigation/use-graph/navigate). 
 
 [NavigationSuiteScaffold](https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation)
+[List-Detail](https://developer.android.com/develop/ui/compose/layouts/adaptive/list-detail)
 ### [Searchbar](https://developer.android.com/develop/ui/compose/components/search-bar)
 ### Widget 
 [Glance](https://developer.android.com/codelabs/glance?hl=en#0)
