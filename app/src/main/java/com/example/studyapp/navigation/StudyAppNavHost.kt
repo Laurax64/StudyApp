@@ -26,7 +26,6 @@ fun StudyAppNavHost(modifier: Modifier = Modifier) {
                 navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) }
             )
         }
-
         composable<SubtopicsRoute> {
             SubtopicsScreen(
                 subtopicsViewModel = hiltViewModel<SubtopicsViewModel>(),
