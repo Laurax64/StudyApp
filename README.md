@@ -1,6 +1,6 @@
 # Under Development
 ### Design
-- [x] [Figma](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1)
+- [x] [StudyApp Figma design](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1)
 - [x] [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en)
 - [ ] [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 
