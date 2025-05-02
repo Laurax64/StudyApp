@@ -23,4 +23,5 @@
     <string name="delete_topic">Delete Topic</string>
     <string name="delete_topic_dialog_title">Delete topic?</string>
     <string name="delete_topic_dialog_description">The topic %s will be permanently removed from the app.</string>
+    <string name="go_to_login">Go to login</string>
 </resources>
