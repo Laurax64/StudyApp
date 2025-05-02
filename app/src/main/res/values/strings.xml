@@ -27,5 +27,6 @@
     <string name="back">Back</string>
     <string name="select_a_topic">Select a topic</string>
     <string name="no_topics_available">No topics available</string>
-
+    <string name="bookmarked">Bookmarked</string>
+    <string name="not_bookmarked">Not Bookmarked</string>
 </resources>
