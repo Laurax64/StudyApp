@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import com.example.studyapp.ui.StudyApp
 import com.example.studyapp.ui.rememberStudyAppState
 import com.example.studyapp.ui.theme.StudyAppTheme
@@ -19,9 +18,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val appState = rememberStudyAppState()
-            val windowSize = calculateWindowSizeClass(this)
             StudyAppTheme {
-                StudyApp(appState = appState, windowSize = windowSize.widthSizeClass)
+                StudyApp(appState = appState)
             }
         }
     }

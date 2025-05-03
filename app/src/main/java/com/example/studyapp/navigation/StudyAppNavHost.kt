@@ -8,14 +8,18 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.example.studyapp.ui.StudyAppState
 import com.example.studyapp.ui.screens.SubtopicScreen
 import com.example.studyapp.ui.screens.SubtopicsScreen
 import com.example.studyapp.ui.screens.TopicsScreen
 
 @Composable
-fun StudyAppNavHost(windowSize: WindowWidthSizeClass, modifier: Modifier = Modifier) {
-    val navController = rememberNavController()
+fun StudyAppNavHost(
+    appState: StudyAppState,
+    windowSize: WindowWidthSizeClass = WindowWidthSizeClass.Compact,
+    modifier: Modifier = Modifier
+) {
+    val navController = appState.navController
     NavHost(
         navController = navController, startDestination = TopicsRoute, modifier = modifier
     ) {
@@ -25,8 +29,9 @@ fun StudyAppNavHost(windowSize: WindowWidthSizeClass, modifier: Modifier = Modif
         )
         subtopicsScreen(navController = navController)
         subtopicScreen(navigateBack = navController::popBackStack)
-
-
+        datesScreen()
+        aIAssistantScreen()
+        bookmarksScreen()
     }
 }
 
@@ -64,4 +69,16 @@ fun NavGraphBuilder.subtopicScreen(navigateBack: () -> Unit) {
             navigateBack = navigateBack,
         )
     }
+}
+
+fun NavGraphBuilder.datesScreen() {
+    composable<DatesRoute> {/* TODO: Implement Dates screen */ }
+}
+
+fun NavGraphBuilder.aIAssistantScreen() {
+    composable<AIAssistantRoute> {/* TODO: Implement AI Assistant screen */ }
+}
+
+fun NavGraphBuilder.bookmarksScreen() {
+    composable<BookmarksRoute> {/* TODO: Implement Bookmarks screen */ }
 }

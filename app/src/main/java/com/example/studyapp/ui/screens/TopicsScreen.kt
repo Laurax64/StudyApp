@@ -12,7 +12,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -30,10 +29,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
@@ -41,11 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
-import com.example.studyapp.ui.components.NavigationItemContent
-import com.example.studyapp.ui.components.NavigationItemType
 import com.example.studyapp.ui.theme.StudyAppTheme
-import com.example.studyapp.ui.utils.StudyAppContentType
-import com.example.studyapp.ui.utils.StudyAppNavigationType
 import com.example.studyapp.ui.viewmodels.TopicsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,47 +49,14 @@ fun TopicsScreen(
     navigateToTopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val navigationType: StudyAppNavigationType
-    val contentType: StudyAppContentType
-    when (windowWidthSize) {
-        WindowWidthSizeClass.Compact -> {
-            navigationType = StudyAppNavigationType.BOTTOM_NAVIGATION
-            contentType = StudyAppContentType.LIST_ONLY
-        }
-
-        WindowWidthSizeClass.Medium -> {
-            navigationType = StudyAppNavigationType.NAVIGATION_RAIL
-            contentType = StudyAppContentType.LIST_ONLY
-        }
-
-        WindowWidthSizeClass.Expanded -> {
-            navigationType = StudyAppNavigationType.NAVIGATION_RAIL
-            contentType = StudyAppContentType.LIST_AND_DETAIL
-        }
-
-        else -> {
-            navigationType = StudyAppNavigationType.BOTTOM_NAVIGATION
-            contentType = StudyAppContentType.LIST_ONLY
-        }
-    }
-    listOf(
-        NavigationItemContent(
-            navigationItemType = NavigationItemType.AI_ASSISTANT,
-            icon = ImageVector.vectorResource(id = R.drawable.baseline_assistant_24),
-            text = stringResource(id = R.string.ai_assistant)
-        ),
-        NavigationItemContent(
-            navigationItemType = NavigationItemType.SAVED,
-            icon = ImageVector.vectorResource(id = R.drawable.baseline_bookmark_24),
-            text = stringResource(id = R.string.bookmarks)
-        ),
-        NavigationItemContent(
-            navigationItemType = NavigationItemType.DATES,
-            icon = ImageVector.vectorResource(id = R.drawable.baseline_event_24),
-            text = stringResource(id = R.string.dates)
-        )
+    val topics by topicsViewModel.topics.collectAsStateWithLifecycle()
+    TopicsListOnlyContent(
+        topics = topics,
+        createTopic = { topicsViewModel::saveTopic },
+        navigateToTopic = navigateToTopic,
+        openSearchBar = { /*TODO*/ },
+        modifier = modifier
     )
-
 }
 
 @Composable
@@ -167,7 +127,6 @@ private fun TopicsScaffold(
         floatingActionButton = {
             CreateTopicFAB(saveTopic = createTopic)
         },
-        floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
         if (topics == null) {
             Box(
