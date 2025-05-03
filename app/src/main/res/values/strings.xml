@@ -27,4 +27,5 @@
     <string name="select_a_topic">Select a topic</string>
     <string name="bookmarked">Bookmarked</string>
     <string name="not_bookmarked">Not Bookmarked</string>
+
 </resources>
