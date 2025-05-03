@@ -27,5 +27,15 @@
     <string name="select_a_topic">Select a topic</string>
     <string name="bookmarked">Bookmarked</string>
     <string name="not_bookmarked">Not Bookmarked</string>
+    <string name="ai_assistant">AI assistant</string>
+    <string name="ai_assistant_top_app_bar_title">AI assistant</string>
+    <string name="saved">Saved</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="dates">Dates</string>
+    <string name="go_to_ai_assistant">Go to AI assistant</string>
+    <string name="go_to_bookmarks">Go to bookmarks</string>
+    <string name="go_to_dates">Go to dates</string>
+    <string name="go_to_study">Go to study</string>
+    <string name="study">Study</string>
 
 </resources>

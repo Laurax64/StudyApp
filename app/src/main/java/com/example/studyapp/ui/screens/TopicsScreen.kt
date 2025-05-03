@@ -22,6 +22,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,8 +30,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
@@ -38,19 +41,78 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
+import com.example.studyapp.ui.components.NavigationItemContent
+import com.example.studyapp.ui.components.NavigationItemType
 import com.example.studyapp.ui.theme.StudyAppTheme
+import com.example.studyapp.ui.utils.StudyAppContentType
+import com.example.studyapp.ui.utils.StudyAppNavigationType
 import com.example.studyapp.ui.viewmodels.TopicsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopicsScreen(
     topicsViewModel: TopicsViewModel,
+    windowWidthSize: WindowWidthSizeClass,
     navigateToTopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val navigationType: StudyAppNavigationType
+    val contentType: StudyAppContentType
+    when (windowWidthSize) {
+        WindowWidthSizeClass.Compact -> {
+            navigationType = StudyAppNavigationType.BOTTOM_NAVIGATION
+            contentType = StudyAppContentType.LIST_ONLY
+        }
 
+        WindowWidthSizeClass.Medium -> {
+            navigationType = StudyAppNavigationType.NAVIGATION_RAIL
+            contentType = StudyAppContentType.LIST_ONLY
+        }
+
+        WindowWidthSizeClass.Expanded -> {
+            navigationType = StudyAppNavigationType.NAVIGATION_RAIL
+            contentType = StudyAppContentType.LIST_AND_DETAIL
+        }
+
+        else -> {
+            navigationType = StudyAppNavigationType.BOTTOM_NAVIGATION
+            contentType = StudyAppContentType.LIST_ONLY
+        }
+    }
+    listOf(
+        NavigationItemContent(
+            navigationItemType = NavigationItemType.AI_ASSISTANT,
+            icon = ImageVector.vectorResource(id = R.drawable.baseline_assistant_24),
+            text = stringResource(id = R.string.ai_assistant)
+        ),
+        NavigationItemContent(
+            navigationItemType = NavigationItemType.SAVED,
+            icon = ImageVector.vectorResource(id = R.drawable.baseline_bookmark_24),
+            text = stringResource(id = R.string.bookmarks)
+        ),
+        NavigationItemContent(
+            navigationItemType = NavigationItemType.DATES,
+            icon = ImageVector.vectorResource(id = R.drawable.baseline_event_24),
+            text = stringResource(id = R.string.dates)
+        )
+    )
+
+}
+
+@Composable
+private fun TopicsContent() {
+
+}
+
+@Composable
+private fun TopicsListOnlyContent(
+    topics: List<Topic>?,
+    createTopic: (Topic) -> Unit,
+    navigateToTopic: (Int) -> Unit,
+    openSearchBar: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
-    val topics by topicsViewModel.topics.collectAsStateWithLifecycle(initialValue = listOf())
     if (showSearchBar) {
         TopicsSearchBar(
             modifier = modifier,
@@ -58,15 +120,24 @@ fun TopicsScreen(
             closeSearchBar = { showSearchBar = false },
             topics = topics
         )
+    } else {
+        TopicsScaffold(
+            topics = topics,
+            createTopic = createTopic,
+            navigateToTopic = navigateToTopic,
+            openSearchBar = { showSearchBar = true },
+            modifier = modifier
+        )
     }
     TopicsScaffold(
         topics = topics,
-        createTopic = topicsViewModel::saveTopic,
+        createTopic = createTopic,
         navigateToTopic = navigateToTopic,
-        openSearchBar = { showSearchBar = true },
+        openSearchBar = openSearchBar,
         modifier = modifier
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
