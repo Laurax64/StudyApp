@@ -2,18 +2,11 @@ package com.example.studyapp.navigation
 
 import kotlinx.serialization.Serializable
 
+@Serializable
+object TopicsRoute
 
 @Serializable
-data class TopicsRoute(
-    // The ID of the topic which will be initially selected at this destination
-    val initialTopicId: Int? = null,
-)
-
-@Serializable
-internal object TopicPlaceholderRoute
-
-@Serializable
-data class TopicRoute(val id: Int)
+data class SubtopicsRoute(val topicId: Int)
 
 @Serializable
 data class SubtopicRoute(val subtopicId: Int)
