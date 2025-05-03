@@ -23,7 +23,7 @@ class SubtopicViewModel @AssistedInject constructor(
         id = subtopicId.toInt()
     ).stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(),
+        started = SharingStarted.Companion.WhileSubscribed(),
         initialValue = null
     )
 
@@ -46,6 +46,3 @@ class SubtopicViewModel @AssistedInject constructor(
         fun create(subtopicId: Int): SubtopicViewModel
     }
 }
-
-
-

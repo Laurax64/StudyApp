@@ -2,323 +2,193 @@ package com.example.studyapp.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.theme.StudyAppTheme
+import com.example.studyapp.ui.viewmodels.TopicsUiState
 import com.example.studyapp.ui.viewmodels.TopicsViewModel
 
+@Composable
+fun TopicsRoute(
+    onTopicClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    shouldHighlightSelectedTopic: Boolean = false,
+    viewModel: TopicsViewModel = hiltViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-@OptIn(ExperimentalMaterial3Api::class)
+    TopicsScreen(
+        uiState = uiState,
+        onTopicClick = {
+            viewModel.onTopicClick(it)
+            onTopicClick(it)
+        },
+        shouldHighlightSelectedTopic = shouldHighlightSelectedTopic,
+        modifier = modifier,
+    )
+}
+
 @Composable
 internal fun TopicsScreen(
-    topicsViewModel: TopicsViewModel,
-    navigateToTopic: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var showSearchBar by rememberSaveable { mutableStateOf(false) }
-    currentWindowAdaptiveInfo().windowSizeClass
-    val topics by topicsViewModel.topics.collectAsStateWithLifecycle(initialValue = listOf())
-    if (showSearchBar) {
-        TopicsSearchBar(
-            modifier = modifier,
-            navigateToTopic = navigateToTopic,
-            closeSearchBar = { showSearchBar = false },
-            topics = topics
-        )
-    }
-    TopicsScaffold(
-        topics = topics,
-        createTopic = topicsViewModel::saveTopic,
-        navigateToTopic = navigateToTopic,
-        openSearchBar = { showSearchBar = true },
-        modifier = modifier
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TopicsScaffold(
-    topics: List<Topic>?,
-    createTopic: (Topic) -> Unit,
-    navigateToTopic: (Int) -> Unit,
-    openSearchBar: () -> Unit,
+    uiState: TopicsUiState,
+    onTopicClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    shouldHighlightSelectedTopic: Boolean = false,
 ) {
-    Scaffold(
+    Column(
         modifier = modifier,
-        topBar = {
-            CenterAlignedTopAppBar(
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_search_24),
-                        contentDescription = stringResource(R.string.topics_search),
-                        modifier = Modifier.clickable { openSearchBar() }
-                    )
-                },
-                actions = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_account_circle_24),
-                        contentDescription = stringResource(R.string.go_to_login),
-                        modifier = Modifier.clickable { openSearchBar() }
-                    )
-                },
-                title = { Text(text = stringResource(R.string.app_name)) },
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        },
-        floatingActionButton = {
-            CreateTopicFAB(saveTopic = createTopic)
-        },
-        floatingActionButtonPosition = FabPosition.Center
-    ) { innerPadding ->
-        if (topics == null) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        when (uiState) {
+            TopicsUiState.Loading ->
                 CircularProgressIndicator()
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .padding(horizontal = 8.dp)
-            ) {
-                items(topics.size) { index ->
-                    val topic = topics[index]
-                    TopicListItem(
-                        topic = topic,
-                        modifier = Modifier
-                            .clickable { navigateToTopic(topic.id) }
-                            .padding(horizontal = 8.dp)
-                    )
-                }
-            }
-        }
-    }
-}
 
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TopicsSearchBar(
-    modifier: Modifier = Modifier,
-    navigateToTopic: (Int) -> Unit,
-    topics: List<Topic>?,
-    closeSearchBar: () -> Unit
-) {
-    var query by rememberSaveable { mutableStateOf("") }
-    var filteredTopics by rememberSaveable { mutableStateOf(topics) }
-    SearchBar(
-        inputField = {
-            SearchBarDefaults.InputField(
-                query = query,
-                onQueryChange = { query = it },
-                onSearch = {
-                    filteredTopics = topics?.filter { topic ->
-                        topic.title.contains(query, ignoreCase = true)
-                    }
-                },
-                expanded = true,
-                onExpandedChange = {},
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_arrow_back_24),
-                        contentDescription = stringResource(R.string.close_search),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable { closeSearchBar() }
-                    )
-                }
-            )
-        },
-        expanded = true,
-        onExpandedChange = {},
-        modifier = modifier,
-        content = {
-            if (topics == null) {
-                Box(
-                    modifier = modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                LazyColumn {
-                    items(topics.size) { index ->
-                        val topic = topics[index]
-                        TopicListItem(
-                            topic = topic,
-                            modifier = Modifier.clickable { navigateToTopic(topic.id) }
-                        )
-                    }
-                }
-            }
-        }
-    )
-}
-
-@Composable
-private fun TopicListItem(
-    topic: Topic,
-    modifier: Modifier
-) {
-    ListItem(
-        headlineContent = { Text(topic.title, overflow = TextOverflow.Ellipsis, maxLines = 1) },
-        modifier = modifier,
-        trailingContent = {
-            Checkbox(
-                checked = topic.checked,
-                enabled = false,
-                onCheckedChange = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(size = 24.dp)
-            )
-        }
-    )
-}
-
-@Composable
-private fun CreateTopicFAB(saveTopic: (Topic) -> Unit, modifier: Modifier = Modifier) {
-    var showDialog by rememberSaveable { mutableStateOf(false) }
-    ExtendedFloatingActionButton(
-        onClick = { showDialog = true },
-        modifier = modifier,
-        icon =
-            {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_add_24),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    contentDescription = stringResource(R.string.create_topic),
-                    modifier = Modifier.size(24.dp)
+            is TopicsUiState.Topics ->
+                TopicsTabContent(
+                    topics = uiState.topics,
+                    onTopicClick = onTopicClick,
+                    selectedTopicId = uiState.selectedTopicId,
+                    shouldHighlightSelectedTopic = shouldHighlightSelectedTopic,
                 )
-            },
-        text = {
-            Text(
-                text = stringResource(R.string.create_topic),
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        },
-    )
-    if (showDialog) {
-        CreateTopicDialog(
-            onDismiss = { showDialog = false },
-            topic = null,
-            onSave = saveTopic
-        )
+
+            is TopicsUiState.Empty -> TopicsEmptyScreen()
+        }
     }
 }
 
 @Composable
-fun CreateTopicDialog(
-    topic: Topic?,
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit,
-    onSave: (Topic) -> Unit
-) {
-    var topicTitle by rememberSaveable { mutableStateOf(topic?.title ?: "") }
-
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = { Text(stringResource(R.string.create_topic)) },
-        text = {
-            OutlinedTextField(
-                value = topicTitle,
-                onValueChange = { topicTitle = it },
-                label = { Text(stringResource(R.string.title)) }
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    if (topic != null) {
-                        onSave(topic.copy(title = topicTitle))
-                    } else {
-                        onSave(Topic(title = topicTitle, checked = false))
-                    }
-                    onDismiss()
-                }
-            ) {
-                Text(stringResource(R.string.save))
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = { onDismiss() }
-            ) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
-        modifier = modifier
-    )
+private fun TopicsEmptyScreen() {
+    Text(text = stringResource(id = R.string.no_topics_available))
 }
 
+@Composable
+fun TopicsTabContent(
+    topics: List<Topic>,
+    onTopicClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    withBottomSpacer: Boolean = true,
+    selectedTopicId: Int? = null,
+    shouldHighlightSelectedTopic: Boolean = false,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth(),
+    ) {
+        val scrollableState = rememberLazyListState()
+        LazyColumn(
+            modifier = Modifier
+                .padding(horizontal = 24.dp),
+            contentPadding = PaddingValues(vertical = 16.dp),
+            state = scrollableState,
+        ) {
+            topics.forEach { topic ->
+                val topicId = topic.id
+                item(key = topicId) {
+                    val isSelected = shouldHighlightSelectedTopic && topicId == selectedTopicId
+
+                    ListItem(
+                        headlineContent = { Text(text = topic.title) },
+                        trailingContent = {
+                            Checkbox(
+                                checked = topic.checked,
+                                onCheckedChange = null,
+                                enabled = false,
+                            )
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = if (isSelected) {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            } else {
+                                Color.Transparent
+                            },
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics(mergeDescendants = true) {
+                                selected = isSelected
+                            }
+                            .clickable(enabled = true, onClick = { onTopicClick(topicId) }),
+                    )
+                }
+            }
+
+            if (withBottomSpacer) {
+                item {
+                    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+                }
+            }
+        }
+    }
+}
 
 @PreviewLightDark
 @PreviewScreenSizes
 @Composable
-private fun TopicsScreenPreviewLightDark() {
+fun TopicsScreenPopulated() {
     StudyAppTheme {
-        TopicsScaffold(
-            topics = listOf(
-                Topic(1, "Topic 1", false),
-                Topic(2, "Topic 2", true),
-                Topic(3, "Topic 3", false)
+        TopicsScreen(
+            uiState = TopicsUiState.Topics(
+                selectedTopicId = null,
+                topics = listOf(
+                    Topic(1, "Topic 1", false),
+                    Topic(2, "Topic 2", true),
+                    Topic(3, "Topic 3", false)
+                ),
             ),
-            navigateToTopic = {},
-            openSearchBar = {},
-            createTopic = {},
+            onTopicClick = {},
         )
     }
 }
 
-@Preview
+@PreviewLightDark
+@PreviewScreenSizes
 @Composable
-private fun LoadingScreenPreview() {
+fun InterestsScreenLoading() {
     StudyAppTheme {
-        TopicsScaffold(
-            topics = null,
-            navigateToTopic = {},
-            openSearchBar = {},
-            createTopic = {},
+        TopicsScreen(
+            uiState = TopicsUiState.Loading,
+            onTopicClick = {},
+        )
+    }
+}
+
+@PreviewLightDark
+@PreviewScreenSizes
+@Composable
+fun TopicsScreenEmpty() {
+    StudyAppTheme {
+        TopicsScreen(
+            uiState = TopicsUiState.Empty,
+            onTopicClick = {},
         )
     }
 }
