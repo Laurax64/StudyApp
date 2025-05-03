@@ -43,7 +43,7 @@
 * The events that modify the data flow in the opposite direction.
 
 [Modularization](https://developer.android.com/topic/modularization)
-- [ ] Modularization according to the linked guide similar to the NIA app
+- [ ]
 ### Code Style 
 - [ ] ...
 ### Testing
