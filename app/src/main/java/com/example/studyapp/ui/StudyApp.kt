@@ -2,6 +2,7 @@ package com.example.studyapp.ui
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -17,6 +18,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.studyapp.navigation.StudyAppNavHost
 import kotlin.reflect.KClass
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun StudyApp(
     appState: StudyAppState,
@@ -25,7 +27,6 @@ fun StudyApp(
 ) {
     val currentDestination = appState.currentDestination
     val layoutType = calculateFromAdaptiveInfo(windowAdaptiveInfo)
-
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             appState.topLevelDestinations.forEach { destination ->
@@ -66,15 +67,14 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
  */
 private fun calculateFromAdaptiveInfo(adaptiveInfo: WindowAdaptiveInfo): NavigationSuiteType {
     return with(adaptiveInfo) {
-        if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-            NavigationSuiteType.NavigationBar
-        } else if (
-            windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED ||
-            windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.MEDIUM
-        ) {
-            NavigationSuiteType.NavigationRail
-        } else {
-            NavigationSuiteType.NavigationBar
+        when (windowSizeClass.windowWidthSizeClass) {
+            WindowWidthSizeClass.COMPACT -> {
+                NavigationSuiteType.NavigationBar
+            }
+
+            else -> {
+                NavigationSuiteType.NavigationRail
+            }
         }
     }
 }

@@ -42,7 +42,6 @@ fun NavGraphBuilder.topicsScreen(
     composable<TopicsRoute> {
         TopicsScreen(
             topicsViewModel = hiltViewModel(),
-            windowWidthSize = windowWidthSize,
             navigateToTopic = navigateToTopic
         )
     }
