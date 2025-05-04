@@ -37,5 +37,7 @@
     <string name="go_to_dates">Go to dates</string>
     <string name="go_to_study">Go to study</string>
     <string name="study">Study</string>
+    <string name="search_in">Search in %s</string>
+    <string name="search_in_topics">Search in topics</string>
 
 </resources>
