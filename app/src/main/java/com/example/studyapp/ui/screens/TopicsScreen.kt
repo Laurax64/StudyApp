@@ -249,7 +249,7 @@ private fun TopicsSearchBar(
             )
         },
         modifier = modifier,
-        expanded = expanded,
+        expanded = true,
         onExpandedChange = { expanded = it },
         colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
         content = {
