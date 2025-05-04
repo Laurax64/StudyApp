@@ -5,13 +5,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -19,7 +22,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,6 +37,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -55,20 +58,17 @@ fun TopicsScreen(
     navigateToTopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val topics by topicsViewModel.topics.collectAsStateWithLifecycle()
-
     TopicsScaffold(
         topics = topics,
         saveTopic = topicsViewModel::saveTopic,
         navigateToTopic = navigateToTopic,
         modifier = modifier
     )
-
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun TopicsScaffold(
     topics: List<Topic>?,
@@ -83,18 +83,28 @@ private fun TopicsScaffold(
     Scaffold(
         modifier = modifier,
         topBar = {
-            CenterAlignedTopAppBar(
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_search_24),
-                        contentDescription = stringResource(R.string.topics_search),
-                        modifier = Modifier.clickable { showSearchBar = true }
-                    )
-                },
-                actions = {/*TODO Add account icon*/ },
-                title = { Text(text = stringResource(R.string.app_name)) },
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+            if (!showSearchBar) {
+                CenterAlignedTopAppBar(
+                    navigationIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_search_24),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            contentDescription = stringResource(R.string.topics_search),
+                            modifier = Modifier.clickable { showSearchBar = true }
+                        )
+                    },
+                    actions = {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_account_circle_24),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            contentDescription = stringResource(R.string.topics_search),
+                            modifier = Modifier.clickable { showSearchBar = true }
+                        )
+                    },
+                    title = { Text(text = stringResource(R.string.app_name)) },
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
         },
         floatingActionButton = {
             CreateTopicFAB(saveTopic = saveTopic)
@@ -121,7 +131,15 @@ private fun TopicsScaffold(
             },
             detailPane = {
                 // Show the detail pane content if selected item is available
-                scaffoldNavigator.currentDestination?.contentKey?.let {
+                val currentKey = scaffoldNavigator.currentDestination?.contentKey
+                if (currentKey != null && currentKey is Int) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "Subtopics for topic ID: ${currentKey - 1}")
+                    }
+                } else {
                     SubtopicsTabContent()
                 }
             },
@@ -139,7 +157,6 @@ fun TopicsTabContent(
     closeSearchBar: () -> Unit,
     showSearchBar: Boolean
 ) {
-
     if (topics == null) {
         Box(
             modifier = modifier.fillMaxSize(),
@@ -149,14 +166,16 @@ fun TopicsTabContent(
         }
     } else if (showSearchBar) {
         TopicsSearchBar(
-            modifier = modifier,
+            modifier = modifier.fillMaxWidth(),
             navigateToTopic = navigateToTopic,
             closeSearchBar = closeSearchBar,
             topics = topics
         )
     } else {
         LazyColumn(
-            modifier.padding(horizontal = 8.dp)
+            modifier = modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
         ) {
             items(topics.size) { index ->
                 val topic = topics[index]
@@ -165,6 +184,7 @@ fun TopicsTabContent(
                     modifier = Modifier
                         .clickable { navigateToTopic(topic.id) }
                         .padding(horizontal = 8.dp)
+                        .fillMaxWidth()
                 )
             }
         }
@@ -203,43 +223,48 @@ private fun TopicsSearchBar(
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var filteredTopics by rememberSaveable { mutableStateOf(topics) }
-    Box(modifier = modifier) {
-        SearchBar(
-            inputField = {
-                SearchBarDefaults.InputField(
-                    query = query,
-                    onQueryChange = { query = it },
-                    onSearch = {
-                        filteredTopics = topics.filter { topic ->
-                            topic.title.contains(query, ignoreCase = true)
-                        }
-                    },
-                    expanded = true,
-                    onExpandedChange = {},
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_arrow_back_24),
-                            contentDescription = stringResource(R.string.close_search),
-                            modifier = Modifier.clickable { closeSearchBar() }
-                        )
+    var expanded by rememberSaveable { mutableStateOf(true) }
+    DockedSearchBar(
+        inputField = {
+            SearchBarDefaults.InputField(
+                query = query,
+                onQueryChange = {
+                    query = it
+                    filteredTopics = topics.filter { topic ->
+                        topic.title.contains(other = it, ignoreCase = true)
                     }
-                )
-            },
-            expanded = true,
-            onExpandedChange = {},
-            content = {
-                LazyColumn {
-                    items(filteredTopics.size) { index ->
-                        val topic = topics[index]
-                        TopicListItem(
-                            topic = topic,
-                            modifier = Modifier.clickable { navigateToTopic(topic.id) }
-                        )
-                    }
+                },
+                onSearch = { expanded = false },
+                expanded = expanded,
+                onExpandedChange = { expanded = it },
+                placeholder = { Text(stringResource(id = R.string.search_in_topics)) },
+                modifier = Modifier.fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_arrow_back_24),
+                        contentDescription = stringResource(R.string.close_search),
+                        modifier = Modifier.clickable { closeSearchBar() }
+                    )
+                },
+            )
+        },
+        modifier = modifier,
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
+        content = {
+            LazyColumn {
+                items(items = filteredTopics) { topic ->
+                    TopicListItem(
+                        topic = topic,
+                        modifier = Modifier
+                            .clickable { navigateToTopic(topic.id) }
+                            .padding(8.dp)
+                    )
                 }
             }
-        )
-    }
+        }
+    )
 }
 
 @Composable
