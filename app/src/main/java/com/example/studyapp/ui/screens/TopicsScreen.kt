@@ -1,34 +1,43 @@
 package com.example.studyapp.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
+import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,146 +49,218 @@ import com.example.studyapp.R
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.TopicsViewModel
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun TopicsScreen(
     topicsViewModel: TopicsViewModel,
     navigateToTopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    var showSearchBar by rememberSaveable { mutableStateOf(false) }
-    val topics by topicsViewModel.topics.collectAsStateWithLifecycle(initialValue = listOf())
-    if (showSearchBar) {
-        TopicsSearchBar(
-            modifier = modifier,
-            navigateToTopic = navigateToTopic,
-            closeSearchBar = { showSearchBar = false },
-            topics = topics
-        )
-    }
+    val topics by topicsViewModel.topics.collectAsStateWithLifecycle()
     TopicsScaffold(
         topics = topics,
-        createTopic = topicsViewModel::saveTopic,
+        saveTopic = topicsViewModel::saveTopic,
         navigateToTopic = navigateToTopic,
-        openSearchBar = { showSearchBar = true },
         modifier = modifier
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun TopicsScaffold(
     topics: List<Topic>?,
-    createTopic: (Topic) -> Unit,
+    saveTopic: (Topic) -> Unit,
     navigateToTopic: (Int) -> Unit,
-    openSearchBar: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
+    val scope = rememberCoroutineScope()
+    var showSearchBar by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         modifier = modifier,
         topBar = {
-            CenterAlignedTopAppBar(
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_search_24),
-                        contentDescription = stringResource(R.string.topics_search),
-                        modifier = Modifier.clickable { openSearchBar() }
-                    )
-                },
-                actions = {/*TODO Add account icon*/ },
-                title = { Text(text = stringResource(R.string.app_name)) },
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+            if (!showSearchBar) {
+                CenterAlignedTopAppBar(
+                    navigationIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_search_24),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            contentDescription = stringResource(R.string.topics_search),
+                            modifier = Modifier.clickable { showSearchBar = true }
+                        )
+                    },
+                    actions = {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_account_circle_24),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            contentDescription = stringResource(R.string.topics_search),
+                            modifier = Modifier.clickable { showSearchBar = true }
+                        )
+                    },
+                    title = { Text(text = stringResource(R.string.app_name)) },
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
         },
         floatingActionButton = {
-            CreateTopicFAB(saveTopic = createTopic)
+            CreateTopicFAB(saveTopic = saveTopic)
         },
-        floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
-        if (topics == null) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            LazyColumn(
-                Modifier
-                    .padding(innerPadding)
-                    .padding(horizontal = 8.dp)
-            ) {
-                items(topics.size) { index ->
-                    val topic = topics[index]
-                    TopicListItem(
-                        topic = topic,
-                        modifier = Modifier
-                            .clickable { navigateToTopic(topic.id) }
-                            .padding(horizontal = 8.dp)
-                    )
+        NavigableListDetailPaneScaffold(
+            navigator = scaffoldNavigator,
+            listPane = {
+                TopicsTabContent(
+                    navigateToTopic = { item ->
+                        // Navigate to the detail pane with the passed item
+                        scope.launch {
+                            scaffoldNavigator.navigateTo(
+                                ListDetailPaneScaffoldRole.Detail,
+                                item
+                            )
+                        }
+                    },
+                    closeSearchBar = { showSearchBar = false },
+                    showSearchBar = showSearchBar,
+                    topics = topics,
+                )
+
+            },
+            detailPane = {
+                // Show the detail pane content if selected item is available
+                val currentKey = scaffoldNavigator.currentDestination?.contentKey
+                if (currentKey != null && currentKey is Int) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "Subtopics for topic ID: ${currentKey - 1}")
+                    }
+                } else {
+                    SubtopicsTabContent()
                 }
+            },
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
+}
+
+
+@Composable
+fun TopicsTabContent(
+    topics: List<Topic>?,
+    modifier: Modifier = Modifier,
+    navigateToTopic: (Int) -> Unit,
+    closeSearchBar: () -> Unit,
+    showSearchBar: Boolean
+) {
+    if (topics == null) {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else if (showSearchBar) {
+        TopicsSearchBar(
+            modifier = modifier.fillMaxWidth(),
+            navigateToTopic = navigateToTopic,
+            closeSearchBar = closeSearchBar,
+            topics = topics
+        )
+    } else {
+        LazyColumn(
+            modifier = modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
+        ) {
+            items(topics.size) { index ->
+                val topic = topics[index]
+                TopicListItem(
+                    topic = topic,
+                    modifier = Modifier
+                        .clickable { navigateToTopic(topic.id) }
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth()
+                )
             }
         }
     }
 }
 
+@Composable
+fun SubtopicsTabContent(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(
+            20.dp,
+            alignment = Alignment.CenterVertically,
+        ),
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_local_florist_24),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+        )
+        Text(
+            text = stringResource(id = R.string.select_a_topic),
+            style = MaterialTheme.typography.titleLarge,
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopicsSearchBar(
     modifier: Modifier = Modifier,
     navigateToTopic: (Int) -> Unit,
-    topics: List<Topic>?,
+    topics: List<Topic>,
     closeSearchBar: () -> Unit
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var filteredTopics by rememberSaveable { mutableStateOf(topics) }
-    SearchBar(
+    var expanded by rememberSaveable { mutableStateOf(true) }
+    DockedSearchBar(
         inputField = {
             SearchBarDefaults.InputField(
                 query = query,
-                onQueryChange = { query = it },
-                onSearch = {
-                    filteredTopics = topics?.filter { topic ->
-                        topic.title.contains(query, ignoreCase = true)
+                onQueryChange = {
+                    query = it
+                    filteredTopics = topics.filter { topic ->
+                        topic.title.contains(other = it, ignoreCase = true)
                     }
                 },
-                expanded = true,
-                onExpandedChange = {},
+                onSearch = { expanded = false },
+                expanded = expanded,
+                onExpandedChange = { expanded = it },
+                placeholder = { Text(stringResource(id = R.string.search_in_topics)) },
+                modifier = Modifier.fillMaxWidth(),
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.baseline_arrow_back_24),
                         contentDescription = stringResource(R.string.close_search),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable { closeSearchBar() }
+                        modifier = Modifier.clickable { closeSearchBar() }
                     )
-                }
+                },
             )
         },
-        expanded = true,
-        onExpandedChange = {},
         modifier = modifier,
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
         content = {
-            if (topics == null) {
-                Box(
-                    modifier = modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                LazyColumn {
-                    items(topics.size) { index ->
-                        val topic = topics[index]
-                        TopicListItem(
-                            topic = topic,
-                            modifier = Modifier.clickable { navigateToTopic(topic.id) }
-                        )
-                    }
+            LazyColumn {
+                items(items = filteredTopics) { topic ->
+                    TopicListItem(
+                        topic = topic,
+                        modifier = Modifier
+                            .clickable { navigateToTopic(topic.id) }
+                            .padding(8.dp)
+                    )
                 }
             }
         }
@@ -294,8 +375,7 @@ private fun TopicsScreenPreview() {
                 Topic(3, "Topic 3", false)
             ),
             navigateToTopic = {},
-            openSearchBar = {},
-            createTopic = {},
+            saveTopic = {},
         )
     }
 }
@@ -308,8 +388,7 @@ private fun LoadingScreenPreview() {
         TopicsScaffold(
             topics = null,
             navigateToTopic = {},
-            openSearchBar = {},
-            createTopic = {},
+            saveTopic = {},
         )
     }
 }

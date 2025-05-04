@@ -10,3 +10,12 @@ data class SubtopicsRoute(val topicId: Int)
 
 @Serializable
 data class SubtopicRoute(val subtopicId: Int)
+
+@Serializable
+data object AIAssistantRoute
+
+@Serializable
+data object BookmarksRoute
+
+@Serializable
+data object DatesRoute

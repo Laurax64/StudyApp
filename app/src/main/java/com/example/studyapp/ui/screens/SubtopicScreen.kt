@@ -171,6 +171,7 @@ private fun MoreActionsMenu(
     Column(modifier, horizontalAlignment = Alignment.End) {
         Icon(
             imageVector = Icons.Default.MoreVert,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             contentDescription = stringResource(R.string.menu),
             modifier = Modifier.clickable { expanded = true })
 

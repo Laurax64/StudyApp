@@ -1,24 +1,23 @@
 package com.example.studyapp.ui.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.SubtopicsRepository
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-// Could also use savedStateHandle.
-@HiltViewModel(assistedFactory = SubtopicViewModel.Factory::class)
-class SubtopicViewModel @AssistedInject constructor(
+@HiltViewModel()
+class SubtopicViewModel @Inject constructor(
     private val subtopicsRepository: SubtopicsRepository,
-    @Assisted val subtopicId: Int,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    private val subtopicId: Int = savedStateHandle["subtopicId"] ?: -1
     var subtopic = subtopicsRepository.getSubtopic(
         id = subtopicId.toInt()
     ).stateIn(
@@ -39,11 +38,6 @@ class SubtopicViewModel @AssistedInject constructor(
                 subtopicsRepository.deleteSubtopic(subtopic = it)
             }
         }
-    }
-
-    @AssistedFactory
-    interface Factory {
-        fun create(subtopicId: Int): SubtopicViewModel
     }
 }
 
