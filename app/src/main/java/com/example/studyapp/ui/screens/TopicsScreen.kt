@@ -26,13 +26,12 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,9 +48,7 @@ import com.example.studyapp.R
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.TopicsViewModel
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun TopicsScreen(
     topicsViewModel: TopicsViewModel,
@@ -77,9 +74,7 @@ private fun TopicsScaffold(
     modifier: Modifier = Modifier,
 ) {
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
-    val scope = rememberCoroutineScope()
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
-
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -113,34 +108,27 @@ private fun TopicsScaffold(
         NavigableListDetailPaneScaffold(
             navigator = scaffoldNavigator,
             listPane = {
-                TopicsTabContent(
-                    navigateToTopic = { item ->
-                        // Navigate to the detail pane with the passed item
-                        scope.launch {
-                            scaffoldNavigator.navigateTo(
-                                ListDetailPaneScaffoldRole.Detail,
-                                item
-                            )
-                        }
-                    },
-                    closeSearchBar = { showSearchBar = false },
-                    showSearchBar = showSearchBar,
-                    topics = topics,
-                )
-
+                AnimatedPane {
+                    TopicsTabContent(
+                        navigateToTopic = {
+                            // Not scaffoldNavigator.navigateTo because the app needs to
+                            // change more than just the detail pane
+                            navigateToTopic(it)
+                        },
+                        closeSearchBar = { showSearchBar = false },
+                        showSearchBar = showSearchBar,
+                        topics = topics,
+                    )
+                }
             },
             detailPane = {
-                // Show the detail pane content if selected item is available
-                val currentKey = scaffoldNavigator.currentDestination?.contentKey
-                if (currentKey != null && currentKey is Int) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "Subtopics for topic ID: ${currentKey - 1}")
+                AnimatedPane {
+                    val currentKey = scaffoldNavigator.currentDestination?.contentKey
+                    if (currentKey != null && currentKey is Int) {
+                        navigateToTopic(currentKey)
+                    } else {
+                        SubtopicsPlaceholder()
                     }
-                } else {
-                    SubtopicsTabContent()
                 }
             },
             modifier = Modifier.padding(innerPadding)
@@ -150,7 +138,7 @@ private fun TopicsScaffold(
 
 
 @Composable
-fun TopicsTabContent(
+private fun TopicsTabContent(
     topics: List<Topic>?,
     modifier: Modifier = Modifier,
     navigateToTopic: (Int) -> Unit,
@@ -172,32 +160,41 @@ fun TopicsTabContent(
             topics = topics
         )
     } else {
-        LazyColumn(
+        ScrollableTopicsList(
             modifier = modifier
                 .padding(horizontal = 8.dp)
-                .fillMaxWidth()
-        ) {
-            items(topics.size) { index ->
-                val topic = topics[index]
-                TopicListItem(
-                    topic = topic,
-                    modifier = Modifier
-                        .clickable { navigateToTopic(topic.id) }
-                        .padding(horizontal = 8.dp)
-                        .fillMaxWidth()
-                )
-            }
+                .fillMaxWidth(),
+            topics = topics,
+            navigateToTopic = navigateToTopic
+        )
+    }
+}
+
+@Composable
+fun ScrollableTopicsList(
+    modifier: Modifier,
+    topics: List<Topic>,
+    navigateToTopic: (Int) -> Unit
+) {
+    LazyColumn(modifier = modifier) {
+        items(topics) { topic ->
+            TopicListItem(
+                topic = topic,
+                modifier = Modifier
+                    .clickable { navigateToTopic(topic.id) }
+                    .fillMaxWidth()
+            )
         }
     }
 }
 
 @Composable
-fun SubtopicsTabContent(modifier: Modifier = Modifier) {
+fun SubtopicsPlaceholder(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(
-            20.dp,
+            space = 20.dp,
             alignment = Alignment.CenterVertically,
         ),
     ) {
@@ -253,25 +250,20 @@ private fun TopicsSearchBar(
         onExpandedChange = { expanded = it },
         colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
         content = {
-            LazyColumn {
-                items(items = filteredTopics) { topic ->
-                    TopicListItem(
-                        topic = topic,
-                        modifier = Modifier
-                            .clickable { navigateToTopic(topic.id) }
-                            .padding(8.dp)
-                    )
-                }
-            }
+            ScrollableTopicsList(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                topics = filteredTopics,
+                navigateToTopic = navigateToTopic
+            )
+
         }
     )
 }
 
 @Composable
-private fun TopicListItem(
-    topic: Topic,
-    modifier: Modifier
-) {
+private fun TopicListItem(topic: Topic, modifier: Modifier) {
     ListItem(
         headlineContent = { Text(topic.title, overflow = TextOverflow.Ellipsis, maxLines = 1) },
         modifier = modifier,
@@ -281,7 +273,7 @@ private fun TopicListItem(
                 enabled = false,
                 onCheckedChange = null,
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(horizontal = 16.dp)
                     .size(size = 24.dp)
             )
         }

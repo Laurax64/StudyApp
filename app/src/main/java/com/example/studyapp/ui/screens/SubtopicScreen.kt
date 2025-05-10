@@ -82,6 +82,7 @@ private fun SubtopicScaffold(
                             description = description,
                             checked = subtopic.checked,
                             topicId = subtopic.topicId,
+                            bookmarked = subtopic.bookmarked,
                             imageUri = imageUri
                         )
                     )
@@ -220,6 +221,7 @@ private fun SubtopicScreenPreview() {
             title = "Subtopic Title",
             description = "Subtopic Description",
             checked = false,
+            bookmarked = false,
             topicId = 1,
             imageUri = null
         ),

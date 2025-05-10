@@ -2,7 +2,6 @@ package com.example.studyapp.ui
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -18,7 +17,6 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.studyapp.navigation.StudyAppNavHost
 import kotlin.reflect.KClass
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun StudyApp(
     appState: StudyAppState,
@@ -53,9 +51,7 @@ fun StudyApp(
 }
 
 private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
-    this?.hierarchy?.any {
-        it.hasRoute(route)
-    } == true
+    this?.hierarchy?.any { it.hasRoute(route) } == true
 
 /**
  * Calculates the navigation suite type based on the adaptive info.

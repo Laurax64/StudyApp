@@ -27,13 +27,17 @@ class SubtopicsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(),
             initialValue = null,
         )
-    val subtopics =
-        subtopicsRepository.getAllSubtopics(topicId = topicId)
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(),
-                initialValue = null
-            )
+    val subtopics = subtopicsRepository.getAllSubtopics(topicId = topicId)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
+        )
+    val topics = topicsRepository.getAllTopics().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = null
+    )
 
     fun createSubtopic(
         title: String,
@@ -45,6 +49,7 @@ class SubtopicsViewModel @Inject constructor(
                 Subtopic(
                     title = title,
                     checked = false,
+                    bookmarked = false,
                     description = description,
                     imageUri = imageUri,
                     topicId = topicId
@@ -55,9 +60,7 @@ class SubtopicsViewModel @Inject constructor(
 
     fun updateTopic(updatedTopic: Topic) {
         viewModelScope.launch {
-            topicsRepository.updateTopic(
-                topic = updatedTopic
-            )
+            topicsRepository.updateTopic(topic = updatedTopic)
         }
     }
 
