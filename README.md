@@ -23,7 +23,7 @@
 - [x] [Navigation graph](https://developer.android.com/guide/navigation/design)
 - [x] [Navigation to destinations](https://developer.android.com/guide/navigation/use-graph/navigate)
 - [x] [NavigationSuiteScaffold](https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation)
-- [x] [Nested graph] https://developer.android.com/guide/navigation/design/nested-graphs
+- [x] [Nested graph](https://developer.android.com/guide/navigation/design/nested-graphs)
 ### Dependency injection 
 - [ ] Assisted and non-assisted dependency injection
  - [x] [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en)
