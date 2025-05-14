@@ -121,7 +121,7 @@ private fun SubtopicsScreen(
             if(showBasicDialog){
                 SubtopicDialog(
                     titleRes = R.string.create_subtopic,
-                    onDismiss = { showFullScreenDialog = false },
+                    onDismiss = { showBasicDialog = false },
                     saveSubtopic = { title, description, imageUri ->
                         saveSubtopic(title, description, imageUri)
                         showBasicDialog = false
