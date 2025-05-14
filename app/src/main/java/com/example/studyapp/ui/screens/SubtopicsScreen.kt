@@ -51,7 +51,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
-import com.example.studyapp.ui.components.SubtopicFullScreenDialog
+import com.example.studyapp.ui.components.study.SubtopicDialog
+import com.example.studyapp.ui.components.study.SubtopicFullScreenDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.SubtopicsViewModel
 
@@ -66,7 +67,7 @@ fun SubtopicsScreen(
     val topic by subtopicsViewModel.topic.collectAsStateWithLifecycle()
     val subtopics by subtopicsViewModel.subtopics.collectAsStateWithLifecycle()
     val topics by subtopicsViewModel.topics.collectAsStateWithLifecycle()
-    SubtopicsScaffold(
+    SubtopicsScreen(
         subtopics = subtopics,
         topics = topics,
         saveSubtopic = { title, description, imageUri ->
@@ -86,7 +87,7 @@ fun SubtopicsScreen(
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-private fun SubtopicsScaffold(
+private fun SubtopicsScreen(
     subtopics: List<Subtopic>?,
     topics: List<Topic>?,
     topic: Topic?,
@@ -98,73 +99,131 @@ private fun SubtopicsScaffold(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
-    var showDialog by rememberSaveable { mutableStateOf(false) }
+    var showFullScreenDialog by rememberSaveable { mutableStateOf(false) }
+    var showBasicDialog by rememberSaveable { mutableStateOf(false) }
 
     if (topic == null || subtopics == null || topics == null) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
     } else {
-        if (showDialog) {
+        if (showFullScreenDialog) {
             SubtopicFullScreenDialog(
                 titleRes = R.string.create_subtopic,
-                onDismiss = { showDialog = false },
+                onDismiss = { showFullScreenDialog = false },
                 saveSubtopic = { title, description, imageUri ->
                     saveSubtopic(title, description, imageUri)
-                    showDialog = false
+                    showFullScreenDialog = false
                 },
                 modifier = modifier
             )
         } else {
-            Scaffold(
-                modifier = modifier,
-                topBar = {
-                    SubtopicsTopAppBar(
-                        topic = topic,
-                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                        deleteTopic = deleteTopic,
-                        updateTopic = updateTopic,
-                        navigateBack = navigateBack
-                    )
-                },
-                floatingActionButton = { CreateSubtopicFAB(onCreate = { showDialog = true }) },
-            ) { innerPadding ->
-                NavigableListDetailPaneScaffold(
-                    navigator = scaffoldNavigator,
-                    listPane = {
-                        AnimatedPane {
-                            if (scaffoldNavigator.scaffoldState.currentState.primary == PaneAdaptedValue.Expanded) {
-                                ScrollableTopicsList(
-                                    topics = topics,
-                                    navigateToTopic = navigateToTopic,
-                                    selectedTopicId = topic.id,
-                                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
-                                )
-                            } else {
-                                if (scaffoldNavigator.scaffoldState.currentState.primary == PaneAdaptedValue.Hidden) {
-                                    ScrollableSubtopicsList(
-                                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                                        subtopics = subtopics,
-                                        navigateToSubtopic = navigateToSubtopic
-                                    )
-                                }
-                            }
-                        }
+            if(showBasicDialog){
+                SubtopicDialog(
+                    titleRes = R.string.create_subtopic,
+                    onDismiss = { showFullScreenDialog = false },
+                    saveSubtopic = { title, description, imageUri ->
+                        saveSubtopic(title, description, imageUri)
+                        showBasicDialog = false
                     },
-                    detailPane = {
-                        AnimatedPane {
+                    modifier = modifier
+                )
+            }
+            SubtopicsScaffold(
+                subtopics = subtopics,
+                topics = topics,
+                topic = topic,
+                onCreateSubtopic = { paneAdaptedValue ->
+                    // Fullscreen dialog for compact screen width
+                    if (paneAdaptedValue == PaneAdaptedValue.Hidden) {
+                        showFullScreenDialog = true
+                    }
+                    // Basic dialog for medium and expanded screen width
+                    else {
+                        showBasicDialog = true
+                    }
+                },
+                deleteTopic = deleteTopic,
+                updateTopic = updateTopic,
+                navigateToSubtopic = navigateToSubtopic,
+                navigateToTopic = navigateToTopic,
+                navigateBack = navigateBack,
+                modifier = modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+private fun SubtopicsScaffold(
+    subtopics: List<Subtopic>,
+    topics: List<Topic>,
+    topic: Topic,
+    onCreateSubtopic: (PaneAdaptedValue) -> Unit,
+    deleteTopic: () -> Unit,
+    updateTopic: (Topic) -> Unit,
+    navigateToSubtopic: (Int) -> Unit,
+    navigateToTopic: (Int) -> Unit,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            SubtopicsTopAppBar(
+                topic = topic,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                deleteTopic = deleteTopic,
+                updateTopic = updateTopic,
+                navigateBack = navigateBack
+            )
+        },
+        floatingActionButton = {
+            CreateSubtopicFAB(
+                onCreate = { onCreateSubtopic(scaffoldNavigator.scaffoldState.currentState.primary) })
+        },
+    ) { innerPadding ->
+        NavigableListDetailPaneScaffold(
+            navigator = scaffoldNavigator,
+            listPane = {
+                AnimatedPane {
+                    if (scaffoldNavigator.scaffoldState.currentState.primary == PaneAdaptedValue.Expanded) {
+                        ScrollableTopicsList(
+                            topics = topics,
+                            navigateToTopic = navigateToTopic,
+                            selectedTopicId = topic.id,
+                            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+                        )
+                    } else {
+                        if (scaffoldNavigator.scaffoldState.currentState.primary == PaneAdaptedValue.Hidden) {
                             ScrollableSubtopicsList(
-                                modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .fillMaxWidth(),
                                 subtopics = subtopics,
                                 navigateToSubtopic = navigateToSubtopic
                             )
                         }
-                    },
-                    modifier = Modifier.padding(innerPadding)
-                )
-            }
-        }
+                    }
+                }
+            },
+            detailPane = {
+                AnimatedPane {
+                    ScrollableSubtopicsList(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .fillMaxWidth(),
+                        subtopics = subtopics,
+                        navigateToSubtopic = navigateToSubtopic
+                    )
+                }
+            },
+            modifier = Modifier.padding(innerPadding)
+        )
     }
 }
 
@@ -290,7 +349,10 @@ fun ScrollableSubtopicsList(
             !(it.checked && showOnlyNotChecked) && (it.bookmarked || !showOnlyBookmarked)
         }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(modifier = Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             FilterChip(
                 onClick = { showOnlyNotChecked = !showOnlyNotChecked },
                 label = { Text(text = stringResource(R.string.unchecked)) },
@@ -442,12 +504,13 @@ private fun CreateSubtopicFAB(onCreate: () -> Unit, modifier: Modifier = Modifie
     )
 }
 
+
 @PreviewLightDark
 @PreviewScreenSizes
 @Composable
 private fun SubtopicsScreenPreview() {
     StudyAppTheme {
-        SubtopicsScaffold(
+        SubtopicsScreen(
             subtopics = listOf(
                 Subtopic(
                     id = 1,
@@ -493,7 +556,7 @@ private fun SubtopicsScreenPreview() {
 @Composable
 private fun LoadingScreenPreview() {
     StudyAppTheme {
-        SubtopicsScaffold(
+        SubtopicsScreen(
             subtopics = null,
             topics = null,
             topic = null,

@@ -81,7 +81,10 @@ private fun TopicsScaffold(
         modifier = modifier,
         topBar = {
             if (!showSearchBar) {
-                TopicsTopAppBar(onSearch = { showSearchBar = true }, modifier = Modifier.padding(horizontal = 16.dp))
+                TopicsTopAppBar(
+                    onSearch = { showSearchBar = true },
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
             }
         },
         floatingActionButton = {
@@ -190,12 +193,15 @@ fun ScrollableTopicsList(
         items(topics) { topic ->
             var colors = ListItemDefaults.colors()
             if (selectedTopicId == topic.id) {
-                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                colors =
+                    ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             }
             TopicListItem(
                 topic = topic,
                 colors = colors,
-                modifier = Modifier.clickable { navigateToTopic(topic.id) }.fillMaxWidth()
+                modifier = Modifier
+                    .clickable { navigateToTopic(topic.id) }
+                    .fillMaxWidth()
             )
         }
     }
@@ -304,15 +310,14 @@ private fun CreateTopicFAB(saveTopic: (Topic) -> Unit, modifier: Modifier = Modi
     ExtendedFloatingActionButton(
         onClick = { showDialog = true },
         modifier = modifier,
-        icon =
-            {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_add_24),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    contentDescription = stringResource(R.string.create_topic),
-                    modifier = Modifier.size(24.dp)
-                )
-            },
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.baseline_add_24),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                contentDescription = stringResource(R.string.create_topic),
+                modifier = Modifier.size(24.dp)
+            )
+        },
         text = {
             Text(
                 text = stringResource(R.string.create_topic),
