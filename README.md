@@ -45,10 +45,10 @@
 * The events that modify the data flow in the opposite direction.
 
 ### Play Feature Delivery
- - [ ]      
+- [ ]  ...   
  
 [Modularization](https://developer.android.com/topic/modularization)
- - [ ]
+- [ ]  ...   
 ### Code Style 
 - [ ] ...
 ### Testing
