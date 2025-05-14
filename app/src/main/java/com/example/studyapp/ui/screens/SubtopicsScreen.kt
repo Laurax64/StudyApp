@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
@@ -48,6 +49,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
@@ -101,6 +103,7 @@ private fun SubtopicsScreen(
 ) {
     var showFullScreenDialog by rememberSaveable { mutableStateOf(false) }
     var showBasicDialog by rememberSaveable { mutableStateOf(false) }
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
     if (topic == null || subtopics == null || topics == null) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -118,7 +121,7 @@ private fun SubtopicsScreen(
                 modifier = modifier
             )
         } else {
-            if(showBasicDialog){
+            if (showBasicDialog) {
                 SubtopicDialog(
                     titleRes = R.string.create_subtopic,
                     onDismiss = { showBasicDialog = false },
@@ -133,14 +136,15 @@ private fun SubtopicsScreen(
                 subtopics = subtopics,
                 topics = topics,
                 topic = topic,
-                onCreateSubtopic = { paneAdaptedValue ->
-                    // Fullscreen dialog for compact screen width
-                    if (paneAdaptedValue == PaneAdaptedValue.Hidden) {
-                        showFullScreenDialog = true
-                    }
+                // TODO Work with screen sizes instead of paneAdaptedValue
+                onCreateSubtopic = {
                     // Basic dialog for medium and expanded screen width
-                    else {
+                    if (windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) {
                         showBasicDialog = true
+                    }
+                    // Fullscreen dialog for compact screen width
+                    else {
+                        showFullScreenDialog = true
                     }
                 },
                 deleteTopic = deleteTopic,
@@ -196,7 +200,9 @@ private fun SubtopicsScaffold(
                             topics = topics,
                             navigateToTopic = navigateToTopic,
                             selectedTopicId = topic.id,
-                            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth()
                         )
                     } else {
                         if (scaffoldNavigator.scaffoldState.currentState.primary == PaneAdaptedValue.Hidden) {
