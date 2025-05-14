@@ -81,26 +81,7 @@ private fun TopicsScaffold(
         modifier = modifier,
         topBar = {
             if (!showSearchBar) {
-                CenterAlignedTopAppBar(
-                    navigationIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_search_24),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            contentDescription = stringResource(R.string.topics_search),
-                            modifier = Modifier.clickable { showSearchBar = true }
-                        )
-                    },
-                    actions = {
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_account_circle_24),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            contentDescription = stringResource(R.string.topics_search),
-                            modifier = Modifier.clickable { showSearchBar = true }
-                        )
-                    },
-                    title = { Text(text = stringResource(R.string.app_name)) },
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+                TopicsTopAppBar(onSearch = { showSearchBar = true }, modifier = Modifier.padding(horizontal = 16.dp))
             }
         },
         floatingActionButton = {
@@ -138,6 +119,32 @@ private fun TopicsScaffold(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopicsTopAppBar(
+    modifier: Modifier = Modifier,
+    onSearch: () -> Unit,
+) {
+    CenterAlignedTopAppBar(
+        navigationIcon = {
+            Icon(
+                painter = painterResource(R.drawable.baseline_search_24),
+                tint = MaterialTheme.colorScheme.onSurface,
+                contentDescription = stringResource(R.string.topics_search),
+                modifier = Modifier.clickable { onSearch() }
+            )
+        },
+        actions = {
+            Icon(
+                painter = painterResource(R.drawable.baseline_account_circle_24),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                contentDescription = stringResource(R.string.topics_search)
+            )
+        },
+        title = { Text(text = stringResource(R.string.app_name)) },
+        modifier = modifier
+    )
+}
 
 @Composable
 private fun TopicsTabContent(
@@ -188,9 +195,7 @@ fun ScrollableTopicsList(
             TopicListItem(
                 topic = topic,
                 colors = colors,
-                modifier = Modifier
-                    .clickable { navigateToTopic(topic.id) }
-                    .fillMaxWidth()
+                modifier = Modifier.clickable { navigateToTopic(topic.id) }.fillMaxWidth()
             )
         }
     }

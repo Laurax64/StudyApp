@@ -122,9 +122,7 @@ private fun SubtopicsScaffold(
                 topBar = {
                     SubtopicsTopAppBar(
                         topic = topic,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth(),
+                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                         deleteTopic = deleteTopic,
                         updateTopic = updateTopic,
                         navigateBack = navigateBack
