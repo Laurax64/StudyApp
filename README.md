@@ -14,21 +14,22 @@
 ### Widget 
 - [ ] [Glance](https://developer.android.com/codelabs/glance?hl=en#0)
 ### Images
-- [ ] [Photo picker](https://developer.android.com/training/data-storage/shared/photopicker) to let the user pick an image for the subtopic
-- [ ] [AsyncImage](https://developer.android.com/develop/ui/compose/graphics/images/loading) composable to load images from the file storage
+- [x] [Photo picker](https://developer.android.com/training/data-storage/shared/photopicker) to let the user pick an image for the subtopic
+- [x] [AsyncImage](https://developer.android.com/develop/ui/compose/graphics/images/loading) composable to load images from the file storage
 ### Accessibility
 - [ ] [TalkBack](https://developer.android.com/guide/topics/ui/accessibility/testing#talkback)
 ### Navigation 
-- [ ] [Navigation controller](https://developer.android.com/guide/navigation/navcontroller)
-- [ ] [Navigation graph](https://developer.android.com/guide/navigation/design)
-- [ ] [Navigation to destinations](https://developer.android.com/guide/navigation/use-graph/navigate)
-- [ ] [NavigationSuiteScaffold](https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation)
+- [x] [Navigation controller](https://developer.android.com/guide/navigation/navcontroller)
+- [x] [Navigation graph](https://developer.android.com/guide/navigation/design)
+- [x] [Navigation to destinations](https://developer.android.com/guide/navigation/use-graph/navigate)
+- [x] [NavigationSuiteScaffold](https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation)
+- [x] [Nested graph] https://developer.android.com/guide/navigation/design/nested-graphs
 ### Dependency injection 
 - [ ] Assisted and non-assisted dependency injection
- - [ ] [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en)
+ - [x] [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en)
  - [ ] [Dagger](https://developer.android.com/training/dependency-injection/dagger-android#assisted-injection)
 ### Data Storage 
-- [ ] [Room](https://developer.android.com/training/data-storage/room?hl=en)
+- [x] [Room](https://developer.android.com/training/data-storage/room?hl=en)
 ### States
 - [ ] ...
 ### App Architecture
