@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.studyapp.navigation.StudyAppNavHost
 import kotlin.reflect.KClass
 
@@ -63,14 +63,11 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
  */
 private fun calculateFromAdaptiveInfo(adaptiveInfo: WindowAdaptiveInfo): NavigationSuiteType {
     return with(adaptiveInfo) {
-        when (windowSizeClass.windowWidthSizeClass) {
-            WindowWidthSizeClass.COMPACT -> {
-                NavigationSuiteType.NavigationBar
-            }
+        if (windowSizeClass.minWidthDp < WIDTH_DP_MEDIUM_LOWER_BOUND) {
+            NavigationSuiteType.NavigationBar
+        } else {
+            NavigationSuiteType.NavigationRail
 
-            else -> {
-                NavigationSuiteType.NavigationRail
-            }
         }
     }
 }

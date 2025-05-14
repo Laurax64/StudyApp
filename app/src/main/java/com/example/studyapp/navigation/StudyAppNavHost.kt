@@ -6,6 +6,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import com.example.studyapp.ui.StudyAppState
 import com.example.studyapp.ui.screens.SubtopicScreen
 import com.example.studyapp.ui.screens.SubtopicsScreen
@@ -18,15 +19,17 @@ fun StudyAppNavHost(
 ) {
     val navController = appState.navController
     NavHost(
-        navController = navController, startDestination = TopicsRoute, modifier = modifier
+        navController = navController, startDestination = StudyRoute, modifier = modifier
     ) {
-        topicsScreen(navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) })
-        subtopicsScreen(
-            navigateToSubtopic = { navController.navigate(route = SubtopicRoute(subtopicId = it)) },
-            navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) },
-            navigateBack = navController::popBackStack
-        )
-        subtopicScreen(navigateBack = navController::popBackStack)
+        navigation<StudyRoute>(startDestination = TopicsRoute) {
+            topicsScreen(navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) })
+            subtopicsScreen(
+                navigateToSubtopic = { navController.navigate(route = SubtopicRoute(subtopicId = it)) },
+                navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) },
+                navigateBack = navController::popBackStack
+            )
+            subtopicScreen(navigateBack = navController::popBackStack)
+        }
         datesScreen()
         aIAssistantScreen()
         bookmarksScreen()
@@ -58,12 +61,16 @@ fun NavGraphBuilder.subtopicsScreen(
 }
 
 fun NavGraphBuilder.subtopicScreen(navigateBack: () -> Unit) {
-    composable<SubtopicRoute> { entry ->
+    composable<SubtopicRoute> {
         SubtopicScreen(
             subtopicViewModel = hiltViewModel(),
             navigateBack = navigateBack,
         )
     }
+}
+
+fun NavGraphBuilder.studyScreen(){
+
 }
 
 fun NavGraphBuilder.datesScreen() {
