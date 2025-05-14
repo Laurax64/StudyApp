@@ -136,7 +136,6 @@ private fun SubtopicsScreen(
                 subtopics = subtopics,
                 topics = topics,
                 topic = topic,
-                // TODO Work with screen sizes instead of paneAdaptedValue
                 onCreateSubtopic = {
                     // Basic dialog for medium and expanded screen width
                     if (windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) {
