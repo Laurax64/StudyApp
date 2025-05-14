@@ -11,20 +11,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -138,20 +136,17 @@ private fun SubtopicsScaffold(
                     navigator = scaffoldNavigator,
                     listPane = {
                         AnimatedPane {
-                            if (scaffoldNavigator.scaffoldState.currentState.secondary == PaneAdaptedValue.Expanded) {
+                            if (scaffoldNavigator.scaffoldState.currentState.primary == PaneAdaptedValue.Expanded) {
                                 ScrollableTopicsList(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp),
                                     topics = topics,
-                                    navigateToTopic = navigateToTopic
+                                    navigateToTopic = navigateToTopic,
+                                    selectedTopicId = topic.id,
+                                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
                                 )
                             } else {
-                                if (scaffoldNavigator.scaffoldState.currentState.secondary == PaneAdaptedValue.Hidden) {
+                                if (scaffoldNavigator.scaffoldState.currentState.primary == PaneAdaptedValue.Hidden) {
                                     ScrollableSubtopicsList(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp),
+                                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                                         subtopics = subtopics,
                                         navigateToSubtopic = navigateToSubtopic
                                     )
@@ -162,9 +157,7 @@ private fun SubtopicsScaffold(
                     detailPane = {
                         AnimatedPane {
                             ScrollableSubtopicsList(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
                                 subtopics = subtopics,
                                 navigateToSubtopic = navigateToSubtopic
                             )
@@ -177,7 +170,7 @@ private fun SubtopicsScaffold(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SubtopicsTopAppBar(
     modifier: Modifier = Modifier,
@@ -186,7 +179,7 @@ private fun SubtopicsTopAppBar(
     updateTopic: (Topic) -> Unit,
     navigateBack: () -> Unit
 ) {
-    LargeTopAppBar(
+    LargeFlexibleTopAppBar(
         navigationIcon = {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_arrow_back_24),
@@ -245,7 +238,7 @@ private fun MoreActionsMenu(
     }
     Column(modifier, horizontalAlignment = Alignment.End) {
         Icon(
-            imageVector = Icons.Default.MoreVert,
+            painter = painterResource(R.drawable.baseline_more_vert_24),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             contentDescription = stringResource(R.string.menu),
             modifier = Modifier.clickable { expanded = true })
@@ -255,9 +248,11 @@ private fun MoreActionsMenu(
                 onClick = { /* TODO Implement */ },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Share, contentDescription = null
+                        painter = painterResource(R.drawable.baseline_share_24),
+                        contentDescription = null
                     )
-                })
+                }
+            )
             HorizontalDivider()
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.edit)) },
@@ -296,19 +291,8 @@ fun ScrollableSubtopicsList(
         subtopics.filter {
             !(it.checked && showOnlyNotChecked) && (it.bookmarked || !showOnlyBookmarked)
         }
-
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(modifier = Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(
                 onClick = { showOnlyNotChecked = !showOnlyNotChecked },
                 label = { Text(text = stringResource(R.string.unchecked)) },
@@ -326,8 +310,10 @@ fun ScrollableSubtopicsList(
                     subtopic = subtopic,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { navigateToSubtopic(subtopic.id) })
+                        .clickable { navigateToSubtopic(subtopic.id) }
+                )
             }
+
         }
     }
 }
@@ -335,7 +321,7 @@ fun ScrollableSubtopicsList(
 @Composable
 private fun SubtopicListItem(subtopic: Subtopic, modifier: Modifier) {
     ListItem(
-        headlineContent = { Text(subtopic.title) },
+        headlineContent = { Text(subtopic.title, overflow = Ellipsis, maxLines = 1) },
         modifier = modifier,
         leadingContent = {
             Icon(
@@ -346,9 +332,7 @@ private fun SubtopicListItem(subtopic: Subtopic, modifier: Modifier) {
                         R.drawable.baseline_bookmark_border_24
                     }
                 ),
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .size(size = 24.dp),
+                modifier = Modifier,
                 contentDescription = stringResource(
                     id = if (subtopic.bookmarked) {
                         R.string.bookmarked
@@ -363,12 +347,10 @@ private fun SubtopicListItem(subtopic: Subtopic, modifier: Modifier) {
                 checked = subtopic.checked,
                 enabled = false,
                 onCheckedChange = null,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .size(size = 24.dp)
             )
         },
     )
+
 }
 
 

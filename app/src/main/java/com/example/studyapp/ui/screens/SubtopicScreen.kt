@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -41,9 +38,7 @@ import com.example.studyapp.ui.viewmodels.SubtopicViewModel
 
 @Composable
 fun SubtopicScreen(
-    subtopicViewModel: SubtopicViewModel,
-    navigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    subtopicViewModel: SubtopicViewModel, navigateBack: () -> Unit, modifier: Modifier = Modifier
 ) {
     val subtopic by subtopicViewModel.subtopic.collectAsStateWithLifecycle()
     SubtopicScaffold(
@@ -93,37 +88,28 @@ private fun SubtopicScaffold(
             )
         } else {
             Scaffold(
-                modifier = modifier,
-                topBar =
-                    {
-                        TopAppBar(
-                            title = {
-                                Text(
-                                    text = subtopic.title,
-                                    modifier = Modifier.padding(start = 16.dp)
-                                )
-                            },
-                            navigationIcon = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.baseline_arrow_back_24),
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                    contentDescription = stringResource(R.string.go_back_to_subtopics),
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clickable { navigateBack() })
-                            },
-                            actions = {
-                                MoreActionsMenu(
-                                    shareSubtopic = { /* TODO: Implement share functionality */ },
-                                    editSubtopic = { showDialog = true },
-                                    deleteSubtopic = {
-                                        deleteSubtopic()
-                                        navigateBack()
-                                    }
-                                )
-                            }
-                        )
-                    }
+                modifier = modifier, topBar = {
+                    TopAppBar(
+                        title = { Text(text = subtopic.title, modifier = Modifier.padding(start = 16.dp)) },
+                        navigationIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                contentDescription = stringResource(R.string.go_back_to_subtopics),
+                                modifier = Modifier.size(24.dp).clickable { navigateBack() })
+                        },
+                        actions = {
+                            MoreActionsMenu(
+                                shareSubtopic = { /* TODO: Implement share functionality */ },
+                                editSubtopic = { showDialog = true },
+                                deleteSubtopic = {
+                                    deleteSubtopic()
+                                    navigateBack()
+                                }
+                            )
+                        }
+                    )
+                }
             ) { innerPadding ->
                 Column(
                     modifier = Modifier
@@ -153,9 +139,7 @@ private fun SubtopicImage(
 ) {
     if (imageUri != null) {
         AsyncImage(
-            model = imageUri,
-            contentDescription = null,
-            modifier = modifier
+            model = imageUri, contentDescription = null, modifier = modifier
         )
     }
 }
@@ -171,7 +155,7 @@ private fun MoreActionsMenu(
 
     Column(modifier, horizontalAlignment = Alignment.End) {
         Icon(
-            imageVector = Icons.Default.MoreVert,
+            painter = painterResource(R.drawable.baseline_more_vert_24),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             contentDescription = stringResource(R.string.menu),
             modifier = Modifier.clickable { expanded = true })
@@ -182,7 +166,7 @@ private fun MoreActionsMenu(
                 onClick = { shareSubtopic() },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Share, // TODO replace with material 3 icon
+                        painter = painterResource(R.drawable.baseline_share_24),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         contentDescription = null
                     )
@@ -196,8 +180,7 @@ private fun MoreActionsMenu(
                         painter = painterResource(R.drawable.baseline_create_24),
                         contentDescription = null
                     )
-                }
-            )
+                })
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.delete)) },
                 onClick = { deleteSubtopic() },
@@ -206,8 +189,7 @@ private fun MoreActionsMenu(
                         painter = painterResource(R.drawable.baseline_delete_outline_24),
                         contentDescription = null // TODO: Add content description
                     )
-                }
-            )
+                })
         }
     }
 }
@@ -224,9 +206,5 @@ private fun SubtopicScreenPreview() {
             bookmarked = false,
             topicId = 1,
             imageUri = null
-        ),
-        updateSubtopic = {},
-        deleteSubtopic = {},
-        navigateBack = {}
-    )
+        ), updateSubtopic = {}, deleteSubtopic = {}, navigateBack = {})
 }

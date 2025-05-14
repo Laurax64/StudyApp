@@ -19,6 +19,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -161,25 +163,31 @@ private fun TopicsTabContent(
         )
     } else {
         ScrollableTopicsList(
+            topics = topics,
+            navigateToTopic = navigateToTopic,
             modifier = modifier
                 .padding(horizontal = 8.dp)
-                .fillMaxWidth(),
-            topics = topics,
-            navigateToTopic = navigateToTopic
+                .fillMaxWidth()
         )
     }
 }
 
 @Composable
 fun ScrollableTopicsList(
-    modifier: Modifier,
     topics: List<Topic>,
-    navigateToTopic: (Int) -> Unit
+    navigateToTopic: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    selectedTopicId: Int? = null,
 ) {
     LazyColumn(modifier = modifier) {
         items(topics) { topic ->
+            var colors = ListItemDefaults.colors()
+            if (selectedTopicId == topic.id) {
+                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+            }
             TopicListItem(
                 topic = topic,
+                colors = colors,
                 modifier = Modifier
                     .clickable { navigateToTopic(topic.id) }
                     .fillMaxWidth()
@@ -251,11 +259,11 @@ private fun TopicsSearchBar(
         colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
         content = {
             ScrollableTopicsList(
+                topics = filteredTopics,
+                navigateToTopic = navigateToTopic,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                topics = filteredTopics,
-                navigateToTopic = navigateToTopic
+                    .fillMaxWidth()
             )
 
         }
@@ -263,20 +271,25 @@ private fun TopicsSearchBar(
 }
 
 @Composable
-private fun TopicListItem(topic: Topic, modifier: Modifier) {
+private fun TopicListItem(topic: Topic, colors: ListItemColors, modifier: Modifier) {
     ListItem(
-        headlineContent = { Text(topic.title, overflow = TextOverflow.Ellipsis, maxLines = 1) },
+        headlineContent = {
+            Text(
+                topic.title,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
+        },
         modifier = modifier,
         trailingContent = {
             Checkbox(
                 checked = topic.checked,
                 enabled = false,
                 onCheckedChange = null,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .size(size = 24.dp)
+                modifier = Modifier.size(size = 24.dp)
             )
-        }
+        },
+        colors = colors
     )
 }
 

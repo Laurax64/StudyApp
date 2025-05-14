@@ -1,6 +1,5 @@
 package com.example.studyapp.navigation
 
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -15,7 +14,6 @@ import com.example.studyapp.ui.screens.TopicsScreen
 @Composable
 fun StudyAppNavHost(
     appState: StudyAppState,
-    windowSize: WindowWidthSizeClass = WindowWidthSizeClass.Compact,
     modifier: Modifier = Modifier
 ) {
     val navController = appState.navController
