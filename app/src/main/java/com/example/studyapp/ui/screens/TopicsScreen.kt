@@ -14,7 +14,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -24,10 +23,8 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
@@ -39,7 +36,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
+import com.example.studyapp.ui.components.StudyAppSearchBar
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.TopicsViewModel
 
@@ -176,7 +173,9 @@ private fun TopicsTabContent(
         ScrollableTopicsList(
             topics = topics,
             navigateToTopic = navigateToTopic,
-            modifier = modifier.padding(horizontal = 8.dp).fillMaxWidth()
+            modifier = modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
         )
     }
 }
@@ -217,7 +216,7 @@ fun SubtopicsPlaceholder(modifier: Modifier = Modifier) {
         ),
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.baseline_local_florist_24),
+            painter = painterResource(id = R.drawable.baseline_topic_24),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
         )
@@ -228,7 +227,6 @@ fun SubtopicsPlaceholder(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopicsSearchBar(
     modifier: Modifier = Modifier,
@@ -236,54 +234,25 @@ private fun TopicsSearchBar(
     topics: List<Topic>,
     closeSearchBar: () -> Unit
 ) {
-    var query by rememberSaveable { mutableStateOf("") }
-    var filteredTopics by rememberSaveable { mutableStateOf(topics) }
-    var expanded by rememberSaveable { mutableStateOf(true) }
-    DockedSearchBar(
-        inputField = {
-            SearchBarDefaults.InputField(
-                query = query,
-                onQueryChange = {
-                    query = it
-                    filteredTopics = topics.filter { topic ->
-                        topic.title.contains(other = it, ignoreCase = true)
-                    }
-                },
-                onSearch = { expanded = false },
-                expanded = expanded,
-                onExpandedChange = { expanded = it },
-                placeholder = { Text(stringResource(id = R.string.search_in_topics)) },
-                modifier = Modifier.fillMaxWidth(),
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_arrow_back_24),
-                        contentDescription = stringResource(R.string.close_search),
-                        modifier = Modifier.clickable { closeSearchBar() }
-                    )
-                },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent
-                )
-            )
-        },
+    StudyAppSearchBar(
         modifier = modifier,
-        expanded = true,
-        onExpandedChange = { expanded = it },
-        colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
-        content = {
-            ScrollableTopicsList(
-                topics = filteredTopics,
-                navigateToTopic = navigateToTopic,
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
-            )
+        items = topics,
+        onItemClick = { topic -> navigateToTopic(topic.id) },
+        closeSearchBar = closeSearchBar,
+        itemLabel = { it.title },
+        placeholderText = stringResource(R.string.search_in_topics)
+    ) { topic ->
+        TopicListItem(topic = topic, modifier = Modifier.fillMaxWidth())
+    }
 
-        }
-    )
 }
 
 @Composable
-private fun TopicListItem(topic: Topic, colors: ListItemColors, modifier: Modifier) {
+private fun TopicListItem(
+    topic: Topic,
+    modifier: Modifier = Modifier,
+    colors: ListItemColors = ListItemDefaults.colors(),
+) {
     ListItem(
         headlineContent = {
             Text(
