@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -113,7 +113,6 @@ fun SubtopicDialog(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SubtopicInputFields(
     updateTitle: (String) -> Unit,
@@ -125,12 +124,17 @@ private fun SubtopicInputFields(
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val scrollState = rememberScrollState()
+    if (scrollState.isScrollInProgress) {
+        keyboardController?.hide()
+    }
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
         updateImageUri(uri.toString())
     }
     Column(
         modifier = modifier
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(state = scrollState)
             .pointerInput(Unit) {
                 detectTapGestures(onTap = { focusManager.clearFocus() })
             },
@@ -139,12 +143,15 @@ private fun SubtopicInputFields(
         OutlinedTextField(
             value = title,
             onValueChange = { updateTitle(it) },
-            modifier = Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.title)) })
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(stringResource(R.string.title)) },
+        )
         OutlinedTextField(
             value = description,
             onValueChange = { updateDescription(it) },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.description)) })
+            label = { Text(stringResource(R.string.description)) }
+        )
         OutlinedTextField(
             value = imageUri,
             onValueChange = { updateImageUri(it) },
@@ -160,7 +167,8 @@ private fun SubtopicInputFields(
                         }
                 )
             },
-            label = { Text(stringResource(R.string.image)) })
+            label = { Text(stringResource(R.string.image)) }
+        )
         AsyncImage(
             model = imageUri,
             contentDescription = null,
