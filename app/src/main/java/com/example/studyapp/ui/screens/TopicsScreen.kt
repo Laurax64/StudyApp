@@ -1,9 +1,7 @@
 package com.example.studyapp.ui.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -45,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
+import com.example.studyapp.ui.components.PlaceholderColumn
 import com.example.studyapp.ui.components.StudyAppSearchBar
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.TopicsViewModel
@@ -64,8 +63,7 @@ fun TopicsScreen(
     )
 }
 
-
-@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 private fun TopicsScaffold(
     topics: List<Topic>?,
@@ -107,11 +105,26 @@ private fun TopicsScaffold(
             },
             detailPane = {
                 AnimatedPane {
-                    val currentKey = scaffoldNavigator.currentDestination?.contentKey
-                    if (currentKey != null && currentKey is Int) {
-                        navigateToTopic(currentKey)
+                    if (topics == null) {
+                        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
                     } else {
-                        SubtopicsPlaceholder()
+                        val currentKey = scaffoldNavigator.currentDestination?.contentKey
+                        if (currentKey != null && currentKey is Int) {
+                            navigateToTopic(currentKey)
+                        } else {
+                            PlaceholderColumn(
+                                textId =
+                                    if (topics.isEmpty()) {
+                                        R.string.no_subtopics_exist
+                                    } else {
+                                        R.string.select_a_topic
+                                    },
+                                iconId = R.drawable.outline_subtitles_24,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
                 }
             },
@@ -170,13 +183,19 @@ private fun TopicsTabContent(
             topics = topics
         )
     } else {
-        ScrollableTopicsList(
-            topics = topics,
-            navigateToTopic = navigateToTopic,
-            modifier = modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth()
-        )
+        if (topics.isEmpty()) {
+            PlaceholderColumn(
+                textId = R.string.no_topics_exist,
+                iconId = R.drawable.outline_topic_24,
+                modifier = modifier.fillMaxSize()
+            )
+        } else {
+            ScrollableTopicsList(
+                topics = topics,
+                navigateToTopic = navigateToTopic,
+                modifier = modifier.padding(horizontal = 8.dp).fillMaxSize()
+            )
+        }
     }
 }
 
@@ -187,43 +206,29 @@ fun ScrollableTopicsList(
     modifier: Modifier = Modifier,
     selectedTopicId: Int? = null,
 ) {
-    LazyColumn(modifier = modifier) {
-        items(topics) { topic ->
-            var colors = ListItemDefaults.colors()
-            if (selectedTopicId == topic.id) {
-                colors =
-                    ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+    if (topics.isEmpty()) {
+        PlaceholderColumn(
+            textId = R.string.no_topics_exist,
+            iconId = R.drawable.outline_topic_24,
+            modifier = modifier,
+        )
+    } else {
+        LazyColumn(modifier = modifier) {
+            items(topics) { topic ->
+                var colors = ListItemDefaults.colors()
+                if (selectedTopicId == topic.id) {
+                    colors =
+                        ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                }
+                TopicListItem(
+                    topic = topic,
+                    colors = colors,
+                    modifier = Modifier
+                        .clickable { navigateToTopic(topic.id) }
+                        .fillMaxWidth()
+                )
             }
-            TopicListItem(
-                topic = topic,
-                colors = colors,
-                modifier = Modifier
-                    .clickable { navigateToTopic(topic.id) }
-                    .fillMaxWidth()
-            )
         }
-    }
-}
-
-@Composable
-fun SubtopicsPlaceholder(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(
-            space = 20.dp,
-            alignment = Alignment.CenterVertically,
-        ),
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.baseline_topic_24),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-        )
-        Text(
-            text = stringResource(id = R.string.select_a_topic),
-            style = MaterialTheme.typography.titleLarge,
-        )
     }
 }
 

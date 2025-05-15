@@ -53,6 +53,7 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOW
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
+import com.example.studyapp.ui.components.PlaceholderColumn
 import com.example.studyapp.ui.components.study.SubtopicDialog
 import com.example.studyapp.ui.components.study.SubtopicFullScreenDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
@@ -354,11 +355,11 @@ fun ScrollableSubtopicsList(
             !(it.checked && showOnlyNotChecked) && (it.bookmarked || !showOnlyBookmarked)
         }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (subtopics.isNotEmpty()) {
+        if (subtopics.isNotEmpty()) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 FilterChip(
                     onClick = { showOnlyNotChecked = !showOnlyNotChecked },
                     label = { Text(text = stringResource(R.string.unchecked)) },
@@ -370,17 +371,23 @@ fun ScrollableSubtopicsList(
                     selected = showOnlyBookmarked,
                 )
             }
-        }
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(filteredSubtopics) { subtopic ->
-                SubtopicListItem(
-                    subtopic = subtopic,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { navigateToSubtopic(subtopic.id) }
-                )
-            }
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                items(filteredSubtopics) { subtopic ->
+                    SubtopicListItem(
+                        subtopic = subtopic,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { navigateToSubtopic(subtopic.id) }
+                    )
+                }
 
+            }
+        } else {
+            PlaceholderColumn(
+                textId = R.string.no_subtopics_exist,
+                iconId = R.drawable.outline_subtitles_24,
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
