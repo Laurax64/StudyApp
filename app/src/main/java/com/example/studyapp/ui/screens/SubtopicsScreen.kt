@@ -358,16 +358,18 @@ fun ScrollableSubtopicsList(
             modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            FilterChip(
-                onClick = { showOnlyNotChecked = !showOnlyNotChecked },
-                label = { Text(text = stringResource(R.string.unchecked)) },
-                selected = showOnlyNotChecked,
-            )
-            FilterChip(
-                onClick = { showOnlyBookmarked = !showOnlyBookmarked },
-                label = { Text(text = stringResource(R.string.bookmarked)) },
-                selected = showOnlyBookmarked,
-            )
+            if (subtopics.isNotEmpty()) {
+                FilterChip(
+                    onClick = { showOnlyNotChecked = !showOnlyNotChecked },
+                    label = { Text(text = stringResource(R.string.unchecked)) },
+                    selected = showOnlyNotChecked,
+                )
+                FilterChip(
+                    onClick = { showOnlyBookmarked = !showOnlyBookmarked },
+                    label = { Text(text = stringResource(R.string.bookmarked)) },
+                    selected = showOnlyBookmarked,
+                )
+            }
         }
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
             items(filteredSubtopics) { subtopic ->
