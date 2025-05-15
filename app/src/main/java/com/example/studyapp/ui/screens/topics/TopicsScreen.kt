@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.screens
+package com.example.studyapp.ui.screens.topics
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -55,81 +55,74 @@ fun TopicsScreen(
     modifier: Modifier = Modifier
 ) {
     val topics by topicsViewModel.topics.collectAsStateWithLifecycle()
-    TopicsScaffold(
+    TopicsScreen(
         topics = topics,
         saveTopic = topicsViewModel::saveTopic,
-        navigateToTopic = navigateToTopic,
+        navigateToSubtopics = navigateToTopic,
         modifier = modifier
     )
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-private fun TopicsScaffold(
+private fun TopicsScreen(
     topics: List<Topic>?,
     saveTopic: (Topic) -> Unit,
-    navigateToTopic: (Int) -> Unit,
+    navigateToSubtopics: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            if (!showSearchBar) {
-                TopicsTopAppBar(
-                    onSearch = { showSearchBar = true },
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-        },
-        floatingActionButton = {
-            CreateTopicFAB(saveTopic = saveTopic)
-        },
-    ) { innerPadding ->
-        NavigableListDetailPaneScaffold(
-            navigator = scaffoldNavigator,
-            listPane = {
-                AnimatedPane {
-                    TopicsTabContent(
-                        navigateToTopic = {
-                            // Not scaffoldNavigator.navigateTo because the app needs to
-                            // change more than just the detail pane
-                            navigateToTopic(it)
-                        },
-                        closeSearchBar = { showSearchBar = false },
-                        showSearchBar = showSearchBar,
-                        topics = topics,
+    if (topics == null) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else {
+        Scaffold(
+            modifier = modifier,
+            topBar = {
+                if (!showSearchBar) {
+                    TopicsTopAppBar(
+                        onSearch = { showSearchBar = true },
+                        modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
             },
-            detailPane = {
-                AnimatedPane {
-                    if (topics == null) {
-                        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
-                        }
-                    } else {
-                        val currentKey = scaffoldNavigator.currentDestination?.contentKey
-                        if (currentKey != null && currentKey is Int) {
-                            navigateToTopic(currentKey)
-                        } else {
-                            PlaceholderColumn(
-                                textId =
-                                    if (topics.isEmpty()) {
-                                        R.string.no_subtopics_exist
-                                    } else {
-                                        R.string.select_a_topic
-                                    },
-                                iconId = R.drawable.outline_subtitles_24,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    }
-                }
+            floatingActionButton = {
+                CreateTopicFAB(saveTopic = saveTopic)
             },
-            modifier = Modifier.padding(innerPadding)
-        )
+        ) { innerPadding ->
+            NavigableListDetailPaneScaffold(
+                navigator = scaffoldNavigator, listPane = {
+                    AnimatedPane {
+                        TopicsPaneContent(
+                            navigateToTopic = {
+                                // Not scaffoldNavigator.navigateTo because the app needs to
+                                // change more than just the detail pane
+                                navigateToSubtopics(it)
+                            },
+                            closeSearchBar = { showSearchBar = false },
+                            showSearchBar = showSearchBar,
+                            topics = topics,
+                        )
+                    }
+                },
+                detailPane = {
+                    AnimatedPane {
+                        PlaceholderColumn(
+                            textId = if (topics.isEmpty()) {
+                                R.string.no_subtopics_exist
+                            } else {
+                                R.string.select_a_topic
+                            },
+                            iconId = R.drawable.outline_subtitles_24,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                },
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
     }
 }
 
@@ -145,23 +138,19 @@ private fun TopicsTopAppBar(
                 painter = painterResource(R.drawable.baseline_search_24),
                 tint = MaterialTheme.colorScheme.onSurface,
                 contentDescription = stringResource(R.string.topics_search),
-                modifier = Modifier.clickable { onSearch() }
-            )
-        },
-        actions = {
+                modifier = Modifier.clickable { onSearch() })
+        }, actions = {
             Icon(
                 painter = painterResource(R.drawable.baseline_account_circle_24),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 contentDescription = stringResource(R.string.topics_search)
             )
-        },
-        title = { Text(text = stringResource(R.string.app_name)) },
-        modifier = modifier
+        }, title = { Text(text = stringResource(R.string.app_name)) }, modifier = modifier
     )
 }
 
 @Composable
-private fun TopicsTabContent(
+private fun TopicsPaneContent(
     topics: List<Topic>?,
     modifier: Modifier = Modifier,
     navigateToTopic: (Int) -> Unit,
@@ -169,10 +158,7 @@ private fun TopicsTabContent(
     showSearchBar: Boolean
 ) {
     if (topics == null) {
-        Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
     } else if (showSearchBar) {
@@ -193,7 +179,9 @@ private fun TopicsTabContent(
             ScrollableTopicsList(
                 topics = topics,
                 navigateToTopic = navigateToTopic,
-                modifier = modifier.padding(horizontal = 8.dp).fillMaxSize()
+                modifier = modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxSize()
             )
         }
     }
@@ -206,28 +194,20 @@ fun ScrollableTopicsList(
     modifier: Modifier = Modifier,
     selectedTopicId: Int? = null,
 ) {
-    if (topics.isEmpty()) {
-        PlaceholderColumn(
-            textId = R.string.no_topics_exist,
-            iconId = R.drawable.outline_topic_24,
-            modifier = modifier,
-        )
-    } else {
-        LazyColumn(modifier = modifier) {
-            items(topics) { topic ->
-                var colors = ListItemDefaults.colors()
-                if (selectedTopicId == topic.id) {
-                    colors =
-                        ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                }
-                TopicListItem(
-                    topic = topic,
-                    colors = colors,
-                    modifier = Modifier
-                        .clickable { navigateToTopic(topic.id) }
-                        .fillMaxWidth()
-                )
+    LazyColumn(modifier = modifier) {
+        items(topics) { topic ->
+            var colors = ListItemDefaults.colors()
+            if (selectedTopicId == topic.id) {
+                colors =
+                    ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             }
+            TopicListItem(
+                topic = topic,
+                colors = colors,
+                modifier = Modifier
+                    .clickable { navigateToTopic(topic.id) }
+                    .fillMaxWidth()
+            )
         }
     }
 }
@@ -261,21 +241,16 @@ private fun TopicListItem(
     ListItem(
         headlineContent = {
             Text(
-                topic.title,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
+                topic.title, overflow = TextOverflow.Ellipsis, maxLines = 1
             )
-        },
-        modifier = modifier,
-        trailingContent = {
+        }, modifier = modifier, trailingContent = {
             Checkbox(
                 checked = topic.checked,
                 enabled = false,
                 onCheckedChange = null,
                 modifier = Modifier.size(size = 24.dp)
             )
-        },
-        colors = colors
+        }, colors = colors
     )
 }
 
@@ -302,19 +277,14 @@ private fun CreateTopicFAB(saveTopic: (Topic) -> Unit, modifier: Modifier = Modi
     )
     if (showDialog) {
         CreateTopicDialog(
-            onDismiss = { showDialog = false },
-            topic = null,
-            onSave = saveTopic
+            onDismiss = { showDialog = false }, topic = null, onSave = saveTopic
         )
     }
 }
 
 @Composable
 fun CreateTopicDialog(
-    topic: Topic?,
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit,
-    onSave: (Topic) -> Unit
+    topic: Topic?, modifier: Modifier = Modifier, onDismiss: () -> Unit, onSave: (Topic) -> Unit
 ) {
     var topicTitle by rememberSaveable { mutableStateOf(topic?.title ?: "") }
 
@@ -325,8 +295,7 @@ fun CreateTopicDialog(
             OutlinedTextField(
                 value = topicTitle,
                 onValueChange = { topicTitle = it },
-                label = { Text(stringResource(R.string.title)) }
-            )
+                label = { Text(stringResource(R.string.title)) })
         },
         confirmButton = {
             TextButton(
@@ -337,15 +306,13 @@ fun CreateTopicDialog(
                         onSave(Topic(title = topicTitle, checked = false))
                     }
                     onDismiss()
-                }
-            ) {
+                }) {
                 Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
             TextButton(
-                onClick = { onDismiss() }
-            ) {
+                onClick = { onDismiss() }) {
                 Text(stringResource(R.string.cancel))
             }
         },
@@ -358,13 +325,11 @@ fun CreateTopicDialog(
 @Composable
 private fun TopicsScreenPreview() {
     StudyAppTheme {
-        TopicsScaffold(
+        TopicsScreen(
             topics = listOf(
-                Topic(1, "Topic 1", false),
-                Topic(2, "Topic 2", true),
-                Topic(3, "Topic 3", false)
+                Topic(1, "Topic 1", false), Topic(2, "Topic 2", true), Topic(3, "Topic 3", false)
             ),
-            navigateToTopic = {},
+            navigateToSubtopics = {},
             saveTopic = {},
         )
     }
@@ -375,9 +340,9 @@ private fun TopicsScreenPreview() {
 @Composable
 private fun LoadingScreenPreview() {
     StudyAppTheme {
-        TopicsScaffold(
+        TopicsScreen(
             topics = null,
-            navigateToTopic = {},
+            navigateToSubtopics = {},
             saveTopic = {},
         )
     }

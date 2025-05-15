@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.screens
+package com.example.studyapp.ui.screens.subtopic
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
-import com.example.studyapp.ui.components.study.SubtopicFullScreenDialog
+import com.example.studyapp.ui.screens.subtopics.SubtopicFullScreenDialog
 import com.example.studyapp.ui.viewmodels.SubtopicViewModel
 
 @Composable
@@ -89,28 +89,28 @@ private fun SubtopicScaffold(
         } else {
             Scaffold(
                 modifier = modifier, topBar = {
-                    TopAppBar(
-                        title = { Text(text = subtopic.title, modifier = Modifier.padding(start = 16.dp)) },
-                        navigationIcon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_arrow_back_24),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                contentDescription = stringResource(R.string.go_back_to_subtopics),
-                                modifier = Modifier.size(24.dp).clickable { navigateBack() })
-                        },
-                        actions = {
-                            MoreActionsMenu(
-                                shareSubtopic = { /* TODO: Implement share functionality */ },
-                                editSubtopic = { showDialog = true },
-                                deleteSubtopic = {
-                                    deleteSubtopic()
-                                    navigateBack()
-                                }
-                            )
-                        }
-                    )
-                }
-            ) { innerPadding ->
+                    TopAppBar(title = {
+                        Text(
+                            text = subtopic.title, modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }, navigationIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            contentDescription = stringResource(R.string.go_back_to_subtopics),
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable { navigateBack() })
+                    }, actions = {
+                        MoreActionsMenu(
+                            shareSubtopic = { /* TODO: Implement share functionality */ },
+                            editSubtopic = { showDialog = true },
+                            deleteSubtopic = {
+                                deleteSubtopic()
+                                navigateBack()
+                            })
+                    })
+                }) { innerPadding ->
                 Column(
                     modifier = Modifier
                         .padding(paddingValues = innerPadding)
@@ -199,12 +199,12 @@ private fun MoreActionsMenu(
 private fun SubtopicScreenPreview() {
     SubtopicScaffold(
         subtopic = Subtopic(
-            id = 1,
-            title = "Subtopic Title",
-            description = "Subtopic Description",
-            checked = false,
-            bookmarked = false,
-            topicId = 1,
-            imageUri = null
-        ), updateSubtopic = {}, deleteSubtopic = {}, navigateBack = {})
+        id = 1,
+        title = "Subtopic Title",
+        description = "Subtopic Description",
+        checked = false,
+        bookmarked = false,
+        topicId = 1,
+        imageUri = null
+    ), updateSubtopic = {}, deleteSubtopic = {}, navigateBack = {})
 }
