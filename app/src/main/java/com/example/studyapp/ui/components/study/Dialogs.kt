@@ -4,8 +4,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,6 +25,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -57,8 +62,7 @@ fun SubtopicFullScreenDialog(
             modifier = Modifier
                 .padding(paddingValues = innerPadding)
                 .padding(horizontal = 8.dp)
-                .fillMaxWidth()
-            ,
+                .fillMaxWidth(),
         )
     }
 }
@@ -75,7 +79,8 @@ fun SubtopicDialog(
     var description by rememberSaveable { mutableStateOf(subtopic?.description ?: "") }
     var imageUri by rememberSaveable { mutableStateOf(subtopic?.imageUri ?: "") }
     AlertDialog(
-        onDismissRequest = { onDismiss() },
+        // Dialog should not close when clicking outside.
+        onDismissRequest = {},
         title = { Text(stringResource(titleRes)) },
         text = {
             SubtopicInputFields(
@@ -85,7 +90,9 @@ fun SubtopicDialog(
                 title = title,
                 description = description,
                 imageUri = imageUri,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
             )
         },
         confirmButton = {
@@ -106,6 +113,7 @@ fun SubtopicDialog(
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SubtopicInputFields(
     updateTitle: (String) -> Unit,
@@ -116,14 +124,18 @@ private fun SubtopicInputFields(
     imageUri: String,
     modifier: Modifier = Modifier,
 ) {
+    val focusManager = LocalFocusManager.current
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
         updateImageUri(uri.toString())
     }
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState()),
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { focusManager.clearFocus() })
+            },
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // TODO remove focus when user clicks outside of TextField
         OutlinedTextField(
             value = title,
             onValueChange = { updateTitle(it) },

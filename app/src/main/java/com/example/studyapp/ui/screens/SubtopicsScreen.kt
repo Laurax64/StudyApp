@@ -83,7 +83,7 @@ fun SubtopicsScreen(
         navigateToTopic = navigateToTopic,
         navigateBack = navigateBack,
         topic = topic ?: return,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
     )
 }
 
