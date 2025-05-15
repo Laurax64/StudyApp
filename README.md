@@ -25,9 +25,8 @@
 - [x] [NavigationSuiteScaffold](https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation)
 - [x] [Nested graph](https://developer.android.com/guide/navigation/design/nested-graphs)
 ### Dependency injection 
-- [ ] Assisted and non-assisted dependency injection
- - [x] [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en)
- - [ ] [Dagger](https://developer.android.com/training/dependency-injection/dagger-android#assisted-injection)
+- [x] [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en) for non-asissted dependency injection 
+- [ ] [Dagger](https://developer.android.com/training/dependency-injection/dagger-android#assisted-injection) for assisted dependency injection
 ### Data Storage 
 - [x] [Room](https://developer.android.com/training/data-storage/room?hl=en)
 ### States
