@@ -1,6 +1,5 @@
 package com.example.studyapp.navigation
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,7 +41,6 @@ fun NavGraphBuilder.topicsScreen(navigateToTopic: (Int) -> Unit) {
         TopicsScreen(
             topicsViewModel = hiltViewModel(),
             navigateToTopic = navigateToTopic,
-            modifier = Modifier.fillMaxSize()
         )
     }
 }
@@ -58,7 +56,6 @@ fun NavGraphBuilder.subtopicsScreen(
             navigateToSubtopic = navigateToSubtopic,
             navigateToTopic = navigateToTopic,
             navigateBack = navigateBack,
-            modifier = Modifier.fillMaxSize()
         )
     }
 }
@@ -68,7 +65,6 @@ fun NavGraphBuilder.subtopicScreen(navigateBack: () -> Unit) {
         SubtopicScreen(
             subtopicViewModel = hiltViewModel(),
             navigateBack = navigateBack,
-            modifier = Modifier.fillMaxSize()
         )
     }
 }
