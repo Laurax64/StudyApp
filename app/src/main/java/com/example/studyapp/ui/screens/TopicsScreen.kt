@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
@@ -175,9 +176,7 @@ private fun TopicsTabContent(
         ScrollableTopicsList(
             topics = topics,
             navigateToTopic = navigateToTopic,
-            modifier = modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth()
+            modifier = modifier.padding(horizontal = 8.dp).fillMaxWidth()
         )
     }
 }
@@ -262,6 +261,10 @@ private fun TopicsSearchBar(
                         modifier = Modifier.clickable { closeSearchBar() }
                     )
                 },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent
+                )
             )
         },
         modifier = modifier,
@@ -272,9 +275,7 @@ private fun TopicsSearchBar(
             ScrollableTopicsList(
                 topics = filteredTopics,
                 navigateToTopic = navigateToTopic,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth()
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
             )
 
         }
