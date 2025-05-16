@@ -97,7 +97,10 @@ fun SubtopicsScaffold(
                                     .padding(horizontal = 16.dp)
                                     .fillMaxWidth(),
                                 subtopics = subtopics,
-                                navigateToSubtopic = navigateToSubtopic
+                                navigateToSubtopic = navigateToSubtopic,
+                                closeSearchBar = { showSearchBar = false },
+                                showSearchBar = showSearchBar,
+                                topicTitle = topic.title
                             )
                         }
                     }
@@ -110,7 +113,10 @@ fun SubtopicsScaffold(
                             .padding(horizontal = 8.dp)
                             .fillMaxWidth(),
                         subtopics = subtopics,
-                        navigateToSubtopic = navigateToSubtopic
+                        navigateToSubtopic = navigateToSubtopic,
+                        closeSearchBar = { showSearchBar = false },
+                        showSearchBar = showSearchBar,
+                        topicTitle = topic.title
                     )
                 }
             },

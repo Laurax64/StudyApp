@@ -99,14 +99,18 @@ private fun TopicsSearchBar(
     StudyAppSearchBar(
         modifier = modifier,
         items = topics,
-        onItemClick = { topic -> navigateToTopic(topic.id) },
         closeSearchBar = closeSearchBar,
         itemLabel = { it.title },
         placeholderText = stringResource(R.string.search_in_topics)
-    ) { topic ->
-        TopicListItem(topic = topic, modifier = Modifier.fillMaxWidth())
+    ) {
+        ScrollableTopicsList(
+            topics = topics,
+            navigateToTopic = navigateToTopic,
+            modifier = modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxSize()
+        )
     }
-
 }
 
 @Composable

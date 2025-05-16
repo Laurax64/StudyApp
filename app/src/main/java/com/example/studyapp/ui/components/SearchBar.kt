@@ -1,11 +1,7 @@
 package com.example.studyapp.ui.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,11 +24,10 @@ import com.example.studyapp.R
 fun <T> StudyAppSearchBar(
     modifier: Modifier = Modifier,
     items: List<T>,
-    onItemClick: (T) -> Unit,
     closeSearchBar: () -> Unit,
     itemLabel: (T) -> String,
     placeholderText: String,
-    itemContent: @Composable (T) -> Unit
+    content: @Composable (List<T>) -> Unit,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var filteredItems by rememberSaveable { mutableStateOf(items) }
@@ -71,18 +65,6 @@ fun <T> StudyAppSearchBar(
         expanded = true,
         onExpandedChange = { expanded = it },
         colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
-        content = {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth()
-            ) {
-                items(items = filteredItems) { item ->
-                    Box(modifier = Modifier.clickable { onItemClick(item) }) {
-                        itemContent(item)
-                    }
-                }
-            }
-        }
+        content = { content(filteredItems) }
     )
 }
