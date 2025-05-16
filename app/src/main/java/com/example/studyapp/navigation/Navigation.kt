@@ -5,7 +5,7 @@ import androidx.navigation.NavOptions
 
 
 fun NavController.navigateToStudy(navOptions: NavOptions? = null) {
-    this.navigate(TopicsRoute, navOptions)
+    this.navigate(StudyRoute, navOptions)
 }
 
 fun NavController.navigateToBookmarks(navOptions: NavOptions? = null) {

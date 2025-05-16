@@ -11,5 +11,6 @@ data class Subtopic(
     val title: String,
     val description: String,
     val checked: Boolean,
+    val bookmarked: Boolean,
     val imageUri: String?
 )

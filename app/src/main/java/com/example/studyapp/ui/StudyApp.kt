@@ -2,7 +2,6 @@ package com.example.studyapp.ui
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -14,11 +13,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.studyapp.navigation.StudyAppNavHost
 import kotlin.reflect.KClass
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun StudyApp(
     appState: StudyAppState,
@@ -53,9 +51,7 @@ fun StudyApp(
 }
 
 private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
-    this?.hierarchy?.any {
-        it.hasRoute(route)
-    } == true
+    this?.hierarchy?.any { it.hasRoute(route) } == true
 
 /**
  * Calculates the navigation suite type based on the adaptive info.
@@ -67,14 +63,11 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
  */
 private fun calculateFromAdaptiveInfo(adaptiveInfo: WindowAdaptiveInfo): NavigationSuiteType {
     return with(adaptiveInfo) {
-        when (windowSizeClass.windowWidthSizeClass) {
-            WindowWidthSizeClass.COMPACT -> {
-                NavigationSuiteType.NavigationBar
-            }
+        if (windowSizeClass.minWidthDp < WIDTH_DP_MEDIUM_LOWER_BOUND) {
+            NavigationSuiteType.NavigationBar
+        } else {
+            NavigationSuiteType.NavigationRail
 
-            else -> {
-                NavigationSuiteType.NavigationRail
-            }
         }
     }
 }

@@ -37,10 +37,6 @@ fun rememberStudyAppState(
 class StudyAppState(val navController: NavHostController) {
     private val previousDestination = mutableStateOf<NavDestination?>(null)
 
-    init {
-
-    }
-
     val currentDestination: NavDestination?
         @Composable get() {
             // Collect the currentBackStackEntryFlow as a state

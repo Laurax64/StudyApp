@@ -1,44 +1,40 @@
 package com.example.studyapp.navigation
 
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import com.example.studyapp.ui.StudyAppState
-import com.example.studyapp.ui.screens.SubtopicScreen
-import com.example.studyapp.ui.screens.SubtopicsScreen
-import com.example.studyapp.ui.screens.TopicsScreen
+import com.example.studyapp.ui.screens.subtopic.SubtopicScreen
+import com.example.studyapp.ui.screens.subtopics.SubtopicsScreen
+import com.example.studyapp.ui.screens.topics.TopicsScreen
 
 @Composable
 fun StudyAppNavHost(
     appState: StudyAppState,
-    windowSize: WindowWidthSizeClass = WindowWidthSizeClass.Compact,
     modifier: Modifier = Modifier
 ) {
     val navController = appState.navController
-    NavHost(
-        navController = navController, startDestination = TopicsRoute, modifier = modifier
-    ) {
-        topicsScreen(
-            windowWidthSize = windowSize,
-            navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) }
-        )
-        subtopicsScreen(navController = navController)
-        subtopicScreen(navigateBack = navController::popBackStack)
+    NavHost(navController = navController, startDestination = StudyRoute, modifier = modifier) {
+        navigation<StudyRoute>(startDestination = TopicsRoute) {
+            topicsScreen(navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) })
+            subtopicsScreen(
+                navigateToSubtopic = { navController.navigate(route = SubtopicRoute(subtopicId = it)) },
+                navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) },
+                navigateToTopics = { navController.navigate(TopicsRoute) }
+            )
+            subtopicScreen(navigateBack = navController::popBackStack)
+        }
         datesScreen()
         aIAssistantScreen()
         bookmarksScreen()
     }
 }
 
-fun NavGraphBuilder.topicsScreen(
-    windowWidthSize: WindowWidthSizeClass,
-    navigateToTopic: (Int) -> Unit
-) {
+fun NavGraphBuilder.topicsScreen(navigateToTopic: (Int) -> Unit) {
     composable<TopicsRoute> {
         TopicsScreen(
             topicsViewModel = hiltViewModel(),
@@ -48,24 +44,25 @@ fun NavGraphBuilder.topicsScreen(
 }
 
 fun NavGraphBuilder.subtopicsScreen(
-    navController: NavController,
+    navigateToSubtopic: (Int) -> Unit,
+    navigateToTopic: (Int) -> Unit,
+    navigateToTopics: () -> Unit
 ) {
     composable<SubtopicsRoute> {
         SubtopicsScreen(
             subtopicsViewModel = hiltViewModel(),
-            navigateToSubtopic = { subtopicId ->
-                navController.navigate(route = SubtopicRoute(subtopicId = subtopicId))
-            },
-            navigateBack = navController::popBackStack
+            navigateToSubtopic = navigateToSubtopic,
+            navigateToTopic = navigateToTopic,
+            navigateBack = navigateToTopics
         )
     }
 }
 
 fun NavGraphBuilder.subtopicScreen(navigateBack: () -> Unit) {
-    composable<SubtopicRoute> { entry ->
+    composable<SubtopicRoute> {
         SubtopicScreen(
             subtopicViewModel = hiltViewModel(),
-            navigateBack = navigateBack,
+            navigateBack = navigateBack
         )
     }
 }
