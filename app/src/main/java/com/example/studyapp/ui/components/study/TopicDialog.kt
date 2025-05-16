@@ -39,7 +39,7 @@ fun TopicDialog(
         R.string.edit_topic
     }
     AlertDialog(
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = {},
         title = { Text(stringResource(id = titleId)) },
         text = {
             TopicInputField(

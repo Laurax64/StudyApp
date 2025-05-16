@@ -37,8 +37,15 @@ import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
+import com.example.studyapp.ui.components.study.SubtopicDialog
+import com.example.studyapp.ui.components.study.TopicDialog
 import com.example.studyapp.ui.screens.topics.ScrollableTopicsList
 
+private enum class DialogType {
+    EDIT_TOPIC,
+    DELETE_TOPIC,
+    CREATE_SUBTOPIC,
+}
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -46,9 +53,9 @@ fun SubtopicsScaffold(
     subtopics: List<Subtopic>,
     topics: List<Topic>,
     topic: Topic,
-    onCreateSubtopic: () -> Unit,
-    onDeleteTopic: () -> Unit,
-    onEditTopic: () -> Unit,
+    saveSubtopic: (String, String, String?) -> Unit,
+    deleteTopic: () -> Unit,
+    updateTopic: (Topic) -> Unit,
     navigateToSubtopic: (Int) -> Unit,
     navigateToTopic: (Int) -> Unit,
     navigateBack: () -> Unit,
@@ -57,69 +64,120 @@ fun SubtopicsScaffold(
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     val paneAdaptedValue = scaffoldNavigator.scaffoldState.currentState.primary
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            if (!showSearchBar) {
-                SubtopicsTopAppBar(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth(),
-                    topic = topic,
-                    onDeleteTopic = onDeleteTopic,
-                    onEditTopic = onEditTopic,
-                    onSearch = { showSearchBar = true },
-                    navigateBack = navigateBack
-                )
-            }
-        },
-        floatingActionButton = { CreateSubtopicFAB(onCreate = onCreateSubtopic) },
-    ) { innerPadding ->
-        NavigableListDetailPaneScaffold(
-            navigator = scaffoldNavigator,
-            listPane = {
-                AnimatedPane {
-                    if (paneAdaptedValue == PaneAdaptedValue.Expanded) {
-                        ScrollableTopicsList(
-                            topics = topics,
-                            navigateToTopic = navigateToTopic,
-                            selectedTopicId = topic.id,
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .fillMaxWidth()
-                        )
-                    } else {
-                        if (paneAdaptedValue == PaneAdaptedValue.Hidden) {
-                            SubtopicsPaneContent(
-                                modifier = Modifier
-                                    .padding(horizontal = 16.dp)
-                                    .fillMaxWidth(),
-                                subtopics = subtopics,
-                                navigateToSubtopic = navigateToSubtopic,
-                                closeSearchBar = { showSearchBar = false },
-                                showSearchBar = showSearchBar,
-                                topicTitle = topic.title
-                            )
-                        }
-                    }
-                }
+    var dialogType by rememberSaveable { mutableStateOf<DialogType?>(null) }
+    if (dialogType == DialogType.CREATE_SUBTOPIC && paneAdaptedValue == PaneAdaptedValue.Hidden) {
+        SubtopicDialog(
+            titleId = R.string.create_subtopic,
+            onDismiss = { dialogType = null },
+            isWidthAtLeastMedium = false,
+            modifier = modifier,
+            saveSubtopic = { title, description, imageUri ->
+                saveSubtopic(title, description, imageUri)
             },
-            detailPane = {
-                AnimatedPane {
-                    SubtopicsPaneContent(
+        )
+    } else {
+        when (dialogType) {
+            DialogType.EDIT_TOPIC ->
+                TopicDialog(
+                    topic = topic,
+                    onDismiss = { dialogType = null },
+                    onSave = {
+                        updateTopic(it)
+                        dialogType = null
+                    }
+                )
+
+            DialogType.DELETE_TOPIC ->
+                DeleteTopicDialog(
+                    onDismiss = { dialogType = null },
+                    deleteTopic = {
+                        // Navigate back because the topic is about to be deleted.
+                        navigateBack()
+                        deleteTopic()
+                    },
+                    topicTitle = topic.title
+                )
+
+            DialogType.CREATE_SUBTOPIC ->
+                SubtopicDialog(
+                    titleId = R.string.create_subtopic,
+                    onDismiss = { dialogType = null },
+                    isWidthAtLeastMedium = true,
+                    saveSubtopic = { title, description, imageUri ->
+                        saveSubtopic(title, description, imageUri)
+                    },
+                )
+
+            null -> {}
+        }
+        Scaffold(
+            modifier = modifier,
+            topBar = {
+                if (!showSearchBar) {
+                    SubtopicsTopAppBar(
                         modifier = Modifier
-                            .padding(horizontal = 8.dp)
+                            .padding(horizontal = 16.dp)
                             .fillMaxWidth(),
-                        subtopics = subtopics,
-                        navigateToSubtopic = navigateToSubtopic,
-                        closeSearchBar = { showSearchBar = false },
-                        showSearchBar = showSearchBar,
-                        topicTitle = topic.title
+                        topic = topic,
+                        onDeleteTopic = { dialogType = DialogType.DELETE_TOPIC },
+                        onEditTopic = { dialogType = DialogType.EDIT_TOPIC },
+                        onSearch = { showSearchBar = true },
+                        navigateBack = navigateBack
                     )
                 }
             },
-            modifier = Modifier.padding(innerPadding)
-        )
+            floatingActionButton = {
+                CreateSubtopicFAB(onCreate = {
+                    dialogType = DialogType.CREATE_SUBTOPIC
+                })
+            },
+        ) { innerPadding ->
+            NavigableListDetailPaneScaffold(
+                navigator = scaffoldNavigator,
+                listPane = {
+                    AnimatedPane {
+                        if (paneAdaptedValue == PaneAdaptedValue.Expanded) {
+                            ScrollableTopicsList(
+                                topics = topics,
+                                navigateToTopic = navigateToTopic,
+                                selectedTopicId = topic.id,
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .fillMaxWidth()
+                            )
+                        } else {
+                            if (paneAdaptedValue == PaneAdaptedValue.Hidden) {
+                                SubtopicsPaneContent(
+                                    modifier = Modifier
+                                        .padding(horizontal = 16.dp)
+                                        .fillMaxWidth(),
+                                    subtopics = subtopics,
+                                    navigateToSubtopic = navigateToSubtopic,
+                                    closeSearchBar = { showSearchBar = false },
+                                    showSearchBar = showSearchBar,
+                                    topicTitle = topic.title
+                                )
+                            }
+                        }
+                    }
+                },
+                detailPane = {
+                    AnimatedPane {
+                        SubtopicsPaneContent(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .fillMaxWidth(),
+                            subtopics = subtopics,
+                            navigateToSubtopic = navigateToSubtopic,
+                            closeSearchBar = { showSearchBar = false },
+                            showSearchBar = showSearchBar,
+                            topicTitle = topic.title
+                        )
+                    }
+                },
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
     }
 }
 

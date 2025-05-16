@@ -39,6 +39,10 @@ fun TopicsScaffold(
 ) {
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+    if (showDialog) {
+        TopicDialog(onDismiss = { showDialog = false }, topic = null, onSave = saveTopic)
+    }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -50,7 +54,7 @@ fun TopicsScaffold(
             }
         },
         floatingActionButton = {
-            CreateTopicFAB(saveTopic = saveTopic)
+            CreateTopicFAB(saveTopic = { showDialog = true })
         },
     ) { innerPadding ->
         NavigableListDetailPaneScaffold(
@@ -108,10 +112,9 @@ private fun TopicsTopAppBar(
 }
 
 @Composable
-private fun CreateTopicFAB(saveTopic: (Topic) -> Unit, modifier: Modifier = Modifier) {
-    var showDialog by rememberSaveable { mutableStateOf(false) }
+private fun CreateTopicFAB(saveTopic: () -> Unit, modifier: Modifier = Modifier) {
     ExtendedFloatingActionButton(
-        onClick = { showDialog = true },
+        onClick = saveTopic,
         modifier = modifier,
         icon = {
             Icon(
@@ -128,7 +131,4 @@ private fun CreateTopicFAB(saveTopic: (Topic) -> Unit, modifier: Modifier = Modi
             )
         },
     )
-    if (showDialog) {
-        TopicDialog(onDismiss = { showDialog = false }, topic = null, onSave = saveTopic)
-    }
 }

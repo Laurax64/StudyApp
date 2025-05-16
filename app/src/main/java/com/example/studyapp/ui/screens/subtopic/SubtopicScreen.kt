@@ -44,7 +44,7 @@ fun SubtopicScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val subtopic by subtopicViewModel.subtopic.collectAsStateWithLifecycle()
+    val subtopic by subtopicViewModel.subtopic.collectAsStateWithLifecycle(null)
     SubtopicScaffold(
         subtopic = subtopic,
         updateSubtopic = subtopicViewModel::updateSubtopic,
