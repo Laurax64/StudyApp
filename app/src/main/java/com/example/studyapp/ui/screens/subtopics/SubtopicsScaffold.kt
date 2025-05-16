@@ -1,5 +1,6 @@
 package com.example.studyapp.ui.screens.subtopics
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -163,16 +164,21 @@ fun SubtopicsScaffold(
                 },
                 detailPane = {
                     AnimatedPane {
-                        SubtopicsPaneContent(
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp)
-                                .fillMaxWidth(),
-                            subtopics = subtopics,
-                            navigateToSubtopic = navigateToSubtopic,
-                            closeSearchBar = { showSearchBar = false },
-                            showSearchBar = showSearchBar,
-                            topicTitle = topic.title
-                        )
+                        AnimatedContent(
+                            targetState = subtopics,
+                            label = "SubtopicsContent"
+                        ) { animatedSubtopics ->
+                            SubtopicsPaneContent(
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp)
+                                    .fillMaxWidth(),
+                                subtopics = animatedSubtopics,
+                                navigateToSubtopic = navigateToSubtopic,
+                                closeSearchBar = { showSearchBar = false },
+                                showSearchBar = showSearchBar,
+                                topicTitle = topic.title
+                            )
+                        }
                     }
                 },
                 modifier = Modifier.padding(innerPadding)

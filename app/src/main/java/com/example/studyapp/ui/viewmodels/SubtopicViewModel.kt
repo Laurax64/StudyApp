@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.SubtopicsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,6 +20,10 @@ class SubtopicViewModel @Inject constructor(
     private val subtopicId: Int = savedStateHandle["subtopicId"] ?: -1
     var subtopic = subtopicsRepository.getSubtopic(
         id = subtopicId
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = null
     )
 
     fun updateSubtopic(updatedSubtopic: Subtopic) {
@@ -28,7 +34,9 @@ class SubtopicViewModel @Inject constructor(
 
     fun deleteSubtopic() {
         viewModelScope.launch {
-            subtopicsRepository.deleteSubtopic(subtopic = subtopic.first())
+            subtopic.first()?.let {
+                subtopicsRepository.deleteSubtopic(subtopic = it)
+            }
         }
     }
 }
