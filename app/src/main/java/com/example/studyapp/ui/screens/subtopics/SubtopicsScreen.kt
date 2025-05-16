@@ -19,6 +19,8 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOW
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
+import com.example.studyapp.ui.screens.subtopics.dialogs.SubtopicDialog
+import com.example.studyapp.ui.screens.subtopics.dialogs.SubtopicFullScreenDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.SubtopicsViewModel
 

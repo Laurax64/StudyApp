@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
+import com.example.studyapp.ui.screens.subtopics.dialogs.DeleteTopicDialog
+import com.example.studyapp.ui.screens.subtopics.dialogs.EditTopicDialog
 import com.example.studyapp.ui.screens.topics.ScrollableTopicsList
 
 

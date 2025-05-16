@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.screens.subtopics
+package com.example.studyapp.ui.screens.subtopics.dialogs
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -32,65 +32,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
-import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.components.FullScreenDialog
-
-@Composable
-fun EditTopicDialog(
-    topic: Topic?,
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit,
-    onSave: (Topic) -> Unit
-) {
-    var topicTitle by rememberSaveable { mutableStateOf(topic?.title ?: "") }
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = { Text(stringResource(R.string.edit_topic)) },
-        text = {
-            OutlinedTextField(
-                value = topicTitle,
-                onValueChange = { topicTitle = it },
-                label = { Text(stringResource(R.string.title)) })
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    if (topic != null) {
-                        onSave(topic.copy(title = topicTitle))
-                    } else {
-                        onSave(Topic(title = topicTitle, checked = false))
-                    }
-                    onDismiss()
-                }) {
-                Text(stringResource(R.string.save))
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = { onDismiss() }) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
-        modifier = modifier
-    )
-}
-
-@Composable
-fun DeleteTopicDialog(
-    modifier: Modifier = Modifier,
-    topicTitle: String,
-    deleteTopic: () -> Unit,
-    closeDialog: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = { deleteTopic() },
-        title = { Text(stringResource(R.string.delete_topic_dialog_title)) },
-        text = { Text(stringResource(R.string.delete_topic_dialog_description, topicTitle)) },
-        confirmButton = { TextButton(onClick = deleteTopic) { Text(stringResource(R.string.delete)) } },
-        dismissButton = { TextButton(onClick = closeDialog) { Text(stringResource(R.string.cancel)) } },
-        modifier = modifier
-    )
-}
 
 @Composable
 fun SubtopicFullScreenDialog(
@@ -187,8 +129,9 @@ private fun SubtopicInputFields(
     if (scrollState.isScrollInProgress) {
         keyboardController?.hide()
     }
-    val pickMedia =
-        rememberLauncherForActivityResult(PickVisualMedia()) { uri -> updateImageUri(uri.toString()) }
+    val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
+        updateImageUri(uri.toString())
+    }
     Column(
         modifier = modifier
             .verticalScroll(state = scrollState)
@@ -227,5 +170,4 @@ private fun SubtopicInputFields(
         AsyncImage(model = imageUri, contentDescription = null, modifier = Modifier.fillMaxWidth())
     }
 }
-
 

@@ -33,7 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
-import com.example.studyapp.ui.screens.subtopics.SubtopicFullScreenDialog
+import com.example.studyapp.ui.screens.subtopics.dialogs.SubtopicFullScreenDialog
 import com.example.studyapp.ui.viewmodels.SubtopicViewModel
 
 @Composable

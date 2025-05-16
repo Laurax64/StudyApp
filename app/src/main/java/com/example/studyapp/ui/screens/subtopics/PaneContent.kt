@@ -72,7 +72,6 @@ fun SubtopicsPaneContent(
     }
 }
 
-
 @Composable
 private fun SubtopicsLazyColumn(
     filteredSubtopics: List<Subtopic>,
