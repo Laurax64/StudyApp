@@ -135,7 +135,8 @@ private fun SubtopicsScreenPreview() {
                     checked = false,
                     bookmarked = false,
                     imageUri = null
-                ), Subtopic(
+                ),
+                Subtopic(
                     id = 2,
                     topicId = 0,
                     title = "Subtopic 2",
@@ -143,7 +144,8 @@ private fun SubtopicsScreenPreview() {
                     checked = true,
                     bookmarked = true,
                     imageUri = null
-                ), Subtopic(
+                ),
+                Subtopic(
                     id = 3,
                     topicId = 0,
                     title = "Subtopic 3",

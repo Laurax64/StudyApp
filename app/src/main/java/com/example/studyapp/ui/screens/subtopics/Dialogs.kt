@@ -37,7 +37,10 @@ import com.example.studyapp.ui.components.FullScreenDialog
 
 @Composable
 fun EditTopicDialog(
-    topic: Topic?, modifier: Modifier = Modifier, onDismiss: () -> Unit, onSave: (Topic) -> Unit
+    topic: Topic?,
+    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit,
+    onSave: (Topic) -> Unit
 ) {
     var topicTitle by rememberSaveable { mutableStateOf(topic?.title ?: "") }
     AlertDialog(
@@ -82,21 +85,9 @@ fun DeleteTopicDialog(
     AlertDialog(
         onDismissRequest = { deleteTopic() },
         title = { Text(stringResource(R.string.delete_topic_dialog_title)) },
-        text = {
-            Text(
-                stringResource(R.string.delete_topic_dialog_description, topicTitle)
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = deleteTopic) {
-                Text(stringResource(R.string.delete))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = closeDialog) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
+        text = { Text(stringResource(R.string.delete_topic_dialog_description, topicTitle)) },
+        confirmButton = { TextButton(onClick = deleteTopic) { Text(stringResource(R.string.delete)) } },
+        dismissButton = { TextButton(onClick = closeDialog) { Text(stringResource(R.string.cancel)) } },
         modifier = modifier
     )
 }
@@ -162,10 +153,11 @@ fun SubtopicDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = {
-                saveSubtopic(title, description, imageUri)
-                onDismiss()
-            }
+            TextButton(
+                onClick = {
+                    saveSubtopic(title, description, imageUri)
+                    onDismiss()
+                }
             ) {
                 Text(stringResource(R.string.save))
             }
@@ -195,9 +187,8 @@ private fun SubtopicInputFields(
     if (scrollState.isScrollInProgress) {
         keyboardController?.hide()
     }
-    val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
-        updateImageUri(uri.toString())
-    }
+    val pickMedia =
+        rememberLauncherForActivityResult(PickVisualMedia()) { uri -> updateImageUri(uri.toString()) }
     Column(
         modifier = modifier
             .verticalScroll(state = scrollState)
@@ -216,8 +207,7 @@ private fun SubtopicInputFields(
             value = description,
             onValueChange = { updateDescription(it) },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.description)) }
-        )
+            label = { Text(stringResource(R.string.description)) })
         OutlinedTextField(
             value = imageUri,
             onValueChange = { updateImageUri(it) },
@@ -233,12 +223,9 @@ private fun SubtopicInputFields(
                         }
                 )
             },
-            label = { Text(stringResource(R.string.image)) }
-        )
-        AsyncImage(
-            model = imageUri,
-            contentDescription = null,
-            modifier = Modifier.fillMaxWidth()
-        )
+            label = { Text(stringResource(R.string.image)) })
+        AsyncImage(model = imageUri, contentDescription = null, modifier = Modifier.fillMaxWidth())
     }
 }
+
+
