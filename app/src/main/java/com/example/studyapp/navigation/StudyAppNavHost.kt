@@ -18,15 +18,13 @@ fun StudyAppNavHost(
     modifier: Modifier = Modifier
 ) {
     val navController = appState.navController
-    NavHost(
-        navController = navController, startDestination = StudyRoute, modifier = modifier
-    ) {
+    NavHost(navController = navController, startDestination = StudyRoute, modifier = modifier) {
         navigation<StudyRoute>(startDestination = TopicsRoute) {
             topicsScreen(navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) })
             subtopicsScreen(
                 navigateToSubtopic = { navController.navigate(route = SubtopicRoute(subtopicId = it)) },
                 navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) },
-                navigateBack = navController::popBackStack
+                navigateToTopics = { navController.navigate(TopicsRoute) }
             )
             subtopicScreen(navigateBack = navController::popBackStack)
         }
@@ -48,14 +46,14 @@ fun NavGraphBuilder.topicsScreen(navigateToTopic: (Int) -> Unit) {
 fun NavGraphBuilder.subtopicsScreen(
     navigateToSubtopic: (Int) -> Unit,
     navigateToTopic: (Int) -> Unit,
-    navigateBack: () -> Unit
+    navigateToTopics: () -> Unit
 ) {
     composable<SubtopicsRoute> {
         SubtopicsScreen(
             subtopicsViewModel = hiltViewModel(),
             navigateToSubtopic = navigateToSubtopic,
             navigateToTopic = navigateToTopic,
-            navigateBack = navigateBack
+            navigateBack = navigateToTopics
         )
     }
 }
