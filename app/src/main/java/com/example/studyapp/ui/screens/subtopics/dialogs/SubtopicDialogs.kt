@@ -28,11 +28,14 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.components.FullScreenDialog
+import com.example.studyapp.ui.theme.StudyAppTheme
 
 @Composable
 fun SubtopicFullScreenDialog(
@@ -171,3 +174,37 @@ private fun SubtopicInputFields(
     }
 }
 
+@PreviewLightDark
+@Composable
+private fun SubtopicFullScreenDialogPreview() {
+    StudyAppTheme {
+        SubtopicFullScreenDialog(
+            titleRes = R.string.create_subtopic,
+            onDismiss = {},
+            saveSubtopic = { _, _, _ -> },
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun SubtopicDialogPreview() {
+    StudyAppTheme {
+        SubtopicDialog(
+            titleRes = R.string.edit_subtopic,
+            onDismiss = {},
+            saveSubtopic = { _, _, _ -> },
+            subtopic = Subtopic(
+                id = 0,
+                title = "Subtopic",
+                description = "Description",
+                //val imageUri = Uri.parse("android.resource://com.yourpackagename/drawable/your_image_name")
+                imageUri = "content://media/picker/0/com.android.providers.media.photopicker/media/18".toUri()
+                    .toString(),
+                checked = false,
+                topicId = 0,
+                bookmarked = true
+            )
+        )
+    }
+}

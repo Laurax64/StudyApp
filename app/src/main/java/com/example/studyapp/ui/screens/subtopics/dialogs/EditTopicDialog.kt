@@ -11,8 +11,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
+import com.example.studyapp.ui.theme.StudyAppTheme
 
 @Composable
 fun EditTopicDialog(
@@ -54,4 +56,10 @@ fun EditTopicDialog(
     )
 }
 
-
+@PreviewLightDark
+@Composable
+fun EditTopicDialogPreview() {
+    StudyAppTheme {
+        EditTopicDialog(topic = null, onDismiss = {}, onSave = {})
+    }
+}

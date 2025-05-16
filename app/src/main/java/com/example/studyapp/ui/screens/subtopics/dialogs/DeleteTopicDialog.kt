@@ -6,7 +6,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.example.studyapp.R
+import com.example.studyapp.ui.theme.StudyAppTheme
 
 @Composable
 fun DeleteTopicDialog(
@@ -23,4 +25,13 @@ fun DeleteTopicDialog(
         dismissButton = { TextButton(onClick = closeDialog) { Text(stringResource(R.string.cancel)) } },
         modifier = modifier
     )
+}
+
+
+@PreviewLightDark
+@Composable
+fun DeleteTopicDialogPreview() {
+    StudyAppTheme {
+        DeleteTopicDialog(topicTitle = "Topic", deleteTopic = {}, closeDialog = {})
+    }
 }
