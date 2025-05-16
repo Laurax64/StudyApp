@@ -19,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
-import com.example.studyapp.ui.screens.subtopics.dialogs.SubtopicFullScreenDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,10 +66,12 @@ fun FullScreenDialog(
 @Composable
 @Preview(showSystemUi = true)
 private fun SubtopicFullScreenDialogPreview() {
-    SubtopicFullScreenDialog(
+    FullScreenDialog(
         titleRes = R.string.create_subtopic,
-        onDismiss = { },
-        saveSubtopic = { _, _, _ -> },
-        subtopic = null
+        onConfirm = {},
+        onDismiss = {},
+        content = {
+            Text(text = "Content")
+        }
     )
 }

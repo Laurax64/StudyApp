@@ -42,4 +42,6 @@
     <string name="search_in">Search in %s</string>
     <string name="search_in_topics">Search in topics</string>
     <string name="unchecked">Unchecked</string>
+    <string name="open_delete_topic_dialog">Open delete topic dialog</string>
+    <string name="open_edit_topic_dialog">Open edit topic dialog</string>
 </resources>

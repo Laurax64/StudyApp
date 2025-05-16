@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.components.PlaceholderColumn
+import com.example.studyapp.ui.components.study.TopicDialog
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -128,6 +129,6 @@ private fun CreateTopicFAB(saveTopic: (Topic) -> Unit, modifier: Modifier = Modi
         },
     )
     if (showDialog) {
-        CreateTopicDialog(onDismiss = { showDialog = false }, topic = null, onSave = saveTopic)
+        TopicDialog(onDismiss = { showDialog = false }, topic = null, onSave = saveTopic)
     }
 }

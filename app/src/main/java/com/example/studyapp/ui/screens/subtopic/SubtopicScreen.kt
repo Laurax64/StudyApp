@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,15 +31,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
-import com.example.studyapp.ui.screens.subtopics.dialogs.SubtopicFullScreenDialog
+import com.example.studyapp.ui.components.study.SubtopicDialog
 import com.example.studyapp.ui.viewmodels.SubtopicViewModel
 
 @Composable
 fun SubtopicScreen(
-    subtopicViewModel: SubtopicViewModel, navigateBack: () -> Unit, modifier: Modifier = Modifier
+    subtopicViewModel: SubtopicViewModel,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val subtopic by subtopicViewModel.subtopic.collectAsStateWithLifecycle()
     SubtopicScaffold(
@@ -60,14 +64,16 @@ private fun SubtopicScaffold(
     modifier: Modifier = Modifier
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
+    val isWidthAtLeastMedium = currentWindowAdaptiveInfo().windowSizeClass
+        .isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
     if (subtopic == null) {
         Box(
             modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
     } else {
         if (showDialog) {
-            SubtopicFullScreenDialog(
-                titleRes = R.string.edit_subtopic,
+            SubtopicDialog(
+                titleId = R.string.edit_subtopic,
                 onDismiss = { showDialog = false },
                 saveSubtopic = { title, description, imageUri ->
                     updateSubtopic(
@@ -85,6 +91,7 @@ private fun SubtopicScaffold(
                 },
                 modifier = modifier,
                 subtopic = subtopic,
+                isWidthAtLeastMedium = isWidthAtLeastMedium
             )
         } else {
             Scaffold(
@@ -178,7 +185,7 @@ private fun MoreActionsMenu(
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.baseline_create_24),
-                        contentDescription = null
+                        contentDescription = stringResource(R.string.open_edit_topic_dialog)
                     )
                 })
             DropdownMenuItem(
@@ -187,7 +194,7 @@ private fun MoreActionsMenu(
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.baseline_delete_outline_24),
-                        contentDescription = null // TODO: Add content description
+                        contentDescription = stringResource(R.string.open_delete_topic_dialog)
                     )
                 })
         }

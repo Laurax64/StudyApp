@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.screens.subtopics.dialogs
+package com.example.studyapp.ui.components.study
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -28,63 +28,70 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.components.FullScreenDialog
-import com.example.studyapp.ui.theme.StudyAppTheme
-
-@Composable
-fun SubtopicFullScreenDialog(
-    titleRes: Int,
-    onDismiss: () -> Unit,
-    saveSubtopic: (String, String, String?) -> Unit,
-    modifier: Modifier = Modifier,
-    subtopic: Subtopic? = null,
-) {
-    var title by rememberSaveable { mutableStateOf(subtopic?.title ?: "") }
-    var description by rememberSaveable { mutableStateOf(subtopic?.description ?: "") }
-    var imageUri by rememberSaveable { mutableStateOf(subtopic?.imageUri ?: "") }
-    FullScreenDialog(
-        titleRes = titleRes,
-        onDismiss = onDismiss,
-        onConfirm = { saveSubtopic(title, description, imageUri) },
-        modifier = modifier.padding(horizontal = 16.dp)
-    ) { innerPadding ->
-        SubtopicInputFields(
-            updateTitle = { title = it },
-            updateDescription = { description = it },
-            updateImageUri = { imageUri = it },
-            title = title,
-            description = description,
-            imageUri = imageUri,
-            modifier = Modifier
-                .padding(paddingValues = innerPadding)
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth(),
-        )
-    }
-}
 
 @Composable
 fun SubtopicDialog(
-    titleRes: Int,
+    titleId: Int,
     onDismiss: () -> Unit,
     saveSubtopic: (String, String, String?) -> Unit,
     modifier: Modifier = Modifier,
+    isWidthAtLeastMedium: Boolean,
     subtopic: Subtopic? = null,
 ) {
     var title by rememberSaveable { mutableStateOf(subtopic?.title ?: "") }
     var description by rememberSaveable { mutableStateOf(subtopic?.description ?: "") }
     var imageUri by rememberSaveable { mutableStateOf(subtopic?.imageUri ?: "") }
-    AlertDialog(
-        // Dialog should not close when clicking outside.
-        onDismissRequest = {},
-        title = { Text(stringResource(titleRes)) },
-        text = {
+
+    if (isWidthAtLeastMedium) {
+        AlertDialog(
+            // Dialog should not close when clicking outside.
+            onDismissRequest = {},
+            title = { Text(stringResource(titleId)) },
+            text = {
+                SubtopicInputFields(
+                    updateTitle = { title = it },
+                    updateDescription = { description = it },
+                    updateImageUri = { imageUri = it },
+                    title = title,
+                    description = description,
+                    imageUri = imageUri,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        saveSubtopic(title, description, imageUri)
+                        onDismiss()
+                    }
+                ) {
+                    Text(stringResource(R.string.save))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onDismiss() }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            modifier = modifier
+        )
+    } else {
+        FullScreenDialog(
+            titleRes = titleId,
+            onDismiss = onDismiss,
+            onConfirm = {
+                saveSubtopic(title, description, imageUri)
+                onDismiss()
+            },
+            modifier = modifier.padding(horizontal = 16.dp)
+        ) { innerPadding ->
             SubtopicInputFields(
                 updateTitle = { title = it },
                 updateDescription = { description = it },
@@ -93,27 +100,12 @@ fun SubtopicDialog(
                 description = description,
                 imageUri = imageUri,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                    .padding(paddingValues = innerPadding)
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
             )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    saveSubtopic(title, description, imageUri)
-                    onDismiss()
-                }
-            ) {
-                Text(stringResource(R.string.save))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { onDismiss() }) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
-        modifier = modifier
-    )
+        }
+    }
 }
 
 @Composable
@@ -149,6 +141,7 @@ private fun SubtopicInputFields(
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.title)) },
         )
+
         OutlinedTextField(
             value = description,
             onValueChange = { updateDescription(it) },
@@ -171,40 +164,5 @@ private fun SubtopicInputFields(
             },
             label = { Text(stringResource(R.string.image)) })
         AsyncImage(model = imageUri, contentDescription = null, modifier = Modifier.fillMaxWidth())
-    }
-}
-
-@PreviewLightDark
-@Composable
-private fun SubtopicFullScreenDialogPreview() {
-    StudyAppTheme {
-        SubtopicFullScreenDialog(
-            titleRes = R.string.create_subtopic,
-            onDismiss = {},
-            saveSubtopic = { _, _, _ -> },
-        )
-    }
-}
-
-@PreviewLightDark
-@Composable
-private fun SubtopicDialogPreview() {
-    StudyAppTheme {
-        SubtopicDialog(
-            titleRes = R.string.edit_subtopic,
-            onDismiss = {},
-            saveSubtopic = { _, _, _ -> },
-            subtopic = Subtopic(
-                id = 0,
-                title = "Subtopic",
-                description = "Description",
-                //val imageUri = Uri.parse("android.resource://com.yourpackagename/drawable/your_image_name")
-                imageUri = "content://media/picker/0/com.android.providers.media.photopicker/media/18".toUri()
-                    .toString(),
-                checked = false,
-                topicId = 0,
-                bookmarked = true
-            )
-        )
     }
 }

@@ -37,8 +37,6 @@ import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
-import com.example.studyapp.ui.screens.subtopics.dialogs.DeleteTopicDialog
-import com.example.studyapp.ui.screens.subtopics.dialogs.EditTopicDialog
 import com.example.studyapp.ui.screens.topics.ScrollableTopicsList
 
 
@@ -49,8 +47,8 @@ fun SubtopicsScaffold(
     topics: List<Topic>,
     topic: Topic,
     onCreateSubtopic: () -> Unit,
-    deleteTopic: () -> Unit,
-    updateTopic: (Topic) -> Unit,
+    onDeleteTopic: () -> Unit,
+    onEditTopic: () -> Unit,
     navigateToSubtopic: (Int) -> Unit,
     navigateToTopic: (Int) -> Unit,
     navigateBack: () -> Unit,
@@ -64,12 +62,12 @@ fun SubtopicsScaffold(
         topBar = {
             if (!showSearchBar) {
                 SubtopicsTopAppBar(
-                    topic = topic,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .fillMaxWidth(),
-                    deleteTopic = deleteTopic,
-                    updateTopic = updateTopic,
+                    topic = topic,
+                    onDeleteTopic = onDeleteTopic,
+                    onEditTopic = onEditTopic,
                     onSearch = { showSearchBar = true },
                     navigateBack = navigateBack
                 )
@@ -130,8 +128,8 @@ fun SubtopicsScaffold(
 private fun SubtopicsTopAppBar(
     modifier: Modifier = Modifier,
     topic: Topic,
-    deleteTopic: () -> Unit,
-    updateTopic: (Topic) -> Unit,
+    onDeleteTopic: () -> Unit,
+    onEditTopic: () -> Unit,
     onSearch: () -> Unit,
     navigateBack: () -> Unit
 ) {
@@ -152,9 +150,8 @@ private fun SubtopicsTopAppBar(
                     contentDescription = stringResource(R.string.subtopics_search),
                 )
                 MoreActionsMenu(
-                    deleteTopic = deleteTopic,
-                    updateTopic = updateTopic,
-                    topic = topic,
+                    onDelete = onDeleteTopic,
+                    onEdit = onEditTopic,
                 )
             }
         },
@@ -165,33 +162,11 @@ private fun SubtopicsTopAppBar(
 
 @Composable
 private fun MoreActionsMenu(
-    deleteTopic: () -> Unit,
-    updateTopic: (Topic) -> Unit,
-    topic: Topic,
+    onDelete: () -> Unit,
+    onEdit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    var showEditDialog by rememberSaveable { mutableStateOf(false) }
-    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
-    if (showEditDialog) {
-        EditTopicDialog(
-            onDismiss = { showEditDialog = false },
-            topic = topic,
-            onSave = {
-                updateTopic(it)
-                showEditDialog = false
-            },
-        )
-    } else if (showDeleteDialog) {
-        DeleteTopicDialog(
-            topicTitle = topic.title,
-            deleteTopic = {
-                deleteTopic()
-                showDeleteDialog = false
-            },
-            closeDialog = { showDeleteDialog = false },
-        )
-    }
     Column(modifier, horizontalAlignment = Alignment.End) {
         Icon(
             painter = painterResource(R.drawable.baseline_more_vert_24),
@@ -212,7 +187,7 @@ private fun MoreActionsMenu(
             HorizontalDivider()
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.edit)) },
-                onClick = { showEditDialog = true },
+                onClick = onEdit,
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.baseline_create_24),
@@ -222,7 +197,7 @@ private fun MoreActionsMenu(
             )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.delete)) },
-                onClick = { showDeleteDialog = true },
+                onClick = onDelete,
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.baseline_delete_outline_24),
