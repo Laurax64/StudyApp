@@ -44,4 +44,6 @@
     <string name="unchecked">Unchecked</string>
     <string name="open_delete_topic_dialog">Open delete topic dialog</string>
     <string name="open_edit_topic_dialog">Open edit topic dialog</string>
+    <string name="delete_subtopic_dialog_title">Delete subtopic?</string>
+    <string name="delete_subtopic_dialog_description">The subtopic %s will be permanently removed from the app.</string>
 </resources>
