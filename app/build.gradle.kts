@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId = "com.example.studyapp"
         minSdk = 27
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -76,7 +76,7 @@ dependencies {
     implementation(libs.androidx.adaptive.layout)
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.material3)
-
+    implementation(libs.androidx.core.splashscreen)
     ksp(libs.hilt.compiler)
     ksp(libs.room.runtime)
     ksp(libs.room.compiler)
