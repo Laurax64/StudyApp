@@ -124,9 +124,10 @@ private fun SubtopicScaffold(
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    SubtopicImage(
-                        modifier = Modifier.fillMaxWidth(),
-                        imageUri = subtopic.imageUri,
+                    AsyncImage(
+                        model = subtopic.imageUri,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxWidth()
                     )
                     Text(
                         text = subtopic.description,
@@ -136,18 +137,6 @@ private fun SubtopicScaffold(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun SubtopicImage(
-    modifier: Modifier = Modifier,
-    imageUri: String?,
-) {
-    if (imageUri != null) {
-        AsyncImage(
-            model = imageUri, contentDescription = null, modifier = modifier
-        )
     }
 }
 
@@ -213,5 +202,7 @@ private fun SubtopicScreenPreview() {
         bookmarked = false,
         topicId = 1,
         imageUri = null
-    ), updateSubtopic = {}, deleteSubtopic = {}, navigateBack = {})
+        ),
+        updateSubtopic = {}, deleteSubtopic = {}, navigateBack = {}
+    )
 }
