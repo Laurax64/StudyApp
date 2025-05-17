@@ -46,4 +46,6 @@
     <string name="open_edit_topic_dialog">Open edit topic dialog</string>
     <string name="delete_subtopic_dialog_title">Delete subtopic?</string>
     <string name="delete_subtopic_dialog_description">The subtopic %s will be permanently removed from the app.</string>
+    <string name="uncheck_subtopic">Uncheck subtopic</string>
+    <string name="check_subtopic">Check subtopic</string>
 </resources>
