@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.studyapp.R
@@ -93,10 +94,7 @@ fun SubtopicScaffold(
             topBar = {
                 LargeFlexibleTopAppBar(
                     title = {
-                        Text(
-                            text = subtopic.title,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
+                        Text(text = subtopic.title, overflow = Ellipsis)
                     },
                     navigationIcon = {
                         Icon(
@@ -121,7 +119,6 @@ fun SubtopicScaffold(
             floatingActionButton = {
                 ExtendedFloatingActionButton(
                     onClick = { updateSubtopic(subtopic.copy(checked = !subtopic.checked)) },
-                    modifier = modifier,
                     icon = {
                         Icon(
                             painter = painterResource(
