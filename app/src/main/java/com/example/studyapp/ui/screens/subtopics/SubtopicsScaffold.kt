@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
@@ -95,9 +94,7 @@ fun SubtopicsScaffold(
             topBar = {
                 if (!showSearchBar) {
                     SubtopicsTopAppBar(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth(),
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         topic = topic,
                         onDeleteTopic = { dialogType = DialogType.DELETE_TOPIC },
                         onEditTopic = { dialogType = DialogType.EDIT_TOPIC },
@@ -285,10 +282,13 @@ private fun SubtopicsTopAppBar(
                     modifier = Modifier.clickable { onSearch() },
                     contentDescription = stringResource(R.string.subtopics_search),
                 )
-                MoreActionsMenu(
-                    onDelete = onDeleteTopic,
-                    onEdit = onEditTopic,
+                Icon(
+                    painter = painterResource(R.drawable.outline_create_24),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.clickable { onEditTopic() },
+                    contentDescription = stringResource(R.string.open_edit_topic_dialog),
                 )
+                MoreActionsMenu(onDelete = onDeleteTopic)
             }
         },
         title = { Text(text = topic.title, overflow = Ellipsis) },
@@ -299,7 +299,6 @@ private fun SubtopicsTopAppBar(
 @Composable
 private fun MoreActionsMenu(
     onDelete: () -> Unit,
-    onEdit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -321,16 +320,6 @@ private fun MoreActionsMenu(
                 }
             )
             HorizontalDivider()
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.edit)) },
-                onClick = onEdit,
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_create_24),
-                        contentDescription = stringResource(R.string.edit_topic)
-                    )
-                }
-            )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.delete)) },
                 onClick = onDelete,

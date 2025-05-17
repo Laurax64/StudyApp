@@ -20,9 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
-import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
@@ -45,10 +44,6 @@ private enum class DialogType {
     DELETE_SUBTOPIC
 }
 
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class,
-    ExperimentalMaterial3ExpressiveApi::class
-)
 @Composable
 fun SubtopicScaffold(
     subtopic: Subtopic,
@@ -57,11 +52,12 @@ fun SubtopicScaffold(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
-    val paneAdaptedValue = scaffoldNavigator.scaffoldState.currentState.primary
+    val isScreenWidthCompact =
+        !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
+            WIDTH_DP_MEDIUM_LOWER_BOUND
+        )
     var dialogType by rememberSaveable { mutableStateOf<DialogType?>(null) }
-
-    if (dialogType == DialogType.EDIT_SUBTOPIC && paneAdaptedValue == PaneAdaptedValue.Hidden) {
+    if (dialogType == DialogType.EDIT_SUBTOPIC && isScreenWidthCompact) {
         SaveSubtopicDialog(
             titleId = R.string.edit_subtopic,
             onDismiss = { dialogType = null },
@@ -82,9 +78,12 @@ fun SubtopicScaffold(
         dialogType?.let {
             Dialog(
                 subtopic = subtopic,
-                deleteSubtopic = deleteSubtopic,
+                deleteSubtopic = {
+                    // Navigate back because the subtopic is about to be deleted.
+                    navigateBack()
+                    deleteSubtopic()
+                },
                 updateSubtopic = updateSubtopic,
-                navigateBack = navigateBack,
                 dismissDialog = { dialogType = null },
                 dialogType = it
             )
@@ -92,28 +91,13 @@ fun SubtopicScaffold(
         Scaffold(
             modifier = modifier,
             topBar = {
-                LargeFlexibleTopAppBar(
-                    title = {
-                        Text(text = subtopic.title, overflow = Ellipsis)
-                    },
-                    navigationIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_arrow_back_24),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            contentDescription = stringResource(R.string.go_back_to_subtopics),
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable { navigateBack() })
-                    }, actions = {
-                        MoreActionsMenu(
-                            shareSubtopic = { /* TODO: Implement share functionality */ },
-                            editSubtopic = { dialogType = DialogType.EDIT_SUBTOPIC },
-                            deleteSubtopic = {
-                                deleteSubtopic()
-                                navigateBack()
-                            }
-                        )
-                    }
+                SubtopicTopAppBar(
+                    subtopic = subtopic,
+                    onDeleteSubtopic = { dialogType = DialogType.DELETE_SUBTOPIC },
+                    onEditSubtopic = { dialogType = DialogType.EDIT_SUBTOPIC },
+                    navigateBack = navigateBack,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    toggleBookmarked = { updateSubtopic(subtopic.copy(bookmarked = !subtopic.bookmarked)) }
                 )
             },
             floatingActionButton = {
@@ -125,15 +109,19 @@ fun SubtopicScaffold(
                                 if (subtopic.checked) R.drawable.outline_check_box_24 else R.drawable.baseline_check_box_outline_blank_24
                             ),
                             contentDescription = stringResource(
-                                if (subtopic.checked) R.string.uncheck_subtopic else R.string.check_subtopic
+                                if (subtopic.checked) R.string.checked else R.string.unchecked
                             )
                         )
                     },
-                    text = { Text(text = stringResource(R.string.create_subtopic)) },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.toggle_checked)
+                        )
+                    }
                 )
             }
         ) { innerPadding ->
-            if (paneAdaptedValue == PaneAdaptedValue.Hidden) {
+            if (isScreenWidthCompact) {
                 Column(
                     modifier = Modifier
                         .padding(paddingValues = innerPadding)
@@ -143,12 +131,16 @@ fun SubtopicScaffold(
                     AsyncImage(
                         model = subtopic.imageUri,
                         contentDescription = null,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
                     )
                     Text(
                         text = subtopic.description,
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
                     )
                 }
             } else {
@@ -175,12 +167,10 @@ fun SubtopicScaffold(
     }
 }
 
-
 @Composable
 private fun MoreActionsMenu(
     shareSubtopic: () -> Unit,
-    editSubtopic: () -> Unit,
-    deleteSubtopic: () -> Unit,
+    onDeleteSubtopic: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -206,18 +196,8 @@ private fun MoreActionsMenu(
             )
             HorizontalDivider()
             DropdownMenuItem(
-                text = { Text(stringResource(R.string.edit)) },
-                onClick = editSubtopic,
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_create_24),
-                        contentDescription = stringResource(R.string.open_edit_topic_dialog)
-                    )
-                }
-            )
-            DropdownMenuItem(
                 text = { Text(stringResource(R.string.delete)) },
-                onClick = { deleteSubtopic() },
+                onClick = { onDeleteSubtopic() },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.baseline_delete_outline_24),
@@ -229,11 +209,59 @@ private fun MoreActionsMenu(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@Composable
+private fun SubtopicTopAppBar(
+    subtopic: Subtopic,
+    onDeleteSubtopic: () -> Unit,
+    navigateBack: () -> Unit,
+    onEditSubtopic: () -> Unit,
+    toggleBookmarked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LargeFlexibleTopAppBar(
+        title = { Text(text = subtopic.title, overflow = Ellipsis) },
+        modifier = modifier,
+        navigationIcon = {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                tint = MaterialTheme.colorScheme.onSurface,
+                contentDescription = stringResource(R.string.go_back_to_subtopics),
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable { navigateBack() })
+        },
+        actions = {
+            Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                Icon(
+                    painter = painterResource(
+                        if (subtopic.bookmarked) R.drawable.baseline_bookmark_24 else R.drawable.baseline_bookmark_border_24
+                    ),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.clickable { toggleBookmarked() },
+                    contentDescription = stringResource(
+                        if (subtopic.bookmarked) R.string.add_bookmark else R.string.remove_bookmark
+                    )
+                )
+                Icon(
+                    painter = painterResource(R.drawable.outline_create_24),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.clickable { onEditSubtopic() },
+                    contentDescription = stringResource(R.string.open_edit_subtopic_dialog),
+                )
+                MoreActionsMenu(
+                    shareSubtopic = { /* TODO: Implement share functionality */ },
+                    onDeleteSubtopic = onDeleteSubtopic
+                )
+            }
+        }
+    )
+}
+
 @Composable
 private fun Dialog(
     subtopic: Subtopic,
     deleteSubtopic: () -> Unit,
-    navigateBack: () -> Unit,
     dismissDialog: () -> Unit,
     dialogType: DialogType,
     updateSubtopic: (Subtopic) -> Unit,
@@ -244,14 +272,9 @@ private fun Dialog(
             DeleteSubtopicDialog(
                 modifier = modifier,
                 onDismiss = dismissDialog,
-                deleteSubtopic = {
-                    // Navigate back because the topic is about to be deleted.
-                    navigateBack()
-                    deleteSubtopic()
-                },
+                deleteSubtopic = deleteSubtopic,
                 subtopicTitle = subtopic.title
             )
-
         DialogType.EDIT_SUBTOPIC ->
             SaveSubtopicDialog(
                 modifier = modifier,
