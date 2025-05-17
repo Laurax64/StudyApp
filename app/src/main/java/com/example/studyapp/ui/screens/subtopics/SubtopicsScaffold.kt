@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
@@ -36,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
@@ -67,7 +69,11 @@ fun SubtopicsScaffold(
     val paneAdaptedValue = scaffoldNavigator.scaffoldState.currentState.primary
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
     var dialogType by rememberSaveable { mutableStateOf<DialogType?>(null) }
-    if (dialogType == DialogType.CREATE_SUBTOPIC && paneAdaptedValue == PaneAdaptedValue.Hidden) {
+    val isScreenWidthCompact =
+        !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
+            WIDTH_DP_MEDIUM_LOWER_BOUND
+        )
+    if (dialogType == DialogType.CREATE_SUBTOPIC && isScreenWidthCompact) {
         SaveSubtopicDialog(
             titleId = R.string.create_subtopic,
             onDismiss = { dialogType = null },
