@@ -4,8 +4,9 @@
 - [x] [Material Theme Builder](https://www.figma.com/community/plugin/1034969338659738588/material-theme-builder)
 - [x] [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en)
 - [x] [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
-
-### Canonical layouts
+### Launcher Icon
+### Splash Screen
+### Canonical Layouts
 - [ ] [Feed](https://m3.material.io/foundations/layout/canonical-layouts/overview#963d7d99-4f04-4685-b7bd-57a89607b514)
 - [x] [List-detail](https://developer.android.com/develop/ui/compose/layouts/adaptive/list-detail)
 - [ ] [Supporting pane](https://m3.material.io/foundations/layout/canonical-layouts/overview#b01f6399-a0d3-4fd8-b78b-78a9ab663482)
@@ -24,7 +25,7 @@
 - [x] [Navigation to destinations](https://developer.android.com/guide/navigation/use-graph/navigate)
 - [x] [NavigationSuiteScaffold](https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation)
 - [x] [Nested graph](https://developer.android.com/guide/navigation/design/nested-graphs)
-### Dependency injection 
+### Dependency Injection 
 - [x] [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en) for non-asissted dependency injection 
 - [ ] [Dagger](https://developer.android.com/training/dependency-injection/dagger-android#assisted-injection) for assisted dependency injection
 ### Data Storage 
