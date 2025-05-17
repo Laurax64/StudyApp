@@ -58,7 +58,8 @@ fun TopicsScaffold(
         },
     ) { innerPadding ->
         NavigableListDetailPaneScaffold(
-            navigator = scaffoldNavigator, listPane = {
+            navigator = scaffoldNavigator,
+            listPane = {
                 AnimatedPane {
                     TopicsPaneContent(
                         navigateToTopic = {
@@ -71,7 +72,8 @@ fun TopicsScaffold(
                         topics = topics,
                     )
                 }
-            }, detailPane = {
+            },
+            detailPane = {
                 AnimatedPane {
                     PlaceholderColumn(
                         textId = if (topics.isEmpty()) {
@@ -83,7 +85,8 @@ fun TopicsScaffold(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
-            }, modifier = Modifier.padding(innerPadding)
+            },
+            modifier = Modifier.padding(innerPadding)
         )
     }
 }
