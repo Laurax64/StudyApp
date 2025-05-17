@@ -11,6 +11,7 @@
 ### Splash Screen
 
 <img width="100" alt="image" src = docs/images/study-app-splash-screen-light.png>
+
 <img width="100" alt="image" src = docs/images/study-app-splash-screen-dark.png>
 
 ### Canonical Layouts
