@@ -5,10 +5,13 @@
 - [x] [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en)
 - [x] [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 ### Launcher Icon
-<img width="100" alt="image" src = docs/images/study-app-launcher-icon.png>
+
+<img width="100" alt="image" src = app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml>
 
 ### Splash Screen
-<img width="100" alt="image" src = docs/images/study-app-splash-screen.png>
+
+<img width="100" alt="image" src = docs/images/study-app-splash-screen-light.png>
+<img width="100" alt="image" src = docs/images/study-app-splash-screen-dark.png>
 
 ### Canonical Layouts
 - [ ] [Feed](https://m3.material.io/foundations/layout/canonical-layouts/overview#963d7d99-4f04-4685-b7bd-57a89607b514)
