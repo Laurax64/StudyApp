@@ -169,13 +169,7 @@ private fun Dialog(
                 titleId = R.string.create_subtopic,
                 onDismiss = dismissDialog,
                 isFullScreenDialog = false,
-                saveSubtopic = { title, description, imageUri ->
-                    saveSubtopic(
-                        title,
-                        description,
-                        imageUri
-                    )
-                },
+                saveSubtopic = saveSubtopic
             )
     }
 }
