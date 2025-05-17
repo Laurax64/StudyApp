@@ -10,7 +10,7 @@
 - [x] [List-detail](https://developer.android.com/develop/ui/compose/layouts/adaptive/list-detail)
 - [ ] [Supporting pane](https://m3.material.io/foundations/layout/canonical-layouts/overview#b01f6399-a0d3-4fd8-b78b-78a9ab663482)
 ### Search 
-- [ ] [Searchbar](https://developer.android.com/develop/ui/compose/components/search-bar)
+- [x] [Searchbar](https://developer.android.com/develop/ui/compose/components/search-bar)
 ### Widget 
 - [ ] [Glance](https://developer.android.com/codelabs/glance?hl=en#0)
 ### Images
