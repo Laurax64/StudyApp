@@ -6,7 +6,7 @@
 - [x] [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 ### Launcher Icon
 
-<img width="100" alt="image" src = app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml>
+<img alt="image" src = docs/images/study-app-ic_launcher_round.png>
 
 ### Splash Screen
 
