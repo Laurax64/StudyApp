@@ -89,8 +89,8 @@ private fun SubtopicsScreenPreview() {
                 Subtopic(
                     id = 1,
                     topicId = 0,
-                    title = "Subtopic 1",
-                    description = "Description 1",
+                    title = "Golden Retriever",
+                    description = "Friendly, intelligent, and great with families.",
                     checked = false,
                     bookmarked = false,
                     imageUri = null
@@ -98,17 +98,80 @@ private fun SubtopicsScreenPreview() {
                 Subtopic(
                     id = 2,
                     topicId = 0,
-                    title = "Subtopic 2",
-                    description = "Description 2",
-                    checked = true,
-                    bookmarked = true,
+                    title = "Labrador Retriever",
+                    description = "Outgoing, loyal, and super trainable.",
+                    checked = false,
+                    bookmarked = false,
                     imageUri = null
                 ),
                 Subtopic(
                     id = 3,
                     topicId = 0,
-                    title = "Subtopic 3",
-                    description = "Description 3",
+                    title = "German Shepherd",
+                    description = "Brave, confident, and excellent working dogs.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 4,
+                    topicId = 0,
+                    title = "Pomeranian",
+                    description = "Small, fluffy, and full of personality.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 5,
+                    topicId = 0,
+                    title = "Border Collie",
+                    description = "Highly energetic and the smartest of all breeds.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 6,
+                    topicId = 0,
+                    title = "Dachshund",
+                    description = "Long-bodied and playful with a bold attitude.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 7,
+                    topicId = 0,
+                    title = "French Bulldog",
+                    description = "Compact and charming with a lovable snort.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 8,
+                    topicId = 0,
+                    title = "Cocker Spaniel",
+                    description = "Gentle, sweet, and always ready to cuddle.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 9,
+                    topicId = 0,
+                    title = "Great Dane",
+                    description = "A gentle giant with a calm and loving nature.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 10,
+                    topicId = 0,
+                    title = "Siberian Husky",
+                    description = "Beautiful, energetic, and known for their striking blue eyes.",
                     checked = false,
                     bookmarked = false,
                     imageUri = null

@@ -58,7 +58,16 @@ private fun TopicsScreenPreview() {
     StudyAppTheme {
         TopicsScreen(
             topics = listOf(
-                Topic(1, "Topic 1", false), Topic(2, "Topic 2", true), Topic(3, "Topic 3", false)
+                Topic(1, "Dogs", false),
+                Topic(2, "Cats", false),
+                Topic(3, "Horses", false),
+                Topic(4, "Rabbits", false),
+                Topic(5, "Fish", false),
+                Topic(6, "Birds", false),
+                Topic(7, "Hamsters", false),
+                Topic(8, "Guinea pigs", false),
+                Topic(9, "Turtles", false),
+                Topic(10, "Elephants", false)
             ),
             navigateToSubtopics = {},
             saveTopic = {},

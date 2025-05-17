@@ -148,7 +148,7 @@ private fun SubtopicInputFields(
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.description)) })
         OutlinedTextField(
-            value = imageUri,
+            value = if (imageUri == "null") "" else imageUri,
             onValueChange = { updateImageUri(it) },
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {

@@ -33,9 +33,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
-import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
+import com.example.studyapp.ui.components.StudyAppAsyncImage
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 
 
@@ -128,7 +128,7 @@ fun SubtopicScaffold(
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    AsyncImage(
+                    StudyAppAsyncImage(
                         model = subtopic.imageUri,
                         contentDescription = null,
                         modifier = Modifier
@@ -150,15 +150,19 @@ fun SubtopicScaffold(
                         .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    AsyncImage(
+                    StudyAppAsyncImage(
                         model = subtopic.imageUri,
                         contentDescription = null,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
                     )
                     Text(
                         text = subtopic.description,
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
                     )
                 }
 
@@ -166,6 +170,7 @@ fun SubtopicScaffold(
         }
     }
 }
+
 
 @Composable
 private fun MoreActionsMenu(
@@ -275,6 +280,7 @@ private fun Dialog(
                 deleteSubtopic = deleteSubtopic,
                 subtopicTitle = subtopic.title
             )
+
         DialogType.EDIT_SUBTOPIC ->
             SaveSubtopicDialog(
                 modifier = modifier,
