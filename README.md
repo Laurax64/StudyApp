@@ -5,7 +5,11 @@
 - [x] [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en)
 - [x] [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 ### Launcher Icon
+
+![study-app-launcher-icon.png](docs/images/study-app-launcher-icon.png)
 ### Splash Screen
+
+![study-app-splash-screen.png](docs/images/study-app-splash-screen.png)
 ### Canonical Layouts
 - [ ] [Feed](https://m3.material.io/foundations/layout/canonical-layouts/overview#963d7d99-4f04-4685-b7bd-57a89607b514)
 - [x] [List-detail](https://developer.android.com/develop/ui/compose/layouts/adaptive/list-detail)
@@ -26,14 +30,17 @@
 - [x] [NavigationSuiteScaffold](https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation)
 - [x] [Nested graph](https://developer.android.com/guide/navigation/design/nested-graphs)
 ### Dependency Injection 
-- [x] [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en) for non-asissted dependency injection 
+
+- [x] [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en) for
+  non-assisted dependency injection
 - [ ] [Dagger](https://developer.android.com/training/dependency-injection/dagger-android#assisted-injection) for assisted dependency injection
 ### Data Storage 
 - [x] [Room](https://developer.android.com/training/data-storage/room?hl=en)
 ### States
 - [ ] ...
 ### App Architecture
-<img width="500" alt="image" src="https://github.com/user-attachments/assets/79ca51cb-ae7a-42e8-ada4-c085367edba1" />
+
+![architecture.png](docs/images/architecture.png)
 
 [Single Sources of Truth](https://developer.android.com/topic/architecture#single-source-of-truth) 
 * Each data type has a SSOT assigned to it.
