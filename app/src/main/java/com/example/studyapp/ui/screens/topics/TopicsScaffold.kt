@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.components.PlaceholderColumn
-import com.example.studyapp.ui.components.study.TopicDialog
+import com.example.studyapp.ui.components.study.SaveTopicDialog
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -41,7 +41,7 @@ fun TopicsScaffold(
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
     var showDialog by rememberSaveable { mutableStateOf(false) }
     if (showDialog) {
-        TopicDialog(onDismiss = { showDialog = false }, topic = null, onSave = saveTopic)
+        SaveTopicDialog(onDismiss = { showDialog = false }, topic = null, onSave = saveTopic)
     }
     Scaffold(
         modifier = modifier,

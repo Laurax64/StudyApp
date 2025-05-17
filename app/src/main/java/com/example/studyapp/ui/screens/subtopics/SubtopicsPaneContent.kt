@@ -34,7 +34,7 @@ import com.example.studyapp.ui.components.StudyAppSearchBar
 
 @Composable
 fun SubtopicsPaneContent(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     subtopics: List<Subtopic>?,
     navigateToSubtopic: (Int) -> Unit,
     closeSearchBar: () -> Unit,
@@ -49,7 +49,7 @@ fun SubtopicsPaneContent(
         val filteredSubtopics by rememberSaveable { mutableStateOf(subtopics) }
         if (showSearchBar) {
             SubtopicsSearchBar(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier,
                 navigateToSubtopic = navigateToSubtopic,
                 closeSearchBar = closeSearchBar,
                 subtopics = filteredSubtopics,

@@ -26,7 +26,7 @@ import com.example.studyapp.R
 import com.example.studyapp.data.Topic
 
 @Composable
-fun TopicDialog(
+fun SaveTopicDialog(
     topic: Topic?,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
@@ -75,7 +75,7 @@ fun TopicDialog(
 
 
 @Composable
-fun TopicInputField(
+private fun TopicInputField(
     updateTitle: (String) -> Unit,
     title: String,
     modifier: Modifier = Modifier,

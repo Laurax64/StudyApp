@@ -35,9 +35,8 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOW
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
-import com.example.studyapp.ui.components.study.SubtopicDialog
+import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.viewmodels.SubtopicViewModel
-
 @Composable
 fun SubtopicScreen(
     subtopicViewModel: SubtopicViewModel,
@@ -45,7 +44,7 @@ fun SubtopicScreen(
     modifier: Modifier = Modifier
 ) {
     val subtopic by subtopicViewModel.subtopic.collectAsStateWithLifecycle(null)
-    SubtopicScaffold(
+    SubtopicScreen(
         subtopic = subtopic,
         updateSubtopic = subtopicViewModel::updateSubtopic,
         deleteSubtopic = subtopicViewModel::deleteSubtopic,
@@ -56,7 +55,7 @@ fun SubtopicScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SubtopicScaffold(
+private fun SubtopicScreen(
     subtopic: Subtopic?,
     updateSubtopic: (Subtopic) -> Unit,
     deleteSubtopic: () -> Unit,
@@ -72,7 +71,7 @@ private fun SubtopicScaffold(
         ) { CircularProgressIndicator() }
     } else {
         if (showDialog) {
-            SubtopicDialog(
+            SaveSubtopicDialog(
                 titleId = R.string.edit_subtopic,
                 onDismiss = { showDialog = false },
                 saveSubtopic = { title, description, imageUri ->
@@ -91,16 +90,20 @@ private fun SubtopicScaffold(
                 },
                 modifier = modifier,
                 subtopic = subtopic,
-                isWidthAtLeastMedium = isWidthAtLeastMedium
+                isFullScreenDialog = isWidthAtLeastMedium
             )
         } else {
             Scaffold(
-                modifier = modifier, topBar = {
-                    TopAppBar(title = {
-                        Text(
-                            text = subtopic.title, modifier = Modifier.padding(start = 16.dp)
-                        )
-                    }, navigationIcon = {
+                modifier = modifier,
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = subtopic.title,
+                                modifier = Modifier.padding(start = 16.dp)
+                            )
+                        },
+                        navigationIcon = {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_arrow_back_24),
                             tint = MaterialTheme.colorScheme.onSurface,
@@ -193,15 +196,15 @@ private fun MoreActionsMenu(
 @Composable
 @Preview(showSystemUi = true)
 private fun SubtopicScreenPreview() {
-    SubtopicScaffold(
+    SubtopicScreen(
         subtopic = Subtopic(
-        id = 1,
-        title = "Subtopic Title",
-        description = "Subtopic Description",
-        checked = false,
-        bookmarked = false,
-        topicId = 1,
-        imageUri = null
+            id = 1,
+            title = "Subtopic Title",
+            description = "Subtopic Description",
+            checked = false,
+            bookmarked = false,
+            topicId = 1,
+            imageUri = null
         ),
         updateSubtopic = {}, deleteSubtopic = {}, navigateBack = {}
     )

@@ -35,19 +35,42 @@ import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.components.FullScreenDialog
 
 @Composable
-fun SubtopicDialog(
+fun SaveSubtopicDialog(
     titleId: Int,
     onDismiss: () -> Unit,
     saveSubtopic: (String, String, String?) -> Unit,
     modifier: Modifier = Modifier,
-    isWidthAtLeastMedium: Boolean,
+    isFullScreenDialog: Boolean,
     subtopic: Subtopic? = null,
 ) {
     var title by rememberSaveable { mutableStateOf(subtopic?.title ?: "") }
     var description by rememberSaveable { mutableStateOf(subtopic?.description ?: "") }
     var imageUri by rememberSaveable { mutableStateOf(subtopic?.imageUri ?: "") }
 
-    if (isWidthAtLeastMedium) {
+    if (isFullScreenDialog) {
+        FullScreenDialog(
+            titleRes = titleId,
+            onDismiss = onDismiss,
+            onConfirm = {
+                saveSubtopic(title, description, imageUri)
+                onDismiss()
+            },
+            modifier = modifier.padding(horizontal = 16.dp)
+        ) { innerPadding ->
+            SubtopicInputFields(
+                updateTitle = { title = it },
+                updateDescription = { description = it },
+                updateImageUri = { imageUri = it },
+                title = title,
+                description = description,
+                imageUri = imageUri,
+                modifier = Modifier
+                    .padding(paddingValues = innerPadding)
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
+            )
+        }
+    } else {
         AlertDialog(
             // Dialog should not close when clicking outside.
             onDismissRequest = {},
@@ -82,29 +105,6 @@ fun SubtopicDialog(
             },
             modifier = modifier
         )
-    } else {
-        FullScreenDialog(
-            titleRes = titleId,
-            onDismiss = onDismiss,
-            onConfirm = {
-                saveSubtopic(title, description, imageUri)
-                onDismiss()
-            },
-            modifier = modifier.padding(horizontal = 16.dp)
-        ) { innerPadding ->
-            SubtopicInputFields(
-                updateTitle = { title = it },
-                updateDescription = { description = it },
-                updateImageUri = { imageUri = it },
-                title = title,
-                description = description,
-                imageUri = imageUri,
-                modifier = Modifier
-                    .padding(paddingValues = innerPadding)
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth(),
-            )
-        }
     }
 }
 
