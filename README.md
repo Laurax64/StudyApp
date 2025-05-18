@@ -1,12 +1,13 @@
 # Under Development
 
 ## Design
+Currently, I am making major updates to the design because of the M3 expressive update.
 - [x] [Figma](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1)
 - [x] [Material Theme Builder](https://www.figma.com/community/plugin/1034969338659738588/material-theme-builder)
 - [x] [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en)
 - [x] [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 - [ ] [Material 3 Expressive](https://m3.material.io/blog/building-with-m3-expressive)
-  - I am currently making major updates to the design because of the M3 expressive update.
+
 ## Launcher Icon
 
 <img alt="image" width="50"  src = docs/images/study-app-ic_launcher_round.png>
@@ -19,7 +20,7 @@
 ### Canonical Layouts
 - [ ] [Feed](https://m3.material.io/foundations/layout/canonical-layouts/overview#963d7d99-4f04-4685-b7bd-57a89607b514)
 - [x] [List-detail](https://developer.android.com/develop/ui/compose/layouts/adaptive/list-detail)
-- [ ] [Supporting pane](https://m3.material.io/foundations/layout/canonical-layouts/overview#b01f6399-a0d3-4fd8-b78b-78a9ab663482)
+- [ ] [Supporting pane](https://m3.material.io/foundations/layout/canonical-layouts/overview#b01f6399-a0d3-4fd8-b78b-78a9ab663482) 
 ## Search 
 - [x] [Searchbar](https://developer.android.com/develop/ui/compose/components/search-bar)
 ## Widget 
@@ -27,42 +28,41 @@
 ## Images
 - [x] [Photo picker](https://developer.android.com/training/data-storage/shared/photopicker) to let the user pick an image for the subtopic
 - [x] [AsyncImage](https://developer.android.com/develop/ui/compose/graphics/images/loading) composable to load images from the file storage
-### Accessibility
+## Accessibility
 - [ ] [TalkBack](https://developer.android.com/guide/topics/ui/accessibility/testing#talkback)
-### Navigation 
+## Navigation 
 - [x] [Navigation controller](https://developer.android.com/guide/navigation/navcontroller)
 - [x] [Navigation graph](https://developer.android.com/guide/navigation/design)
 - [x] [Navigation to destinations](https://developer.android.com/guide/navigation/use-graph/navigate)
 - [x] [NavigationSuiteScaffold](https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation)
 - [x] [Nested graph](https://developer.android.com/guide/navigation/design/nested-graphs)
-### Dependency Injection 
+## Dependency Injection 
 
 - [x] [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=en) for
   non-assisted dependency injection
 - [ ] [Dagger](https://developer.android.com/training/dependency-injection/dagger-android#assisted-injection) for assisted dependency injection
-### Data Storage 
+## Data Storage 
 - [x] [Room](https://developer.android.com/training/data-storage/room?hl=en)
-### States
-- [ ] ...
-### App Architecture
+## States
+
+## App Architecture
 <img width="600" alt="image" src = docs/images/architecture.png>
 
-[Single Sources of Truth](https://developer.android.com/topic/architecture#single-source-of-truth) 
+### [Single Sources of Truth](https://developer.android.com/topic/architecture#single-source-of-truth) 
 * Each data type has a SSOT assigned to it.
 * Only the SSOT can modify or mutate the data.
 * The SSOT exposes the data using an immutable type, and to modify the data, the SSOT exposes functions or receives events.
 
-[Unidirectional Data Flow](https://developer.android.com/topic/architecture#unidirectional-data-flow)
+### [Unidirectional Data Flow](https://developer.android.com/topic/architecture#unidirectional-data-flow)
 * State flows in only one direction.
 * The events that modify the data flow in the opposite direction.
   
-[Modularization](https://developer.android.com/topic/modularization)
-- [ ] ...
-### [Play Feature Delivery](https://developer.android.com/guide/playcore/feature-delivery)
-- [ ]  ...   
+### [Modularization](https://developer.android.com/topic/modularization)
+
+## [Play Feature Delivery](https://developer.android.com/guide/playcore/feature-delivery)
+
  
 
-### Code Style 
-- [ ] ...
-### Testing
-- [ ] ...
+## Code Style 
+
+## Testing
