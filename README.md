@@ -16,14 +16,9 @@
 <img width="200" alt="image" src = docs/images/study-app-splash-screen-light.png>  <img width="200" alt="image" src = docs/images/study-app-splash-screen-dark.png>
 
 ## Adaptive Layouts 
-<img width="200" alt="image" src = docs/images/edit-subtopic-compact.png title = "Edit subtopic compact"> 
-
 ### Canonical Layouts
 - [ ] [Feed](https://m3.material.io/foundations/layout/canonical-layouts/overview#963d7d99-4f04-4685-b7bd-57a89607b514)
 - [x] [List-detail](https://developer.android.com/develop/ui/compose/layouts/adaptive/list-detail)
-<img width="600" alt="image" src = docs/images/topics-screen-expanded.png title = "TopicsScreen expanded"> 
-<img width="600" alt="image" src = docs/images/subtopics-screen-expanded.png title = "SubtopicsScreen expanded">
-
 - [ ] [Supporting pane](https://m3.material.io/foundations/layout/canonical-layouts/overview#b01f6399-a0d3-4fd8-b78b-78a9ab663482)
 ## Search 
 - [x] [Searchbar](https://developer.android.com/develop/ui/compose/components/search-bar)
