@@ -1,10 +1,12 @@
 # Under Development
-Currently making major updates to the design because of the M3 expressive update.
+
 ## Design
 - [x] [Figma](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1)
 - [x] [Material Theme Builder](https://www.figma.com/community/plugin/1034969338659738588/material-theme-builder)
 - [x] [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en)
 - [x] [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
+- [ ] [Material 3 Expressive](https://m3.material.io/blog/building-with-m3-expressive)
+  - I am currently making major updates to the design because of the M3 expressive update.
 ## Launcher Icon
 
 <img alt="image" width="50"  src = docs/images/study-app-ic_launcher_round.png>
