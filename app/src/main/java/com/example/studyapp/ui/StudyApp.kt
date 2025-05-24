@@ -64,10 +64,9 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
 private fun calculateFromAdaptiveInfo(adaptiveInfo: WindowAdaptiveInfo): NavigationSuiteType {
     return with(adaptiveInfo) {
         if (windowSizeClass.minWidthDp < WIDTH_DP_MEDIUM_LOWER_BOUND) {
-            NavigationSuiteType.NavigationBar
+            NavigationSuiteType.ShortNavigationBarCompact
         } else {
-            NavigationSuiteType.NavigationRail
-
+            NavigationSuiteType.WideNavigationRailCollapsed
         }
     }
 }
