@@ -4,20 +4,25 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopSearchBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
+import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -29,7 +34,7 @@ import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.components.PlaceholderColumn
 import com.example.studyapp.ui.components.study.SaveTopicDialog
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun TopicsScaffold(
     topics: List<Topic>,
@@ -40,18 +45,28 @@ fun TopicsScaffold(
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
     var showDialog by rememberSaveable { mutableStateOf(false) }
+    val textFieldState = rememberTextFieldState()
+    val searchBarState = rememberSearchBarState()
+    val scope = rememberCoroutineScope()
+    val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
+
     if (showDialog) {
         SaveTopicDialog(onDismiss = { showDialog = false }, topic = null, onSave = saveTopic)
     }
     Scaffold(
         modifier = modifier,
         topBar = {
-            if (!showSearchBar) {
-                TopicsTopAppBar(
-                    onSearch = { showSearchBar = true },
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
+            TopSearchBar(
+                state = searchBarState,
+                inputField = TODO(),
+                modifier = TODO(),
+                shape = TODO(),
+                colors = TODO(),
+                tonalElevation = TODO(),
+                shadowElevation = TODO(),
+                windowInsets = TODO(),
+                scrollBehavior = TODO()
+            )
         },
         floatingActionButton = {
             CreateTopicFAB(saveTopic = { showDialog = true })
@@ -97,7 +112,9 @@ private fun TopicsTopAppBar(
     modifier: Modifier = Modifier,
     onSearch: () -> Unit,
 ) {
-    CenterAlignedTopAppBar(
+
+
+    TopAppBar(
         navigationIcon = {
             Icon(
                 painter = painterResource(R.drawable.baseline_search_24),
