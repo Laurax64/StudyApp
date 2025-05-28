@@ -9,10 +9,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +27,7 @@ import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.components.PlaceholderColumn
 import com.example.studyapp.ui.components.StudyAppSearchBar
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TopicsPaneContent(
     topics: List<Topic>?,
@@ -36,7 +38,7 @@ fun TopicsPaneContent(
 ) {
     if (topics == null) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            LoadingIndicator()
         }
     } else if (showSearchBar) {
         TopicsSearchBar(
