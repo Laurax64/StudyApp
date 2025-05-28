@@ -3,7 +3,8 @@ package com.example.studyapp.ui.screens.subtopic
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,6 +31,7 @@ fun SubtopicScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SubtopicScreen(
     subtopic: Subtopic?,
@@ -40,7 +42,8 @@ private fun SubtopicScreen(
 ) {
     if (subtopic == null) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            // Wait for 200 ms befor
+            LoadingIndicator()
         }
     } else {
         SubtopicScaffold(

@@ -17,7 +17,7 @@ class TopicsViewModel @Inject constructor(
     val topics = topicsRepository.getAllTopics()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
+            started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
 
