@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 
@@ -55,7 +56,6 @@ fun SearchAppBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-
         Image(
             painter = painterResource(R.drawable.ic_launcher_foreground),
             contentDescription = stringResource(R.string.close_search),
@@ -63,8 +63,8 @@ fun SearchAppBar(
                 .clip(shape = RoundedCornerShape(90.dp))
                 .background(color = MaterialTheme.colorScheme.surfaceContainerLowest)
                 .border(
-                    width = 0.5.dp,
-                    color = MaterialTheme.colorScheme.outline,
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant,
                     shape = RoundedCornerShape(90.dp)
                 )
                 .size(size = 48.dp)
@@ -74,6 +74,7 @@ fun SearchAppBar(
             query = query,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
+                .weight(0.5f)
                 .wrapContentWidth()
                 .height(64.dp)
                 .clickable { openSearchView() },
@@ -85,7 +86,7 @@ fun SearchAppBar(
             placeholder = {
                 Text(
                     text = placeholderText,
-                    modifier = Modifier.padding(start = 24.dp),
+                    modifier = Modifier.padding(start = 12.dp),
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -93,6 +94,7 @@ fun SearchAppBar(
         Icon(
             painter = painterResource(R.drawable.baseline_account_circle_24),
             contentDescription = stringResource(R.string.open_login),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
                 .clickable {/*TODO add login functionality and avatar display. */ }
                 .size(size = 48.dp)
@@ -159,5 +161,14 @@ fun <T> DockedSearchBar(
         onExpandedChange = { expanded = it },
         colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
         content = { content(filteredItems) }
+    )
+}
+
+@Preview
+@Composable
+fun SearchAppBarPreview() {
+    SearchAppBar(
+        openSearchView = {},
+        placeholderText = "Search",
     )
 }
