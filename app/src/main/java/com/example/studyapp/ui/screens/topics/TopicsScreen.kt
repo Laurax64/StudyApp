@@ -71,8 +71,8 @@ private fun TopicsScreenPreview() {
                 Topic(9, "Turtles", false),
                 Topic(10, "Elephants", false)
             ),
-            navigateToSubtopics = {},
             saveTopic = {},
+            navigateToSubtopics = {},
         )
     }
 }
