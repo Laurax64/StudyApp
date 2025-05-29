@@ -52,7 +52,9 @@ fun TopicsScaffold(
                 SearchAppBar(
                     placeholderText = stringResource(R.string.search_in_topics),
                     openSearchView = { showSearchView = true },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
                 )
             }
         },
