@@ -24,8 +24,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
+import com.example.studyapp.ui.components.DockedSearchBar
 import com.example.studyapp.ui.components.PlaceholderColumn
-import com.example.studyapp.ui.components.StudyAppSearchBar
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -98,7 +98,7 @@ private fun TopicsSearchBar(
     topics: List<Topic>,
     closeSearchBar: () -> Unit
 ) {
-    StudyAppSearchBar(
+    DockedSearchBar(
         modifier = modifier,
         items = topics,
         closeSearchBar = closeSearchBar,
@@ -106,7 +106,7 @@ private fun TopicsSearchBar(
         placeholderText = stringResource(R.string.search_in_topics)
     ) {
         ScrollableTopicsList(
-            topics = topics,
+            topics = it,
             navigateToTopic = navigateToTopic,
             modifier = modifier
                 .padding(horizontal = 8.dp)

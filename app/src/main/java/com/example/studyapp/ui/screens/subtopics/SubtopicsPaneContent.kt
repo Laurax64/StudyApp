@@ -29,8 +29,8 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
+import com.example.studyapp.ui.components.DockedSearchBar
 import com.example.studyapp.ui.components.PlaceholderColumn
-import com.example.studyapp.ui.components.StudyAppSearchBar
 
 @Composable
 fun SubtopicsPaneContent(
@@ -108,7 +108,7 @@ private fun SubtopicsSearchBar(
     topicTitle: String,
     closeSearchBar: () -> Unit,
 ) {
-    StudyAppSearchBar(
+    DockedSearchBar(
         modifier = modifier,
         items = subtopics,
         closeSearchBar = closeSearchBar,

@@ -42,7 +42,6 @@ private fun SubtopicScreen(
 ) {
     if (subtopic == null) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            // Wait for 200 ms befor
             LoadingIndicator()
         }
     } else {
