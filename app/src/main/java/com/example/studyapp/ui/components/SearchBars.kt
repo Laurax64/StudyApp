@@ -21,14 +21,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -108,10 +114,20 @@ fun <T> DockedSearchBar(
     var query by rememberSaveable { mutableStateOf("") }
     var filteredItems by rememberSaveable { mutableStateOf(items) }
     var expanded by rememberSaveable { mutableStateOf(true) }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
+    // Request focus and show keyboard when composable enters composition
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
     DockedSearchBar(
         inputField = {
             SearchBarDefaults.InputField(
                 query = query,
+                modifier = Modifier.focusRequester(focusRequester),
                 onQueryChange = {
                     query = it
                     filteredItems = items.filter { item ->
@@ -126,7 +142,10 @@ fun <T> DockedSearchBar(
                     Icon(
                         painter = painterResource(R.drawable.baseline_arrow_back_24),
                         contentDescription = stringResource(R.string.close_search),
-                        modifier = Modifier.clickable { closeSearchBar() }
+                        modifier = Modifier.clickable {
+                            closeSearchBar()
+                            focusManager.clearFocus()
+                        }
                     )
                 },
                 colors = TextFieldDefaults.colors(
