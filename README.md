@@ -2,7 +2,7 @@
 
 # Design 
 Currently, I am making major updates to the design because of the M3 expressive update.
-### [Figma Design File](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1) :arrows_counterclockwise:
+### [Figma Design File](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1) 
 ### [Material Theme Builder](https://www.figma.com/community/plugin/1034969338659738588/material-theme-builder) 
 ### [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en) 
 ### [Material 3 Expressive](https://m3.material.io/blog/building-with-m3-expressive) :arrows_counterclockwise:
