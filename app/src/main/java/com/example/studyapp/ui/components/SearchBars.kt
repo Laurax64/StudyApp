@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -129,7 +130,9 @@ fun <T> DockedSearchBar(
         inputField = {
             SearchBarDefaults.InputField(
                 query = query,
-                modifier = Modifier.focusRequester(focusRequester),
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .fillMaxWidth(),
                 onQueryChange = {
                     query = it
                     filteredItems = items.filter { item ->
@@ -149,6 +152,16 @@ fun <T> DockedSearchBar(
                             focusManager.clearFocus()
                         }
                     )
+                },
+                trailingIcon = {
+                    if (query.isNotEmpty()) {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_close_24),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            contentDescription = stringResource(R.string.close_search),
+                            modifier = Modifier.clickable { query = "" }
+                        )
+                    }
                 },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
