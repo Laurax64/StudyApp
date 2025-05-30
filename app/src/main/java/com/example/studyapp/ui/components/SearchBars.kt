@@ -179,7 +179,7 @@ fun <T> DockedSearchBar(
 
 @Preview
 @Composable
-fun SearchAppBarPreview() {
+private fun SearchAppBarPreview() {
     SearchAppBar(
         openSearchView = {},
         placeholderText = "Search",

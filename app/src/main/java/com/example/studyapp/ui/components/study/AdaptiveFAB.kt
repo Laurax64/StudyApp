@@ -24,7 +24,7 @@ import com.example.studyapp.ui.theme.StudyAppTheme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun AdaptiveFAB(
+internal fun AdaptiveFAB(
     iconId: Int,
     contentDescriptionId: Int,
     onClick: () -> Unit,

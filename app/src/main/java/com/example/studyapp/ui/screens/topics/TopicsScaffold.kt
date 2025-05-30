@@ -3,12 +3,7 @@ package com.example.studyapp.ui.screens.topics
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -22,13 +17,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.components.PlaceholderColumn
 import com.example.studyapp.ui.components.SearchAppBar
+import com.example.studyapp.ui.components.study.AdaptiveFAB
 import com.example.studyapp.ui.components.study.SaveTopicDialog
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -61,7 +56,12 @@ fun TopicsScaffold(
             }
         },
         floatingActionButton = {
-            //CreateTopicFAB(saveTopic = { showDialog = true })
+            AdaptiveFAB(
+                onClick = { showDialog = true },
+                modifier = Modifier.padding(bottom = 16.dp),
+                iconId = R.drawable.baseline_add_24,
+                contentDescriptionId = R.string.create_topic
+            )
         },
         floatingActionButtonPosition = FabPosition.Start
     ) { innerPadding ->
@@ -99,19 +99,3 @@ fun TopicsScaffold(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun CreateTopicFAB(saveTopic: () -> Unit, modifier: Modifier = Modifier) {
-    MediumFloatingActionButton(
-        onClick = saveTopic,
-        modifier = modifier,
-        content = {
-            Icon(
-                painter = painterResource(R.drawable.baseline_add_24),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                contentDescription = stringResource(R.string.create_topic),
-                modifier = Modifier.size(24.dp)
-            )
-        },
-    )
-}

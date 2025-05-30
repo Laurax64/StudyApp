@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,7 +18,6 @@ import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,139 +33,75 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
-import com.example.studyapp.ui.components.StudyAppAsyncImage
-import com.example.studyapp.ui.components.study.SaveSubtopicDialog
-
-
-private enum class DialogType {
-    EDIT_SUBTOPIC,
-    DELETE_SUBTOPIC
-}
 
 @Composable
-fun SubtopicScaffold(
+internal fun SubtopicScaffold(
     subtopic: Subtopic,
     updateSubtopic: (Subtopic) -> Unit,
     deleteSubtopic: () -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var dialogType by rememberSaveable { mutableStateOf<DialogType?>(null) }
     val isScreenWidthCompact =
         !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
             WIDTH_DP_MEDIUM_LOWER_BOUND
         )
-    var dialogType by rememberSaveable { mutableStateOf<DialogType?>(null) }
-    if (dialogType == DialogType.EDIT_SUBTOPIC && isScreenWidthCompact) {
-        SaveSubtopicDialog(
-            titleId = R.string.edit_subtopic,
-            onDismiss = { dialogType = null },
-            isFullScreenDialog = true,
-            modifier = modifier,
-            saveSubtopic = { title, description, imageUri ->
-                updateSubtopic(
-                    subtopic.copy(
-                        title = title,
-                        description = description,
-                        imageUri = imageUri
-                    )
-                )
+    dialogType?.let {
+        SubtopicDialog(
+            subtopic = subtopic,
+            deleteSubtopic = {
+                // Navigate back because the subtopic is about to be deleted.
+                navigateBack()
+                deleteSubtopic()
             },
-            subtopic = subtopic
+            updateSubtopic = updateSubtopic,
+            dismissDialog = { dialogType = null },
+            isScreenWidthCompact = isScreenWidthCompact,
+            dialogType = it
         )
-    } else {
-        dialogType?.let {
-            Dialog(
+    }
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            SubtopicTopAppBar(
                 subtopic = subtopic,
-                deleteSubtopic = {
-                    // Navigate back because the subtopic is about to be deleted.
-                    navigateBack()
-                    deleteSubtopic()
+                onDeleteSubtopic = { dialogType = DialogType.DELETE_SUBTOPIC },
+                onEditSubtopic = { dialogType = DialogType.EDIT_SUBTOPIC },
+                navigateBack = navigateBack,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                toggleBookmarked = { updateSubtopic(subtopic.copy(bookmarked = !subtopic.bookmarked)) }
+            )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = { updateSubtopic(subtopic.copy(checked = !subtopic.checked)) },
+                icon = {
+                    Icon(
+                        painter = painterResource(
+                            if (subtopic.checked) R.drawable.outline_check_box_24 else R.drawable.baseline_check_box_outline_blank_24
+                        ),
+                        contentDescription = stringResource(
+                            if (subtopic.checked) R.string.checked else R.string.unchecked
+                        )
+                    )
                 },
-                updateSubtopic = updateSubtopic,
-                dismissDialog = { dialogType = null },
-                dialogType = it
+                text = {
+                    Text(
+                        text = stringResource(R.string.toggle_checked)
+                    )
+                }
             )
         }
-        Scaffold(
-            modifier = modifier,
-            topBar = {
-                SubtopicTopAppBar(
-                    subtopic = subtopic,
-                    onDeleteSubtopic = { dialogType = DialogType.DELETE_SUBTOPIC },
-                    onEditSubtopic = { dialogType = DialogType.EDIT_SUBTOPIC },
-                    navigateBack = navigateBack,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    toggleBookmarked = { updateSubtopic(subtopic.copy(bookmarked = !subtopic.bookmarked)) }
-                )
-            },
-            floatingActionButton = {
-                ExtendedFloatingActionButton(
-                    onClick = { updateSubtopic(subtopic.copy(checked = !subtopic.checked)) },
-                    icon = {
-                        Icon(
-                            painter = painterResource(
-                                if (subtopic.checked) R.drawable.outline_check_box_24 else R.drawable.baseline_check_box_outline_blank_24
-                            ),
-                            contentDescription = stringResource(
-                                if (subtopic.checked) R.string.checked else R.string.unchecked
-                            )
-                        )
-                    },
-                    text = {
-                        Text(
-                            text = stringResource(R.string.toggle_checked)
-                        )
-                    }
-                )
-            }
-        ) { innerPadding ->
-            if (isScreenWidthCompact) {
-                Column(
-                    modifier = Modifier
-                        .padding(paddingValues = innerPadding)
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    StudyAppAsyncImage(
-                        model = subtopic.imageUri,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                    Text(
-                        text = subtopic.description,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                }
-            } else {
-                Row(
-                    modifier = Modifier
-                        .padding(paddingValues = innerPadding)
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    StudyAppAsyncImage(
-                        model = subtopic.imageUri,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                    Text(
-                        text = subtopic.description,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                }
-
-            }
-        }
+    ) { innerPadding ->
+        SubtopicAnswerCard(
+            isScreenWidthCompact = isScreenWidthCompact,
+            subtopic = subtopic,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(paddingValues = innerPadding)
+                .padding(horizontal = 16.dp)
+        )
     }
 }
 
@@ -260,70 +194,5 @@ private fun SubtopicTopAppBar(
                 )
             }
         }
-    )
-}
-
-@Composable
-private fun Dialog(
-    subtopic: Subtopic,
-    deleteSubtopic: () -> Unit,
-    dismissDialog: () -> Unit,
-    dialogType: DialogType,
-    updateSubtopic: (Subtopic) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    when (dialogType) {
-        DialogType.DELETE_SUBTOPIC ->
-            DeleteSubtopicDialog(
-                modifier = modifier,
-                onDismiss = dismissDialog,
-                deleteSubtopic = deleteSubtopic,
-                subtopicTitle = subtopic.title
-            )
-
-        DialogType.EDIT_SUBTOPIC ->
-            SaveSubtopicDialog(
-                modifier = modifier,
-                titleId = R.string.edit_subtopic,
-                onDismiss = dismissDialog,
-                isFullScreenDialog = false,
-                saveSubtopic = { title, description, imageUri ->
-                    updateSubtopic(
-                        subtopic.copy(
-                            title = title,
-                            description = description,
-                            imageUri = imageUri
-                        )
-                    )
-                },
-                subtopic = subtopic
-            )
-    }
-}
-
-@Composable
-private fun DeleteSubtopicDialog(
-    modifier: Modifier = Modifier,
-    subtopicTitle: String,
-    deleteSubtopic: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.delete_subtopic_dialog_title)) },
-        text = { Text(stringResource(R.string.delete_subtopic_dialog_description, subtopicTitle)) },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    deleteSubtopic()
-                    onDismiss()
-                }
-            )
-            {
-                Text(stringResource(R.string.delete))
-            }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
-        modifier = modifier
     )
 }

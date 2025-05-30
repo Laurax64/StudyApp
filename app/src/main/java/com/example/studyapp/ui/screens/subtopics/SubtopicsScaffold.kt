@@ -43,7 +43,7 @@ import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.components.study.SaveTopicDialog
-import com.example.studyapp.ui.screens.topics.ScrollableTopicsList
+import com.example.studyapp.ui.components.study.TopicsLazyColumn
 
 private enum class DialogType {
     EDIT_TOPIC,
@@ -196,7 +196,7 @@ private fun <T> SubtopicsNavigableListDetailPaneScaffold(
         listPane = {
             AnimatedPane {
                 if (paneAdaptedValue == PaneAdaptedValue.Expanded) {
-                    ScrollableTopicsList(
+                    TopicsLazyColumn(
                         topics = topics,
                         navigateToTopic = navigateToTopic,
                         selectedTopicId = topic.id,
