@@ -33,9 +33,10 @@ fun StudyApp(
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
     val currentDestination = appState.currentDestination
-    val layoutType = calculateFromAdaptiveInfo(windowAdaptiveInfo)
+    val navigationSuiteType = calculateFromAdaptiveInfo(windowAdaptiveInfo)
     val windowSizeClass = windowAdaptiveInfo.windowSizeClass
     NavigationSuiteScaffold(
+
         navigationItemVerticalArrangement =
             if (windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)) {
                 Arrangement.Center
@@ -48,6 +49,7 @@ fun StudyApp(
                 val selected = currentDestination.isRouteInHierarchy(destination.route)
                 NavigationSuiteItem(
                     selected = selected,
+                    navigationSuiteType = navigationSuiteType,
                     onClick = { appState.navigateToTopLevelDestination(destination) },
                     icon = {
                         Icon(
@@ -60,7 +62,7 @@ fun StudyApp(
             }
         },
         modifier = modifier,
-        navigationSuiteType = layoutType,
+        navigationSuiteType = navigationSuiteType,
         content = {
             StudyAppNavHost(appState = appState)
         }
