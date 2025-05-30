@@ -17,8 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.tooling.preview.PreviewFontScale
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
+import com.example.studyapp.ui.theme.StudyAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,15 +67,20 @@ fun FullScreenDialog(
 }
 
 
-@Composable
 @Preview(showSystemUi = true)
+@PreviewLightDark
+@PreviewDynamicColors
+@PreviewFontScale
+@Composable
 private fun SubtopicFullScreenDialogPreview() {
-    FullScreenDialog(
-        titleRes = R.string.create_subtopic,
-        onConfirm = {},
-        onDismiss = {},
-        content = {
-            Text(text = "Content")
-        }
-    )
+    StudyAppTheme {
+        FullScreenDialog(
+            titleRes = R.string.create_subtopic,
+            onConfirm = {},
+            onDismiss = {},
+            content = {
+                Text(text = "Content")
+            }
+        )
+    }
 }

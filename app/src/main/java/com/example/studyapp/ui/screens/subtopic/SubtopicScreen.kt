@@ -10,9 +10,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.tooling.preview.PreviewFontScale
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.data.Subtopic
+import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.SubtopicViewModel
 
 @Composable
@@ -55,19 +60,25 @@ private fun SubtopicScreen(
     }
 }
 
-@Composable
 @Preview(showSystemUi = true)
+@PreviewLightDark
+@PreviewScreenSizes
+@PreviewDynamicColors
+@PreviewFontScale
+@Composable
 private fun SubtopicScreenPreview() {
-    SubtopicScreen(
-        subtopic = Subtopic(
-            id = 1,
-            title = "Subtopic Title",
-            description = "Subtopic Description",
-            checked = false,
-            bookmarked = false,
-            topicId = 1,
-            imageUri = null
-        ),
-        updateSubtopic = {}, deleteSubtopic = {}, navigateBack = {}
-    )
+    StudyAppTheme {
+        SubtopicScreen(
+            subtopic = Subtopic(
+                id = 1,
+                title = "Subtopic Title",
+                description = "Subtopic Description",
+                checked = false,
+                bookmarked = false,
+                topicId = 1,
+                imageUri = null
+            ),
+            updateSubtopic = {}, deleteSubtopic = {}, navigateBack = {}
+        )
+    }
 }

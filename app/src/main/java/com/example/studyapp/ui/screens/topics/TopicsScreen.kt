@@ -8,6 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,8 +56,11 @@ private fun TopicsScreen(
 }
 
 
+@Preview(showSystemUi = true)
 @PreviewLightDark
 @PreviewScreenSizes
+@PreviewDynamicColors
+@PreviewFontScale
 @Composable
 private fun TopicsScreenPreview() {
     StudyAppTheme {
@@ -77,10 +83,13 @@ private fun TopicsScreenPreview() {
     }
 }
 
+@Preview(showSystemUi = true)
 @PreviewLightDark
 @PreviewScreenSizes
+@PreviewDynamicColors
+@PreviewFontScale
 @Composable
-private fun LoadingScreenPreview() {
+private fun TopicsScreenLoadingPreview() {
     StudyAppTheme {
         TopicsScreen(
             topics = null,
