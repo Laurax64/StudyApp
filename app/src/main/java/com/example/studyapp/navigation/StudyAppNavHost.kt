@@ -6,7 +6,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import com.example.studyapp.ui.StudyAppState
 import com.example.studyapp.ui.screens.subtopic.SubtopicScreen
 import com.example.studyapp.ui.screens.subtopics.SubtopicsScreen
@@ -18,16 +17,14 @@ fun StudyAppNavHost(
     modifier: Modifier = Modifier
 ) {
     val navController = appState.navController
-    NavHost(navController = navController, startDestination = StudyRoute, modifier = modifier) {
-        navigation<StudyRoute>(startDestination = TopicsRoute) {
-            topicsScreen(navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) })
-            subtopicsScreen(
-                navigateToSubtopic = { navController.navigate(route = SubtopicRoute(subtopicId = it)) },
-                navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) },
-                navigateToTopics = { navController.navigate(TopicsRoute) }
-            )
-            subtopicScreen(navigateBack = navController::popBackStack)
-        }
+    NavHost(navController = navController, startDestination = TopicsRoute, modifier = modifier) {
+        topicsScreen(navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) })
+        subtopicsScreen(
+            navigateToSubtopic = { navController.navigate(route = SubtopicRoute(subtopicId = it)) },
+            navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) },
+            navigateToTopics = { navController.navigate(TopicsRoute) }
+        )
+        subtopicScreen(navigateBack = navController::popBackStack)
         datesScreen()
         aIAssistantScreen()
         bookmarksScreen()

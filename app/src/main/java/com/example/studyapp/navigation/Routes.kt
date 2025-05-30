@@ -3,9 +3,6 @@ package com.example.studyapp.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object StudyRoute
-
-@Serializable
 object TopicsRoute
 
 @Serializable

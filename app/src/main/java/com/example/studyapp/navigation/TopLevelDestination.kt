@@ -13,7 +13,7 @@ enum class TopLevelDestination(
         iconRes = R.drawable.baseline_school_24,
         contentDescriptionRes = R.string.go_to_study,
         labelRes = R.string.study,
-        route = StudyRoute::class
+        route = TopicsRoute::class
     ),
     BOOKMARKS(
         iconRes = R.drawable.baseline_bookmarks_24,

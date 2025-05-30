@@ -18,7 +18,7 @@ import com.example.studyapp.navigation.TopLevelDestination.STUDY
 import com.example.studyapp.navigation.navigateToAIAssistant
 import com.example.studyapp.navigation.navigateToBookmarks
 import com.example.studyapp.navigation.navigateToDates
-import com.example.studyapp.navigation.navigateToStudy
+import com.example.studyapp.navigation.navigateToTopics
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -58,7 +58,6 @@ class StudyAppState(val navController: NavHostController) {
             }
         }
 
-
     /**
      * Map of top level destinations to be used in the TopBar, BottomBar and NavRail. The key is the
      * route.
@@ -67,7 +66,7 @@ class StudyAppState(val navController: NavHostController) {
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         when (topLevelDestination) {
-            STUDY -> navController.navigateToStudy()
+            STUDY -> navController.navigateToTopics()
             BOOKMARKS -> navController.navigateToBookmarks()
             DATES -> navController.navigateToDates()
             AI_ASSISTANT -> navController.navigateToAIAssistant()

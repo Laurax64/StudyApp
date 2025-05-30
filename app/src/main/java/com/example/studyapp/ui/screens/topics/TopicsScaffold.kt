@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumFloatingActionButton
@@ -60,8 +61,9 @@ fun TopicsScaffold(
             }
         },
         floatingActionButton = {
-            //  CreateTopicFAB(saveTopic = { showDialog = true })
-        }
+            //CreateTopicFAB(saveTopic = { showDialog = true })
+        },
+        floatingActionButtonPosition = FabPosition.Start
     ) { innerPadding ->
         NavigableListDetailPaneScaffold(
             navigator = scaffoldNavigator,
