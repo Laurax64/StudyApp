@@ -3,7 +3,6 @@ package com.example.studyapp.ui.screens.topics
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -58,12 +57,10 @@ fun TopicsScaffold(
         floatingActionButton = {
             AdaptiveFAB(
                 onClick = { showDialog = true },
-                modifier = Modifier.padding(bottom = 16.dp),
                 iconId = R.drawable.baseline_add_24,
                 contentDescriptionId = R.string.create_topic
             )
         },
-        floatingActionButtonPosition = FabPosition.Start
     ) { innerPadding ->
         NavigableListDetailPaneScaffold(
             navigator = scaffoldNavigator,
