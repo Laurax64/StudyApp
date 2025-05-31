@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,12 +18,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
+import androidx.compose.material3.FloatingToolbarDefaults.StandardFloatingActionButton
+import androidx.compose.material3.FloatingToolbarDefaults.floatingToolbarVerticalNestedScroll
+import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
@@ -63,7 +65,6 @@ import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.components.DockedSearchBar
 import com.example.studyapp.ui.components.PlaceholderColumn
-import com.example.studyapp.ui.components.study.AdaptiveFAB
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.components.study.SaveTopicDialog
 import com.example.studyapp.ui.components.study.TopicsLazyColumn
@@ -141,7 +142,7 @@ private fun SubtopicsScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SubtopicsScaffold(
     subtopics: List<Subtopic>,
@@ -159,6 +160,7 @@ private fun SubtopicsScaffold(
     val paneAdaptedValue = scaffoldNavigator.scaffoldState.currentState.primary
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
     var dialogType by rememberSaveable { mutableStateOf<SubtopicsDialog?>(null) }
+    var expanded by rememberSaveable { mutableStateOf(true) }
     val isScreenWidthCompact =
         !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
             WIDTH_DP_MEDIUM_LOWER_BOUND
@@ -195,26 +197,41 @@ private fun SubtopicsScaffold(
                     )
                 }
             },
-            floatingActionButton = {
-                AdaptiveFAB(
-                    onClick = { dialogType = SubtopicsDialog.CREATE_SUBTOPIC },
-                    iconId = R.drawable.baseline_add_24,
-                    contentDescriptionId = R.string.create_subtopic
-                )
-            },
         ) { innerPadding ->
-            SubtopicsNavigableListDetailPaneScaffold(
-                scaffoldNavigator = scaffoldNavigator,
-                paneAdaptedValue = paneAdaptedValue,
-                subtopics = subtopics,
-                topics = topics,
-                topic = topic,
-                navigateToSubtopic = navigateToSubtopic,
-                navigateToTopic = navigateToTopic,
-                showSearchBar = showSearchBar,
-                closeSearchBar = { showSearchBar = false },
-                modifier = Modifier.padding(innerPadding)
-            )
+            Box(Modifier.padding(innerPadding)) {
+                SubtopicsNavigableListDetailPaneScaffold(
+                    scaffoldNavigator = scaffoldNavigator,
+                    paneAdaptedValue = paneAdaptedValue,
+                    subtopics = subtopics,
+                    topics = topics,
+                    topic = topic,
+                    navigateToSubtopic = navigateToSubtopic,
+                    navigateToTopic = navigateToTopic,
+                    showSearchBar = showSearchBar,
+                    closeSearchBar = { showSearchBar = false },
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .floatingToolbarVerticalNestedScroll(
+                            expanded = expanded,
+                            onExpand = { expanded = true },
+                            onCollapse = { expanded = false }
+                        )
+                    //.verticalScroll(rememberScrollState())
+
+                )
+                SubtopicsToolbar(
+                    onDelete = { dialogType = SubtopicsDialog.DELETE_TOPIC },
+                    onEdit = { dialogType = SubtopicsDialog.EDIT_TOPIC },
+                    onShare = { /*TODO*/ },
+                    onCreate = { dialogType = SubtopicsDialog.CREATE_SUBTOPIC },
+                    expanded = expanded,
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomEnd)
+                            .offset(x = -ScreenOffset, y = -ScreenOffset),
+
+                    )
+            }
         }
     }
 }
@@ -381,42 +398,48 @@ private fun SubtopicsTopAppBar(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun MoreActionsMenu(
+private fun SubtopicsToolbar(
     onDelete: () -> Unit,
-    modifier: Modifier = Modifier
+    onEdit: () -> Unit,
+    onShare: () -> Unit,
+    onCreate: () -> Unit,
+    modifier: Modifier = Modifier,
+    expanded: Boolean
 ) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    Column(modifier, horizontalAlignment = Alignment.End) {
-        Icon(
-            painter = painterResource(R.drawable.baseline_more_vert_24),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            contentDescription = stringResource(R.string.menu),
-            modifier = Modifier.clickable { expanded = true })
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.share)) },
-                onClick = { /* TODO Implement */ },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_share_24),
-                        contentDescription = null
-                    )
-                }
-            )
-            HorizontalDivider()
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.delete)) },
-                onClick = onDelete,
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_delete_outline_24),
-                        contentDescription = stringResource(R.string.delete_topic)
-                    )
-                }
-            )
+    HorizontalFloatingToolbar(
+        modifier = modifier,
+        expanded = expanded,
+        floatingActionButton = {
+            StandardFloatingActionButton(onClick = onCreate) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_add_24),
+                    contentDescription = stringResource(R.string.create_subtopic),
+                )
+            }
+        },
+        content = {
+            IconButton(onClick = onShare) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_share_24),
+                    contentDescription = "Localized description"
+                )
+            }
+            IconButton(onClick = onDelete) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_delete_24),
+                    contentDescription = "Localized description"
+                )
+            }
+            IconButton(onClick = onEdit) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_edit_24),
+                    contentDescription = "Localized description"
+                )
+            }
         }
-    }
+    )
 }
 
 @Composable
@@ -446,7 +469,7 @@ fun SubtopicsPaneContent(
             FilterableSubtopicsColumn(
                 subtopics = filteredSubtopics,
                 navigateToSubtopic = navigateToSubtopic,
-                modifier = modifier.padding(horizontal = 16.dp)
+                modifier = modifier
             )
         }
     }
