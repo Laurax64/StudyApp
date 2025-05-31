@@ -26,7 +26,7 @@ import com.example.studyapp.R
 import com.example.studyapp.data.Topic
 
 @Composable
-fun SaveTopicDialog(
+internal fun SaveTopicDialog(
     topic: Topic?,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,

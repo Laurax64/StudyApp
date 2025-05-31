@@ -35,7 +35,7 @@ import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.components.FullScreenDialog
 
 @Composable
-fun SaveSubtopicDialog(
+internal fun SaveSubtopicDialog(
     titleId: Int,
     onDismiss: () -> Unit,
     saveSubtopic: (String, String, String?) -> Unit,
