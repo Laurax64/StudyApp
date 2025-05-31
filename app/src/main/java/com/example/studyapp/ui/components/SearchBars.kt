@@ -159,7 +159,10 @@ fun <T> DockedSearchBar(
                             painter = painterResource(R.drawable.baseline_close_24),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             contentDescription = stringResource(R.string.close_search),
-                            modifier = Modifier.clickable { query = "" }
+                            modifier = Modifier.clickable {
+                                query = ""
+                                filteredItems = items
+                            }
                         )
                     }
                 },
