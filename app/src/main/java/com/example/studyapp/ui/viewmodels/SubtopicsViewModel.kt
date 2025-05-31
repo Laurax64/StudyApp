@@ -24,7 +24,7 @@ class SubtopicsViewModel @Inject constructor(
     val topic = topicsRepository.getTopic(id = topicId)
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = null,
         )
 

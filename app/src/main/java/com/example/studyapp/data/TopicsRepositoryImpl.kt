@@ -9,7 +9,7 @@ class TopicsRepositoryImpl(private val topicDao: TopicDao) : TopicsRepository {
 
     override suspend fun updateTopic(topic: Topic) = topicDao.update(topic = topic)
 
-    override fun getTopic(id: Int): Flow<Topic> = topicDao.getTopic(id = id)
+    override fun getTopic(id: Int): Flow<Topic?> = topicDao.getTopic(id = id)
 
     override fun getAllTopics(): Flow<List<Topic>> = topicDao.getAllTopics()
 }

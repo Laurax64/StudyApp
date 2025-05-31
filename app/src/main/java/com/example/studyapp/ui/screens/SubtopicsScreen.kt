@@ -180,7 +180,10 @@ private fun SubtopicsScaffold(
             SubtopicsDialog(
                 topic = topic,
                 updateTopic = updateTopic,
-                deleteTopic = deleteTopic,
+                deleteTopic = {
+                    deleteTopic()
+                    navigateBack()
+                },
                 dismissDialog = { dialogType = null },
                 dialogType = it,
                 saveSubtopic = saveSubtopic
@@ -216,8 +219,6 @@ private fun SubtopicsScaffold(
                             onExpand = { expanded = true },
                             onCollapse = { expanded = false }
                         )
-                    //.verticalScroll(rememberScrollState())
-
                 )
                 SubtopicsToolbar(
                     onDelete = { dialogType = SubtopicsDialog.DELETE_TOPIC },
@@ -229,8 +230,7 @@ private fun SubtopicsScaffold(
                         Modifier
                             .align(Alignment.BottomEnd)
                             .offset(x = -ScreenOffset, y = -ScreenOffset),
-
-                    )
+                )
             }
         }
     }
@@ -262,9 +262,7 @@ private fun SubtopicsDialog(
             DeleteTopicDialog(
                 modifier = modifier,
                 onDismiss = dismissDialog,
-                deleteTopic = {
-                    deleteTopic()
-                },
+                deleteTopic = deleteTopic,
                 topicTitle = topic.title
             )
 
@@ -318,12 +316,9 @@ private fun <T> SubtopicsNavigableListDetailPaneScaffold(
         },
         detailPane = {
             AnimatedPane {
-                AnimatedContent(
-                    targetState = subtopics,
-                    label = "SubtopicsContent"
-                ) { animatedSubtopics ->
+                AnimatedContent(targetState = subtopics) {
                     SubtopicsPaneContent(
-                        subtopics = animatedSubtopics,
+                        subtopics = it,
                         navigateToSubtopic = navigateToSubtopic,
                         closeSearchBar = closeSearchBar,
                         showSearchBar = showSearchBar,
@@ -456,18 +451,18 @@ fun SubtopicsPaneContent(
             CircularProgressIndicator()
         }
     } else {
-        val filteredSubtopics by rememberSaveable { mutableStateOf(subtopics) }
+
         if (showSearchBar) {
             SubtopicsSearchBar(
                 modifier = modifier,
                 navigateToSubtopic = navigateToSubtopic,
                 closeSearchBar = closeSearchBar,
-                subtopics = filteredSubtopics,
+                subtopics = subtopics,
                 topicTitle = topicTitle
             )
         } else {
             FilterableSubtopicsColumn(
-                subtopics = filteredSubtopics,
+                subtopics = subtopics,
                 navigateToSubtopic = navigateToSubtopic,
                 modifier = modifier
             )

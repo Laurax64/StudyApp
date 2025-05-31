@@ -20,7 +20,7 @@ interface TopicDao {
     suspend fun delete(topic: Topic)
 
     @Query("SELECT * from topics WHERE id = :id")
-    fun getTopic(id: Int): Flow<Topic>
+    fun getTopic(id: Int): Flow<Topic?>
 
     @Query("SELECT * from topics")
     fun getAllTopics(): Flow<List<Topic>>
