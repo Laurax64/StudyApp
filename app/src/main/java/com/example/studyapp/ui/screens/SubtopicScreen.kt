@@ -46,7 +46,7 @@ import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.components.StudyAppAsyncImage
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
-import com.example.studyapp.ui.screens.DialogType
+import com.example.studyapp.ui.screens.SubtopicDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.SubtopicViewModel
 
@@ -98,7 +98,7 @@ private fun SubtopicScaffold(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var dialogType by rememberSaveable { mutableStateOf<DialogType?>(null) }
+    var dialogType by rememberSaveable { mutableStateOf<SubtopicDialog?>(null) }
     val isScreenWidthCompact =
         !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
             WIDTH_DP_MEDIUM_LOWER_BOUND
@@ -122,8 +122,8 @@ private fun SubtopicScaffold(
         topBar = {
             SubtopicTopAppBar(
                 subtopic = subtopic,
-                onDeleteSubtopic = { dialogType = DialogType.DELETE_SUBTOPIC },
-                onEditSubtopic = { dialogType = DialogType.EDIT_SUBTOPIC },
+                onDeleteSubtopic = { dialogType = SubtopicDialog.DELETE_SUBTOPIC },
+                onEditSubtopic = { dialogType = SubtopicDialog.EDIT_SUBTOPIC },
                 navigateBack = navigateBack,
                 modifier = Modifier.padding(horizontal = 16.dp),
                 toggleBookmarked = { updateSubtopic(subtopic.copy(bookmarked = !subtopic.bookmarked)) }
@@ -302,7 +302,7 @@ private fun SubtopicTopAppBar(
     )
 }
 
-private enum class DialogType {
+private enum class SubtopicDialog {
     EDIT_SUBTOPIC,
     DELETE_SUBTOPIC
 }
@@ -313,12 +313,12 @@ private fun SubtopicDialog(
     isScreenWidthCompact: Boolean,
     deleteSubtopic: () -> Unit,
     dismissDialog: () -> Unit,
-    dialogType: DialogType,
+    dialogType: SubtopicDialog,
     updateSubtopic: (Subtopic) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (dialogType) {
-        DialogType.DELETE_SUBTOPIC ->
+        SubtopicDialog.DELETE_SUBTOPIC ->
             DeleteSubtopicDialog(
                 modifier = modifier,
                 onDismiss = dismissDialog,
@@ -326,7 +326,7 @@ private fun SubtopicDialog(
                 subtopicTitle = subtopic.title
             )
 
-        DialogType.EDIT_SUBTOPIC ->
+        SubtopicDialog.EDIT_SUBTOPIC ->
             SaveSubtopicDialog(
                 modifier = modifier,
                 titleId = R.string.edit_subtopic,

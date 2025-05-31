@@ -66,7 +66,7 @@ import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.SubtopicsViewModel
 
 
-private enum class DialogType {
+private enum class SubtopicDialog {
     EDIT_TOPIC,
     DELETE_TOPIC,
     CREATE_SUBTOPIC,
@@ -268,12 +268,12 @@ private fun SubtopicsScaffold(
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     val paneAdaptedValue = scaffoldNavigator.scaffoldState.currentState.primary
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
-    var dialogType by rememberSaveable { mutableStateOf<DialogType?>(null) }
+    var dialogType by rememberSaveable { mutableStateOf<SubtopicDialog?>(null) }
     val isScreenWidthCompact =
         !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
             WIDTH_DP_MEDIUM_LOWER_BOUND
         )
-    if (dialogType == DialogType.CREATE_SUBTOPIC && isScreenWidthCompact) {
+    if (dialogType == SubtopicDialog.CREATE_SUBTOPIC && isScreenWidthCompact) {
         SaveSubtopicDialog(
             titleId = R.string.create_subtopic,
             onDismiss = { dialogType = null },
@@ -302,8 +302,8 @@ private fun SubtopicsScaffold(
                     SubtopicsTopAppBar(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         topic = topic,
-                        onDeleteTopic = { dialogType = DialogType.DELETE_TOPIC },
-                        onEditTopic = { dialogType = DialogType.EDIT_TOPIC },
+                        onDeleteTopic = { dialogType = SubtopicDialog.DELETE_TOPIC },
+                        onEditTopic = { dialogType = SubtopicDialog.EDIT_TOPIC },
                         onSearch = { showSearchBar = true },
                         navigateBack = navigateBack
                     )
@@ -311,7 +311,7 @@ private fun SubtopicsScaffold(
             },
             floatingActionButton = {
                 CreateSubtopicFAB(onCreate = {
-                    dialogType = DialogType.CREATE_SUBTOPIC
+                    dialogType = SubtopicDialog.CREATE_SUBTOPIC
                 })
             },
         ) { innerPadding ->
@@ -338,12 +338,12 @@ private fun Dialog(
     deleteTopic: () -> Unit,
     navigateBack: () -> Unit,
     dismissDialog: () -> Unit,
-    dialogType: DialogType,
+    dialogType: SubtopicDialog,
     saveSubtopic: (String, String, String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (dialogType) {
-        DialogType.EDIT_TOPIC ->
+        SubtopicDialog.EDIT_TOPIC ->
             SaveTopicDialog(
                 modifier = modifier,
                 topic = topic,
@@ -354,7 +354,7 @@ private fun Dialog(
                 }
             )
 
-        DialogType.DELETE_TOPIC ->
+        SubtopicDialog.DELETE_TOPIC ->
             DeleteTopicDialog(
                 modifier = modifier,
                 onDismiss = dismissDialog,
@@ -366,7 +366,7 @@ private fun Dialog(
                 topicTitle = topic.title
             )
 
-        DialogType.CREATE_SUBTOPIC ->
+        SubtopicDialog.CREATE_SUBTOPIC ->
             SaveSubtopicDialog(
                 modifier = modifier,
                 titleId = R.string.create_subtopic,
