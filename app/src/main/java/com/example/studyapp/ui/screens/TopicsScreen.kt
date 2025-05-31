@@ -99,9 +99,7 @@ private fun TopicsScaffold(
                 SearchAppBar(
                     placeholderText = stringResource(R.string.search_in_topics),
                     openSearchView = { showSearchView = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         },
@@ -146,7 +144,9 @@ private fun TopicsScaffold(
                     }
                 }
             },
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
         )
     }
 }
@@ -184,7 +184,6 @@ private fun TopicsPaneContent(
                 topics = topics,
                 navigateToTopic = navigateToTopic,
                 modifier = modifier
-                    .padding(horizontal = 8.dp)
                     .fillMaxSize()
             )
         }
@@ -209,7 +208,6 @@ private fun TopicsSearchBar(
             topics = it,
             navigateToTopic = navigateToTopic,
             modifier = modifier
-                .padding(horizontal = 8.dp)
                 .fillMaxSize()
         )
     }

@@ -22,7 +22,7 @@ fun StudyAppNavHost(
         subtopicsScreen(
             navigateToSubtopic = { navController.navigate(route = SubtopicRoute(subtopicId = it)) },
             navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) },
-            navigateToTopics = { navController.navigate(TopicsRoute) }
+            navigateBack = { navController.popBackStack() }
         )
         subtopicScreen(navigateBack = navController::popBackStack)
         datesScreen()
@@ -43,14 +43,14 @@ fun NavGraphBuilder.topicsScreen(navigateToTopic: (Int) -> Unit) {
 fun NavGraphBuilder.subtopicsScreen(
     navigateToSubtopic: (Int) -> Unit,
     navigateToTopic: (Int) -> Unit,
-    navigateToTopics: () -> Unit
+    navigateBack: () -> Unit
 ) {
     composable<SubtopicsRoute> {
         SubtopicsScreen(
             subtopicsViewModel = hiltViewModel(),
             navigateToSubtopic = navigateToSubtopic,
             navigateToTopic = navigateToTopic,
-            navigateBack = navigateToTopics
+            navigateBack = navigateBack
         )
     }
 }

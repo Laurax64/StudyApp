@@ -9,6 +9,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType.Companion.None
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType.Companion.ShortNavigationBarCompact
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType.Companion.ShortNavigationBarMedium
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType.Companion.WideNavigationRailCollapsed
@@ -33,10 +34,15 @@ fun StudyApp(
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
     val currentDestination = appState.currentDestination
-    val navigationSuiteType = calculateFromAdaptiveInfo(windowAdaptiveInfo)
+    val isTopLevelDestination = appState.topLevelDestinations.any { destination ->
+        currentDestination.isRouteInHierarchy(destination.route)
+    }
+    val navigationSuiteType = calculateNavigationSuiteType(
+        windowAdaptiveInfo = windowAdaptiveInfo,
+        isTopLevelDestination = isTopLevelDestination
+    )
     val windowSizeClass = windowAdaptiveInfo.windowSizeClass
     NavigationSuiteScaffold(
-
         navigationItemVerticalArrangement =
             if (windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)) {
                 Arrangement.Center
@@ -73,20 +79,28 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
     this?.hierarchy?.any { it.hasRoute(route) } == true
 
 /**
- * Calculates the navigation suite type based on the adaptive info.
+ * Calculates the navigation suite type based on the adaptive info and whether the current destination
+ * is a top level destination.
  *
- * This is a modified version of the original function to use a navigation rail for
- * mobile phones in landscape orientation with an expanded width size class.
  *
- * @param adaptiveInfo The adaptive info to calculate the navigation suite type from.
+ * @param windowAdaptiveInfo The adaptive info to calculate the navigation suite type from.
+ * @param isTopLevelDestination Whether the current destination is a top level destination.
+ * @return The calculated navigation suite type.
  */
-fun calculateFromAdaptiveInfo(adaptiveInfo: WindowAdaptiveInfo): NavigationSuiteType {
-    return with(adaptiveInfo) {
-        val minWidthDp = windowSizeClass.minWidthDp
-        when {
-            minWidthDp < WIDTH_DP_MEDIUM_LOWER_BOUND -> ShortNavigationBarCompact
-            minWidthDp < WIDTH_DP_EXPANDED_LOWER_BOUND -> ShortNavigationBarMedium
-            else -> WideNavigationRailCollapsed
+fun calculateNavigationSuiteType(
+    windowAdaptiveInfo: WindowAdaptiveInfo,
+    isTopLevelDestination: Boolean
+): NavigationSuiteType {
+    return if (!isTopLevelDestination) {
+        None
+    } else {
+        with(windowAdaptiveInfo) {
+            val minWidthDp = windowSizeClass.minWidthDp
+            when {
+                minWidthDp < WIDTH_DP_MEDIUM_LOWER_BOUND -> ShortNavigationBarCompact
+                minWidthDp < WIDTH_DP_EXPANDED_LOWER_BOUND -> ShortNavigationBarMedium
+                else -> WideNavigationRailCollapsed
+            }
         }
     }
 }

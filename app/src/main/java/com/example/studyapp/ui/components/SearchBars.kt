@@ -52,8 +52,8 @@ fun SearchAppBar(
     val query by rememberSaveable { mutableStateOf("") }
     Row(
         modifier = modifier
-            .padding(horizontal = 4.dp)
-            .windowInsetsPadding(insets = TopAppBarDefaults.windowInsets),
+            .windowInsetsPadding(insets = TopAppBarDefaults.windowInsets)
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -159,7 +159,10 @@ fun <T> DockedSearchBar(
                             painter = painterResource(R.drawable.baseline_close_24),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             contentDescription = stringResource(R.string.close_search),
-                            modifier = Modifier.clickable { query = "" }
+                            modifier = Modifier.clickable {
+                                query = ""
+                                filteredItems = items
+                            }
                         )
                     }
                 },
