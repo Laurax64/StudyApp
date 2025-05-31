@@ -193,8 +193,7 @@ private fun SubtopicAnswerCard(
         }
     } else {
         Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             StudyAppAsyncImage(
                 model = subtopic.imageUri,

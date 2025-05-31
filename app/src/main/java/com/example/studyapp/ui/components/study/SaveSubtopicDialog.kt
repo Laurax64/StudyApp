@@ -29,10 +29,10 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.components.FullScreenDialog
+import com.example.studyapp.ui.components.StudyAppAsyncImage
 
 @Composable
 internal fun SaveSubtopicDialog(
@@ -163,6 +163,10 @@ private fun SubtopicInputFields(
                 )
             },
             label = { Text(stringResource(R.string.image)) })
-        AsyncImage(model = imageUri, contentDescription = null, modifier = Modifier.fillMaxWidth())
+        StudyAppAsyncImage(
+            model = imageUri,
+            contentDescription = null,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
