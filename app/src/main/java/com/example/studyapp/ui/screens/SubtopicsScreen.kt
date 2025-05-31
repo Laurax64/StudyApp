@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -20,10 +21,10 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.LoadingIndicator
@@ -62,6 +63,7 @@ import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
 import com.example.studyapp.ui.components.DockedSearchBar
 import com.example.studyapp.ui.components.PlaceholderColumn
+import com.example.studyapp.ui.components.study.AdaptiveFAB
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.components.study.SaveTopicDialog
 import com.example.studyapp.ui.components.study.TopicsLazyColumn
@@ -173,7 +175,7 @@ private fun SubtopicsScaffold(
         )
     } else {
         dialogType?.let {
-            Dialog(
+            SubtopicsDialog(
                 topic = topic,
                 updateTopic = updateTopic,
                 deleteTopic = deleteTopic,
@@ -187,19 +189,17 @@ private fun SubtopicsScaffold(
             topBar = {
                 if (!showSearchBar) {
                     SubtopicsTopAppBar(
-                        modifier = Modifier.padding(horizontal = 16.dp),
                         topic = topic,
-                        onDeleteTopic = { dialogType = SubtopicsDialog.DELETE_TOPIC },
-                        onEditTopic = { dialogType = SubtopicsDialog.EDIT_TOPIC },
                         onSearch = { showSearchBar = true },
                         navigateBack = navigateBack
                     )
                 }
             },
             floatingActionButton = {
-                CreateSubtopicFAB(onCreate = {
-                    dialogType = SubtopicsDialog.CREATE_SUBTOPIC
-                }
+                AdaptiveFAB(
+                    onClick = { dialogType = SubtopicsDialog.CREATE_SUBTOPIC },
+                    iconId = R.drawable.baseline_add_24,
+                    contentDescriptionId = R.string.create_subtopic
                 )
             },
         ) { innerPadding ->
@@ -220,7 +220,7 @@ private fun SubtopicsScaffold(
 }
 
 @Composable
-private fun Dialog(
+private fun SubtopicsDialog(
     topic: Topic,
     updateTopic: (Topic) -> Unit,
     deleteTopic: () -> Unit,
@@ -293,7 +293,7 @@ private fun <T> SubtopicsNavigableListDetailPaneScaffold(
                             navigateToSubtopic = navigateToSubtopic,
                             closeSearchBar = closeSearchBar,
                             showSearchBar = showSearchBar,
-                            topicTitle = topic.title
+                            topicTitle = topic.title,
                         )
                     }
                 }
@@ -352,34 +352,28 @@ private fun DeleteTopicDialog(
 private fun SubtopicsTopAppBar(
     modifier: Modifier = Modifier,
     topic: Topic,
-    onDeleteTopic: () -> Unit,
-    onEditTopic: () -> Unit,
     onSearch: () -> Unit,
     navigateBack: () -> Unit
 ) {
     LargeFlexibleTopAppBar(
         navigationIcon = {
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_arrow_back_24),
-                tint = MaterialTheme.colorScheme.onSurface,
-                contentDescription = stringResource(R.string.go_back_to_topics),
-                modifier = Modifier.clickable { navigateBack() })
+            IconButton(modifier = Modifier.size(48.dp), onClick = navigateBack) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(24.dp),
+                    contentDescription = stringResource(R.string.go_back_to_topics),
+                )
+            }
         },
         actions = {
-            Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+            IconButton(modifier = Modifier.size(48.dp), onClick = onSearch) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_search_24),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.clickable { onSearch() },
+                    modifier = Modifier.size(24.dp),
                     contentDescription = stringResource(R.string.subtopics_search),
                 )
-                Icon(
-                    painter = painterResource(R.drawable.outline_create_24),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.clickable { onEditTopic() },
-                    contentDescription = stringResource(R.string.open_edit_topic_dialog),
-                )
-                MoreActionsMenu(onDelete = onDeleteTopic)
             }
         },
         title = { Text(text = topic.title, overflow = Ellipsis) },
@@ -426,21 +420,6 @@ private fun MoreActionsMenu(
 }
 
 @Composable
-private fun CreateSubtopicFAB(onCreate: () -> Unit, modifier: Modifier = Modifier) {
-    ExtendedFloatingActionButton(
-        onClick = onCreate,
-        modifier = modifier,
-        icon = {
-            Icon(
-                painter = painterResource(R.drawable.baseline_add_24),
-                contentDescription = stringResource(R.string.create_subtopic),
-            )
-        },
-        text = { Text(text = stringResource(R.string.create_subtopic)) },
-    )
-}
-
-@Composable
 fun SubtopicsPaneContent(
     modifier: Modifier = Modifier,
     subtopics: List<Subtopic>?,
@@ -467,7 +446,7 @@ fun SubtopicsPaneContent(
             FilterableSubtopicsColumn(
                 subtopics = filteredSubtopics,
                 navigateToSubtopic = navigateToSubtopic,
-                modifier = modifier
+                modifier = modifier.padding(horizontal = 16.dp)
             )
         }
     }
@@ -496,7 +475,8 @@ private fun FilterableSubtopicsColumn(
                 showOnlyNotChecked = showOnlyNotChecked,
                 toggleShowOnlyNotChecked = { showOnlyNotChecked = !showOnlyNotChecked },
                 showOnlyBookmarked = showOnlyBookmarked,
-                toggleShowOnlyBookmarked = { showOnlyBookmarked = !showOnlyBookmarked }
+                toggleShowOnlyBookmarked = { showOnlyBookmarked = !showOnlyBookmarked },
+                modifier = Modifier.fillMaxWidth()
             )
             SubtopicsLazyColumn(
                 filteredSubtopics = filteredSubtopics,
@@ -532,7 +512,9 @@ private fun SubtopicsSearchBar(
         FilterableSubtopicsColumn(
             subtopics = it,
             navigateToSubtopic = navigateToSubtopic,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
         )
     }
 }
@@ -542,10 +524,11 @@ private fun FilteredChipsRow(
     showOnlyNotChecked: Boolean,
     toggleShowOnlyNotChecked: () -> Unit,
     showOnlyBookmarked: Boolean,
-    toggleShowOnlyBookmarked: () -> Unit
+    toggleShowOnlyBookmarked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         FilterChip(
