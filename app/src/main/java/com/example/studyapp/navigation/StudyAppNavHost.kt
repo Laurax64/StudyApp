@@ -7,9 +7,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.studyapp.ui.StudyAppState
-import com.example.studyapp.ui.screens.subtopic.SubtopicScreen
-import com.example.studyapp.ui.screens.subtopics.SubtopicsScreen
-import com.example.studyapp.ui.screens.topics.TopicsScreen
+import com.example.studyapp.ui.screens.SubtopicScreen
+import com.example.studyapp.ui.screens.SubtopicsScreen
+import com.example.studyapp.ui.screens.TopicsScreen
 
 @Composable
 fun StudyAppNavHost(

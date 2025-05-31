@@ -1,12 +1,15 @@
-package com.example.studyapp.ui.screens.subtopic
+package com.example.studyapp.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,9 +18,11 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,13 +34,64 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.tooling.preview.PreviewFontScale
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
+import com.example.studyapp.ui.components.StudyAppAsyncImage
+import com.example.studyapp.ui.components.study.SaveSubtopicDialog
+import com.example.studyapp.ui.screens.DialogType
+import com.example.studyapp.ui.theme.StudyAppTheme
+import com.example.studyapp.ui.viewmodels.SubtopicViewModel
 
 @Composable
-internal fun SubtopicScaffold(
+fun SubtopicScreen(
+    subtopicViewModel: SubtopicViewModel,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val subtopic by subtopicViewModel.subtopic.collectAsStateWithLifecycle(null)
+    SubtopicScreen(
+        subtopic = subtopic,
+        updateSubtopic = subtopicViewModel::updateSubtopic,
+        deleteSubtopic = subtopicViewModel::deleteSubtopic,
+        modifier = modifier.padding(horizontal = 16.dp),
+        navigateBack = navigateBack
+    )
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun SubtopicScreen(
+    subtopic: Subtopic?,
+    updateSubtopic: (Subtopic) -> Unit,
+    deleteSubtopic: () -> Unit,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (subtopic == null) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            LoadingIndicator()
+        }
+    } else {
+        SubtopicScaffold(
+            subtopic = subtopic,
+            updateSubtopic = updateSubtopic,
+            deleteSubtopic = deleteSubtopic,
+            navigateBack = navigateBack,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun SubtopicScaffold(
     subtopic: Subtopic,
     updateSubtopic: (Subtopic) -> Unit,
     deleteSubtopic: () -> Unit,
@@ -105,6 +161,55 @@ internal fun SubtopicScaffold(
     }
 }
 
+@Composable
+private fun SubtopicAnswerCard(
+    isScreenWidthCompact: Boolean,
+    subtopic: Subtopic,
+    modifier: Modifier = Modifier
+) {
+    if (isScreenWidthCompact) {
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            StudyAppAsyncImage(
+                model = subtopic.imageUri,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+            Text(
+                text = subtopic.description,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+        }
+    } else {
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            StudyAppAsyncImage(
+                model = subtopic.imageUri,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+            Text(
+                text = subtopic.description,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+        }
+
+    }
+}
 
 @Composable
 private fun MoreActionsMenu(
@@ -195,4 +300,97 @@ private fun SubtopicTopAppBar(
             }
         }
     )
+}
+
+private enum class DialogType {
+    EDIT_SUBTOPIC,
+    DELETE_SUBTOPIC
+}
+
+@Composable
+private fun SubtopicDialog(
+    subtopic: Subtopic,
+    isScreenWidthCompact: Boolean,
+    deleteSubtopic: () -> Unit,
+    dismissDialog: () -> Unit,
+    dialogType: DialogType,
+    updateSubtopic: (Subtopic) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when (dialogType) {
+        DialogType.DELETE_SUBTOPIC ->
+            DeleteSubtopicDialog(
+                modifier = modifier,
+                onDismiss = dismissDialog,
+                deleteSubtopic = deleteSubtopic,
+                subtopicTitle = subtopic.title
+            )
+
+        DialogType.EDIT_SUBTOPIC ->
+            SaveSubtopicDialog(
+                modifier = modifier,
+                titleId = R.string.edit_subtopic,
+                onDismiss = dismissDialog,
+                isFullScreenDialog = isScreenWidthCompact,
+                saveSubtopic = { title, description, imageUri ->
+                    updateSubtopic(
+                        subtopic.copy(
+                            title = title,
+                            description = description,
+                            imageUri = imageUri
+                        )
+                    )
+                },
+                subtopic = subtopic
+            )
+    }
+}
+
+@Composable
+private fun DeleteSubtopicDialog(
+    modifier: Modifier = Modifier,
+    subtopicTitle: String,
+    deleteSubtopic: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.delete_subtopic_dialog_title)) },
+        text = { Text(stringResource(R.string.delete_subtopic_dialog_description, subtopicTitle)) },
+        confirmButton = {
+            TextButton(onClick = {
+                deleteSubtopic()
+                onDismiss()
+            }
+            )
+            {
+                Text(stringResource(R.string.delete))
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
+        modifier = modifier
+    )
+}
+
+@Preview(showSystemUi = true)
+@PreviewLightDark
+@PreviewScreenSizes
+@PreviewDynamicColors
+@PreviewFontScale
+@Composable
+private fun SubtopicScreenPreview() {
+    StudyAppTheme {
+        SubtopicScreen(
+            subtopic = Subtopic(
+                id = 1,
+                title = "Subtopic Title",
+                description = "Subtopic Description",
+                checked = false,
+                bookmarked = false,
+                topicId = 1,
+                imageUri = null
+            ),
+            updateSubtopic = {}, deleteSubtopic = {}, navigateBack = {}
+        )
+    }
 }
