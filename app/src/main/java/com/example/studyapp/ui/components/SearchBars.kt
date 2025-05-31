@@ -52,8 +52,8 @@ fun SearchAppBar(
     val query by rememberSaveable { mutableStateOf("") }
     Row(
         modifier = modifier
-            .padding(horizontal = 4.dp)
-            .windowInsetsPadding(insets = TopAppBarDefaults.windowInsets),
+            .windowInsetsPadding(insets = TopAppBarDefaults.windowInsets)
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
