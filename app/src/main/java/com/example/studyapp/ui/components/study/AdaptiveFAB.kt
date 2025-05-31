@@ -1,8 +1,11 @@
 package com.example.studyapp.ui.components.study
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MediumFloatingActionButton
@@ -11,12 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewDynamicColors
-import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.studyapp.R
@@ -28,9 +29,10 @@ internal fun AdaptiveFAB(
     iconId: Int,
     contentDescriptionId: Int,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+
     if (windowSizeClass.isWidthAtLeastBreakpoint(widthDpBreakpoint = WIDTH_DP_EXPANDED_LOWER_BOUND)) {
         LargeFloatingActionButton(
             onClick = onClick,
@@ -40,26 +42,20 @@ internal fun AdaptiveFAB(
             Icon(
                 painter = painterResource(iconId),
                 contentDescription = stringResource(contentDescriptionId),
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(FloatingActionButtonDefaults.LargeIconSize)
             )
         }
     } else if (windowSizeClass.isWidthAtLeastBreakpoint(widthDpBreakpoint = WIDTH_DP_MEDIUM_LOWER_BOUND)) {
-        MediumFloatingActionButton(
-            onClick = onClick,
-            modifier = modifier,
-        )
+        MediumFloatingActionButton(onClick = onClick, modifier = modifier)
         {
             Icon(
                 painter = painterResource(iconId),
                 contentDescription = stringResource(contentDescriptionId),
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(FloatingActionButtonDefaults.MediumIconSize)
             )
         }
     } else {
-        FloatingActionButton(
-            onClick = onClick,
-            modifier = modifier
-        ) {
+        FloatingActionButton(onClick = onClick, modifier = modifier) {
             Icon(
                 painter = painterResource(iconId),
                 contentDescription = stringResource(contentDescriptionId),
@@ -69,18 +65,39 @@ internal fun AdaptiveFAB(
     }
 }
 
-@Preview(showSystemUi = true)
 @PreviewLightDark
-@PreviewScreenSizes
 @PreviewDynamicColors
-@PreviewFontScale
 @Composable
-fun FABPreview() {
+fun AdaptiveFABPreview() {
     StudyAppTheme {
-        AdaptiveFAB(
-            iconId = R.drawable.baseline_add_24,
-            contentDescriptionId = R.string.create_topic,
-            onClick = {},
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            AdaptiveFAB(
+                iconId = R.drawable.baseline_add_24,
+                contentDescriptionId = R.string.create_topic,
+                onClick = {},
+                windowSizeClass = WindowSizeClass(
+                    minWidthDp = WIDTH_DP_MEDIUM_LOWER_BOUND - 1,
+                    minHeightDp = 200
+                )
+            )
+            AdaptiveFAB(
+                iconId = R.drawable.baseline_add_24,
+                contentDescriptionId = R.string.create_topic,
+                onClick = {},
+                windowSizeClass = WindowSizeClass(
+                    minWidthDp = WIDTH_DP_MEDIUM_LOWER_BOUND,
+                    minHeightDp = 200
+                )
+            )
+            AdaptiveFAB(
+                iconId = R.drawable.baseline_add_24,
+                contentDescriptionId = R.string.create_topic,
+                onClick = {},
+                windowSizeClass = WindowSizeClass(
+                    minWidthDp = WIDTH_DP_EXPANDED_LOWER_BOUND,
+                    minHeightDp = 200
+                )
+            )
+        }
     }
 }
