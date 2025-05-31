@@ -1,5 +1,7 @@
 package com.example.studyapp.ui.screens
 
+import android.util.Log
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,6 +46,7 @@ fun TopicsScreen(
     modifier: Modifier = Modifier
 ) {
     val topics by topicsViewModel.topics.collectAsStateWithLifecycle()
+    Log.d("TopicsScreen", "Collected topics: $topics")
     TopicsScreen(
         topics = topics,
         saveTopic = topicsViewModel::saveTopic,
@@ -85,7 +88,7 @@ private fun TopicsScaffold(
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     var showSearchView by rememberSaveable { mutableStateOf(false) }
     var showDialog by rememberSaveable { mutableStateOf(false) }
-    val filteredTopics by rememberSaveable { mutableStateOf(topics) }
+
     if (showDialog) {
         SaveTopicDialog(onDismiss = { showDialog = false }, topic = null, onSave = saveTopic)
     }
@@ -114,29 +117,33 @@ private fun TopicsScaffold(
             navigator = scaffoldNavigator,
             listPane = {
                 AnimatedPane {
-                    TopicsPaneContent(
-                        topics = filteredTopics,
-                        navigateToTopic = {
-                            // Not scaffoldNavigator.navigateTo because the app needs to
-                            // change more than just the detail pane
-                            navigateToSubtopics(it)
-                        },
-                        closeSearchBar = { showSearchView = false },
-                        showSearchBar = showSearchView,
-                    )
+                    AnimatedContent(targetState = topics) {
+                        TopicsPaneContent(
+                            topics = it,
+                            navigateToTopic = {
+                                // Not scaffoldNavigator.navigateTo because the app needs to
+                                // change more than just the detail pane
+                                navigateToSubtopics(it)
+                            },
+                            closeSearchBar = { showSearchView = false },
+                            showSearchBar = showSearchView,
+                        )
+                    }
                 }
             },
             detailPane = {
                 AnimatedPane {
-                    PlaceholderColumn(
-                        textId = if (topics.isEmpty()) {
-                            R.string.no_subtopics_exist
-                        } else {
-                            R.string.select_a_topic
-                        },
-                        iconId = R.drawable.outline_subtitles_24,
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    AnimatedContent(targetState = topics) {
+                        PlaceholderColumn(
+                            textId = if (it.isEmpty()) {
+                                R.string.no_subtopics_exist
+                            } else {
+                                R.string.select_a_topic
+                            },
+                            iconId = R.drawable.outline_subtitles_24,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             },
             modifier = Modifier.padding(innerPadding)

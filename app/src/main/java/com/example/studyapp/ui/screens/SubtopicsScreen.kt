@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
@@ -43,6 +45,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
@@ -66,7 +69,7 @@ import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.SubtopicsViewModel
 
 
-private enum class SubtopicDialog {
+private enum class SubtopicsDialog {
     EDIT_TOPIC,
     DELETE_TOPIC,
     CREATE_SUBTOPIC,
@@ -136,121 +139,6 @@ private fun SubtopicsScreen(
     }
 }
 
-@Preview(showSystemUi = true)
-@PreviewLightDark
-@PreviewScreenSizes
-@PreviewDynamicColors
-@PreviewFontScale
-@Composable
-private fun SubtopicsScreenPreview() {
-    StudyAppTheme {
-        SubtopicsScreen(
-            subtopics = listOf(
-                Subtopic(
-                    id = 1,
-                    topicId = 0,
-                    title = "Golden Retriever",
-                    description = "Friendly, intelligent, and great with families.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 2,
-                    topicId = 0,
-                    title = "Labrador Retriever",
-                    description = "Outgoing, loyal, and super trainable.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 3,
-                    topicId = 0,
-                    title = "German Shepherd",
-                    description = "Brave, confident, and excellent working dogs.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 4,
-                    topicId = 0,
-                    title = "Pomeranian",
-                    description = "Small, fluffy, and full of personality.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 5,
-                    topicId = 0,
-                    title = "Border Collie",
-                    description = "Highly energetic and the smartest of all breeds.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 6,
-                    topicId = 0,
-                    title = "Dachshund",
-                    description = "Long-bodied and playful with a bold attitude.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 7,
-                    topicId = 0,
-                    title = "French Bulldog",
-                    description = "Compact and charming with a lovable snort.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 8,
-                    topicId = 0,
-                    title = "Cocker Spaniel",
-                    description = "Gentle, sweet, and always ready to cuddle.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 9,
-                    topicId = 0,
-                    title = "Great Dane",
-                    description = "A gentle giant with a calm and loving nature.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 10,
-                    topicId = 0,
-                    title = "Siberian Husky",
-                    description = "Beautiful, energetic, and known for their striking blue eyes.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                )
-            ),
-            topics = listOf(Topic(id = 1, title = "Topic 1", checked = false)),
-            topic = Topic(
-                id = 1, title = "Android Taint Analysis", checked = false
-            ),
-            navigateToSubtopic = {},
-            navigateToTopic = {},
-            navigateBack = {},
-            saveSubtopic = { _, _, _ -> },
-            deleteTopic = {},
-            updateTopic = {}
-        )
-    }
-}
-
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 private fun SubtopicsScaffold(
@@ -268,12 +156,12 @@ private fun SubtopicsScaffold(
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     val paneAdaptedValue = scaffoldNavigator.scaffoldState.currentState.primary
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
-    var dialogType by rememberSaveable { mutableStateOf<SubtopicDialog?>(null) }
+    var dialogType by rememberSaveable { mutableStateOf<SubtopicsDialog?>(null) }
     val isScreenWidthCompact =
         !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
             WIDTH_DP_MEDIUM_LOWER_BOUND
         )
-    if (dialogType == SubtopicDialog.CREATE_SUBTOPIC && isScreenWidthCompact) {
+    if (dialogType == SubtopicsDialog.CREATE_SUBTOPIC && isScreenWidthCompact) {
         SaveSubtopicDialog(
             titleId = R.string.create_subtopic,
             onDismiss = { dialogType = null },
@@ -289,7 +177,6 @@ private fun SubtopicsScaffold(
                 topic = topic,
                 updateTopic = updateTopic,
                 deleteTopic = deleteTopic,
-                navigateBack = navigateBack,
                 dismissDialog = { dialogType = null },
                 dialogType = it,
                 saveSubtopic = saveSubtopic
@@ -302,8 +189,8 @@ private fun SubtopicsScaffold(
                     SubtopicsTopAppBar(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         topic = topic,
-                        onDeleteTopic = { dialogType = SubtopicDialog.DELETE_TOPIC },
-                        onEditTopic = { dialogType = SubtopicDialog.EDIT_TOPIC },
+                        onDeleteTopic = { dialogType = SubtopicsDialog.DELETE_TOPIC },
+                        onEditTopic = { dialogType = SubtopicsDialog.EDIT_TOPIC },
                         onSearch = { showSearchBar = true },
                         navigateBack = navigateBack
                     )
@@ -311,8 +198,9 @@ private fun SubtopicsScaffold(
             },
             floatingActionButton = {
                 CreateSubtopicFAB(onCreate = {
-                    dialogType = SubtopicDialog.CREATE_SUBTOPIC
-                })
+                    dialogType = SubtopicsDialog.CREATE_SUBTOPIC
+                }
+                )
             },
         ) { innerPadding ->
             SubtopicsNavigableListDetailPaneScaffold(
@@ -336,14 +224,13 @@ private fun Dialog(
     topic: Topic,
     updateTopic: (Topic) -> Unit,
     deleteTopic: () -> Unit,
-    navigateBack: () -> Unit,
     dismissDialog: () -> Unit,
-    dialogType: SubtopicDialog,
+    dialogType: SubtopicsDialog,
     saveSubtopic: (String, String, String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (dialogType) {
-        SubtopicDialog.EDIT_TOPIC ->
+        SubtopicsDialog.EDIT_TOPIC ->
             SaveTopicDialog(
                 modifier = modifier,
                 topic = topic,
@@ -354,19 +241,17 @@ private fun Dialog(
                 }
             )
 
-        SubtopicDialog.DELETE_TOPIC ->
+        SubtopicsDialog.DELETE_TOPIC ->
             DeleteTopicDialog(
                 modifier = modifier,
                 onDismiss = dismissDialog,
                 deleteTopic = {
-                    // Navigate back because the topic is about to be deleted.
-                    navigateBack()
                     deleteTopic()
                 },
                 topicTitle = topic.title
             )
 
-        SubtopicDialog.CREATE_SUBTOPIC ->
+        SubtopicsDialog.CREATE_SUBTOPIC ->
             SaveSubtopicDialog(
                 modifier = modifier,
                 titleId = R.string.create_subtopic,
@@ -599,7 +484,13 @@ private fun FilterableSubtopicsColumn(
     val filteredSubtopics = subtopics.filter {
         !(it.checked && showOnlyNotChecked) && (it.bookmarked || !showOnlyBookmarked)
     }
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val state = rememberScrollState()
+    // Hide keyboard when scrolling
+    if (state.isScrollInProgress) {
+        keyboardController?.hide()
+    }
+    Column(modifier = modifier) {
         if (subtopics.isNotEmpty()) {
             FilteredChipsRow(
                 showOnlyNotChecked = showOnlyNotChecked,
@@ -677,7 +568,14 @@ private fun SubtopicsLazyColumn(
     navigateToSubtopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val state = rememberLazyListState()
+    // Hide keyboard when scrolling
+    if (state.isScrollInProgress) {
+        keyboardController?.hide()
+    }
+
+    LazyColumn(modifier = modifier, state = state) {
         items(filteredSubtopics) { subtopic ->
             SubtopicListItem(
                 subtopic = subtopic,
@@ -721,6 +619,121 @@ private fun SubtopicListItem(subtopic: Subtopic, modifier: Modifier) {
             )
         },
     )
+}
+
+@Preview(showSystemUi = true)
+@PreviewLightDark
+@PreviewScreenSizes
+@PreviewDynamicColors
+@PreviewFontScale
+@Composable
+private fun SubtopicsScreenPreview() {
+    StudyAppTheme {
+        SubtopicsScreen(
+            subtopics = listOf(
+                Subtopic(
+                    id = 1,
+                    topicId = 0,
+                    title = "Golden Retriever",
+                    description = "Friendly, intelligent, and great with families.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 2,
+                    topicId = 0,
+                    title = "Labrador Retriever",
+                    description = "Outgoing, loyal, and super trainable.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 3,
+                    topicId = 0,
+                    title = "German Shepherd",
+                    description = "Brave, confident, and excellent working dogs.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 4,
+                    topicId = 0,
+                    title = "Pomeranian",
+                    description = "Small, fluffy, and full of personality.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 5,
+                    topicId = 0,
+                    title = "Border Collie",
+                    description = "Highly energetic and the smartest of all breeds.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 6,
+                    topicId = 0,
+                    title = "Dachshund",
+                    description = "Long-bodied and playful with a bold attitude.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 7,
+                    topicId = 0,
+                    title = "French Bulldog",
+                    description = "Compact and charming with a lovable snort.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 8,
+                    topicId = 0,
+                    title = "Cocker Spaniel",
+                    description = "Gentle, sweet, and always ready to cuddle.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 9,
+                    topicId = 0,
+                    title = "Great Dane",
+                    description = "A gentle giant with a calm and loving nature.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                ),
+                Subtopic(
+                    id = 10,
+                    topicId = 0,
+                    title = "Siberian Husky",
+                    description = "Beautiful, energetic, and known for their striking blue eyes.",
+                    checked = false,
+                    bookmarked = false,
+                    imageUri = null
+                )
+            ),
+            topics = listOf(Topic(id = 1, title = "Topic 1", checked = false)),
+            topic = Topic(
+                id = 1, title = "Android Taint Analysis", checked = false
+            ),
+            navigateToSubtopic = {},
+            navigateToTopic = {},
+            navigateBack = {},
+            saveSubtopic = { _, _, _ -> },
+            deleteTopic = {},
+            updateTopic = {}
+        )
+    }
 }
 
 @Preview(showSystemUi = true)

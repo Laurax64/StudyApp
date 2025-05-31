@@ -46,9 +46,13 @@ import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.components.StudyAppAsyncImage
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
-import com.example.studyapp.ui.screens.SubtopicDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 import com.example.studyapp.ui.viewmodels.SubtopicViewModel
+
+private enum class SubtopicDialog {
+    EDIT_SUBTOPIC,
+    DELETE_SUBTOPIC
+}
 
 @Composable
 fun SubtopicScreen(
@@ -300,11 +304,6 @@ private fun SubtopicTopAppBar(
             }
         }
     )
-}
-
-private enum class SubtopicDialog {
-    EDIT_SUBTOPIC,
-    DELETE_SUBTOPIC
 }
 
 @Composable
