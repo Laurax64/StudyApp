@@ -63,6 +63,7 @@
 
 <img width="200" alt="image" src = docs/images/study-app-splash-screen-light.png>  <img width="200" alt="image" src = docs/images/study-app-splash-screen-dark.png>
 
+## [Typography](https://m3.material.io/styles/typography/overview)
 ## Adaptive Layouts 
 ### Canonical Layouts  :arrows_counterclockwise:
 #### [Feed](https://m3.material.io/foundations/layout/canonical-layouts/overview#963d7d99-4f04-4685-b7bd-57a89607b514) :arrows_counterclockwise:
