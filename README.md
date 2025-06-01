@@ -11,51 +11,19 @@ Colors, Theme, [Typography](https://m3.material.io/styles/typography/overview)
 # UI Components
 
 ## Actions
-### Button groups :arrows_counterclockwise:
-### Buttons 
-### Extended FAB
-### FAB menu  :arrows_counterclockwise:
-### Floating action buttons  :arrows_counterclockwise:
-### Icon buttons  :arrows_counterclockwise:
-### Segmented button  :arrows_counterclockwise:
-### Split buttons  :arrows_counterclockwise:
+Button groups :arrows_counterclockwise:,  Buttons, Extended FAB, FAB menu  :arrows_counterclockwise:, Floating action buttons  :arrows_counterclockwise:, Icon buttons  :arrows_counterclockwise:, Segmented button  :arrows_counterclockwise:, Split buttons  :arrows_counterclockwise:
 
 ## Communication
-### Badges  :arrows_counterclockwise:
-### Loading indicator  :arrows_counterclockwise:
-### Progress indicators
-### Snackbar  :arrows_counterclockwise:
-### Tooltips  :arrows_counterclockwise:
+Badges  :arrows_counterclockwise:, Loading indicator  :arrows_counterclockwise:, Progress indicators, Snackbar  :arrows_counterclockwise:,  Tooltips  :arrows_counterclockwise:
 
 ## Containment
-### Bottom sheets  :arrows_counterclockwise:
-### Cards  :arrows_counterclockwise:
-### Carousel  :arrows_counterclockwise:
-### Dialogs
-### Divider
-### Lists 
-### Side sheets  :arrows_counterclockwise:
+Bottom sheets  :arrows_counterclockwise:, Cards  :arrows_counterclockwise:, Carousel  :arrows_counterclockwise:, Dialogs, Divider, Lists, Side sheets  :arrows_counterclockwise:
 
 ## Navigation 
-### App bars
-### Navigation bar
-### Navigation drawer :arrows_counterclockwise:
-### Navigation rail 
-### Tabs  :arrows_counterclockwise:
-### Toolbar  :arrows_counterclockwise:
+App bars, Navigation bar, Navigation drawer :arrows_counterclockwise:, Navigation rail, Tabs  :arrows_counterclockwise:, Toolbar  :arrows_counterclockwise:
 
 ## Selection
-### Checkbox 
-### Chips
-### Date pickers  :arrows_counterclockwise:
-### Menus 
-### Radio button  :arrows_counterclockwise:
-### Sliders  :arrows_counterclockwise:
-### Switch  :arrows_counterclockwise:
-### Timer pickers  :arrows_counterclockwise:
-## Text inputs
-### Search 
-### Text fields
+Checkbox, Chips, Date pickers  :arrows_counterclockwise:, Menus, Radio button  :arrows_counterclockwise:, Sliders  :arrows_counterclockwise:, Switch  :arrows_counterclockwise:, Timer pickers  :arrows_counterclockwise:, Text inputs, Search, Text fields
 
 ## Launcher Icon
 <img alt="image" width="50"  src = docs/images/study-app-ic_launcher_round.png>
