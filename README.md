@@ -33,10 +33,10 @@ Checkbox, Chips, Date pickers  :arrows_counterclockwise:, Menus, Radio button  :
 <img width="200" alt="image" src = docs/images/study-app-splash-screen-light.png>  <img width="200" alt="image" src = docs/images/study-app-splash-screen-dark.png>
 
 ## Adaptive Layouts 
-### Canonical Layouts  :arrows_counterclockwise:
+### Canonical Layouts 
 #### [Feed](https://m3.material.io/foundations/layout/canonical-layouts/overview#963d7d99-4f04-4685-b7bd-57a89607b514) :arrows_counterclockwise:
 #### [List-detail](https://developer.android.com/develop/ui/compose/layouts/adaptive/list-detail)
-#### [Supporting pane](https://m3.material.io/foundations/layout/canonical-layouts/overview#b01f6399-a0d3-4fd8-b78b-78a9ab663482) :arrows_counterclockwise:
+#### [Supporting pane](https://m3.material.io/foundations/layout/canonical-layouts/overview#b01f6399-a0d3-4fd8-b78b-78a9ab663482) 
 
 ## Widget 
 ### [Glance](https://developer.android.com/codelabs/glance?hl=en#0) :arrows_counterclockwise:
