@@ -5,7 +5,7 @@
 ### [Material Theme Builder](https://www.figma.com/community/plugin/1034969338659738588/material-theme-builder) 
 Colors, Theme, [Typography](https://m3.material.io/styles/typography/overview)
 ### [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en) 
-### [Material 3 Expressive](https://m3.material.io/blog/building-with-m3-expressive)
+[Material 3 Expressive](https://m3.material.io/blog/building-with-m3-expressive)
 ### [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 
 # UI Components
