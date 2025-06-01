@@ -1,7 +1,7 @@
 # Under Development
 
 # Design 
-### [Figma Design File](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1) 
+### [Figma Design File](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1) :arrows_counterclockwise:
 ### [Material Theme Builder](https://www.figma.com/community/plugin/1034969338659738588/material-theme-builder) 
 Colors, Theme, [Typography](https://m3.material.io/styles/typography/overview)
 ### [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en) 
