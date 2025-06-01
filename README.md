@@ -3,6 +3,7 @@
 # Design 
 ### [Figma Design File](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&t=Z2gDVT6f44Ki0b7z-1) 
 ### [Material Theme Builder](https://www.figma.com/community/plugin/1034969338659738588/material-theme-builder) 
+Colors, Theme, [Typography](https://m3.material.io/styles/typography/overview)
 ### [Material 3 Guidelines](https://developer.android.com/design/ui?hl=en) 
 ### [Material 3 Expressive](https://m3.material.io/blog/building-with-m3-expressive)
 ### [Previews](https://developer.android.com/develop/ui/compose/tooling/previews)
@@ -63,7 +64,6 @@
 
 <img width="200" alt="image" src = docs/images/study-app-splash-screen-light.png>  <img width="200" alt="image" src = docs/images/study-app-splash-screen-dark.png>
 
-## [Typography](https://m3.material.io/styles/typography/overview)
 ## Adaptive Layouts 
 ### Canonical Layouts  :arrows_counterclockwise:
 #### [Feed](https://m3.material.io/foundations/layout/canonical-layouts/overview#963d7d99-4f04-4685-b7bd-57a89607b514) :arrows_counterclockwise:
