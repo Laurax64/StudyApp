@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
@@ -14,9 +15,13 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
+import androidx.compose.material3.FloatingToolbarDefaults.VibrantFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
@@ -94,6 +99,7 @@ private fun SubtopicScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SubtopicScaffold(
     subtopic: Subtopic,
@@ -103,6 +109,7 @@ private fun SubtopicScaffold(
     modifier: Modifier = Modifier
 ) {
     var dialogType by rememberSaveable { mutableStateOf<SubtopicDialog?>(null) }
+    var expanded by rememberSaveable { mutableStateOf(true) }
     val isScreenWidthCompact =
         !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
             WIDTH_DP_MEDIUM_LOWER_BOUND
@@ -129,39 +136,35 @@ private fun SubtopicScaffold(
                 onDeleteSubtopic = { dialogType = SubtopicDialog.DELETE_SUBTOPIC },
                 onEditSubtopic = { dialogType = SubtopicDialog.EDIT_SUBTOPIC },
                 navigateBack = navigateBack,
-                modifier = Modifier.padding(horizontal = 16.dp),
                 toggleBookmarked = { updateSubtopic(subtopic.copy(bookmarked = !subtopic.bookmarked)) }
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { updateSubtopic(subtopic.copy(checked = !subtopic.checked)) },
-                icon = {
-                    Icon(
-                        painter = painterResource(
-                            if (subtopic.checked) R.drawable.outline_check_box_24 else R.drawable.baseline_check_box_outline_blank_24
-                        ),
-                        contentDescription = stringResource(
-                            if (subtopic.checked) R.string.checked else R.string.unchecked
-                        )
-                    )
-                },
-                text = {
-                    Text(
-                        text = stringResource(R.string.toggle_checked)
-                    )
-                }
-            )
+
         }
     ) { innerPadding ->
-        SubtopicAnswerCard(
-            isScreenWidthCompact = isScreenWidthCompact,
-            subtopic = subtopic,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues = innerPadding)
-                .padding(horizontal = 16.dp)
-        )
+        Box(Modifier.padding(innerPadding)) {
+            SubtopicAnswerCard(
+                isScreenWidthCompact = isScreenWidthCompact,
+                subtopic = subtopic,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(paddingValues = innerPadding)
+                    .padding(horizontal = 16.dp)
+            )
+            SubtopicToolbar(
+                onDelete = { dialogType = SubtopicDialog.DELETE_SUBTOPIC },
+                onEdit = { dialogType = SubtopicDialog.EDIT_SUBTOPIC },
+                onCheck = {/*TODO*/ },
+                onNext = { /*TODO*/ },
+                onPrevious = { /*TODO*/ },
+                expanded = expanded,
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = -ScreenOffset, y = -ScreenOffset),
+            )
+        }
     }
 }
 
@@ -234,11 +237,7 @@ private fun MoreActionsMenu(
                 text = { Text(stringResource(R.string.share)) },
                 onClick = { shareSubtopic() },
                 leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_share_24),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        contentDescription = null
-                    )
+
                 }
             )
             HorizontalDivider()
@@ -291,10 +290,9 @@ private fun SubtopicTopAppBar(
                     )
                 )
                 Icon(
-                    painter = painterResource(R.drawable.outline_create_24),
+                    painter = painterResource(R.drawable.baseline_share_24),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.clickable { onEditSubtopic() },
-                    contentDescription = stringResource(R.string.open_edit_subtopic_dialog),
+                    contentDescription = null
                 )
                 MoreActionsMenu(
                     shareSubtopic = { /* TODO: Implement share functionality */ },
@@ -367,6 +365,59 @@ private fun DeleteSubtopicDialog(
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
         modifier = modifier
+    )
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun SubtopicToolbar(
+    onDelete: () -> Unit,
+    onEdit: () -> Unit,
+    onCheck: () -> Unit,
+    onNext: () -> Unit,
+    onPrevious: () -> Unit,
+    modifier: Modifier = Modifier,
+    expanded: Boolean
+) {
+    HorizontalFloatingToolbar(
+        modifier = modifier,
+        expanded = expanded,
+        colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+        floatingActionButton =
+            {
+                VibrantFloatingActionButton(onClick = onCheck) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_check_24),
+                        contentDescription = stringResource(R.string.create_subtopic),
+                    )
+                }
+            },
+        content = {
+            IconButton(onClick = onNext) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_navigate_before_24),
+                    contentDescription = stringResource(R.string.go_to_previous_subtopic)
+                )
+            }
+            IconButton(onClick = onPrevious) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_navigate_next_24),
+                    contentDescription = stringResource(R.string.go_to_next_subtopic)
+                )
+            }
+            IconButton(onClick = onDelete) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_delete_24),
+                    contentDescription = stringResource(R.string.open_delete_subtopic_dialog)
+                )
+            }
+            IconButton(onClick = onEdit) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_edit_24),
+                    contentDescription = stringResource(R.string.open_edit_subtopic_dialog)
+                )
+            }
+        }
     )
 }
 

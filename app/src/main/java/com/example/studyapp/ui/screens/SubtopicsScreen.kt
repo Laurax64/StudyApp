@@ -196,6 +196,7 @@ private fun SubtopicsScaffold(
                     SubtopicsTopAppBar(
                         topic = topic,
                         onSearch = { showSearchBar = true },
+                        onShare = {},
                         navigateBack = navigateBack
                     )
                 }
@@ -365,6 +366,7 @@ private fun SubtopicsTopAppBar(
     modifier: Modifier = Modifier,
     topic: Topic,
     onSearch: () -> Unit,
+    onShare: () -> Unit,
     navigateBack: () -> Unit
 ) {
     LargeFlexibleTopAppBar(
@@ -385,6 +387,12 @@ private fun SubtopicsTopAppBar(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp),
                     contentDescription = stringResource(R.string.subtopics_search),
+                )
+            }
+            IconButton(onClick = onShare) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_share_24),
+                    contentDescription = null
                 )
             }
         },
@@ -415,22 +423,16 @@ private fun SubtopicsToolbar(
             }
         },
         content = {
-            IconButton(onClick = onShare) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_share_24),
-                    contentDescription = "Localized description"
-                )
-            }
             IconButton(onClick = onDelete) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_delete_24),
-                    contentDescription = "Localized description"
+                    contentDescription = stringResource(R.string.open_delete_topic_dialog)
                 )
             }
             IconButton(onClick = onEdit) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_edit_24),
-                    contentDescription = "Localized description"
+                    contentDescription = stringResource(R.string.open_edit_topic_dialog)
                 )
             }
         }

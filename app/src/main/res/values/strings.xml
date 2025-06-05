@@ -53,4 +53,7 @@
     <string name="toggle_checked">Toggle checked</string>
     <string name="open_login">Open login</string>
     <string name="open_search">Open search</string>
+    <string name="go_to_next_subtopic">Go to next subtopic</string>
+    <string name="go_to_previous_subtopic">Go to previous subtopic</string>
+    <string name="open_delete_subtopic_dialog">Open delete subtopic dialog</string>
 </resources>
