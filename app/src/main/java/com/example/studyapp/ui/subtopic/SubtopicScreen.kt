@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -132,35 +133,41 @@ private fun SubtopicScaffold(
             dialogType = it
         )
     }
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            SubtopicTopAppBar(
-                subtopic = subtopic,
-                navigateBack = navigateBack,
-                toggleBookmarked = { updateSubtopic(subtopic.copy(bookmarked = !subtopic.bookmarked)) })
-        },
-    ) { innerPadding ->
-        Box(Modifier.padding(innerPadding)) {
-            SubtopicAnswerCard(
-                isScreenWidthCompact = isScreenWidthCompact,
-                subtopic = subtopic,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(paddingValues = innerPadding)
-                    .padding(horizontal = 16.dp)
-            )
-            SubtopicToolbar(
-                onDelete = { dialogType = SubtopicDialog.DELETE_SUBTOPIC },
-                onEdit = { dialogType = SubtopicDialog.EDIT_SUBTOPIC },
-                onCheck = { updateSubtopic(subtopic.copy(checked = true)) },
-                onNext = { uiState.nextSubtopicId?.let { navigateToSubtopic(it) } },
-                onPrevious = { uiState.previousSubtopicId?.let { navigateToSubtopic(it) } },
-                expanded = expanded,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(x = -ScreenOffset, y = -ScreenOffset),
-            )
+    if (!(dialogType == SubtopicDialog.EDIT_SUBTOPIC && isScreenWidthCompact)) {
+        Scaffold(
+            modifier = modifier,
+            topBar = {
+                SubtopicTopAppBar(
+                    subtopic = subtopic,
+                    navigateBack = navigateBack,
+                    toggleBookmarked = { updateSubtopic(subtopic.copy(bookmarked = !subtopic.bookmarked)) })
+            },
+        ) { innerPadding ->
+            Box(Modifier.padding(innerPadding)) {
+                SubtopicAnswerCard(
+                    isScreenWidthCompact = isScreenWidthCompact,
+                    subtopic = subtopic,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(paddingValues = innerPadding)
+                        .padding(horizontal = 16.dp)
+                )
+                SubtopicToolbar(
+                    onDelete = { dialogType = SubtopicDialog.DELETE_SUBTOPIC },
+                    onEdit = { dialogType = SubtopicDialog.EDIT_SUBTOPIC },
+                    onCheck = if (!subtopic.checked) {
+                        { updateSubtopic(subtopic.copy(checked = true)) }
+                    } else {
+                        null
+                    },
+                    onNext = uiState.nextSubtopicId?.let { id -> { navigateToSubtopic(id) } },
+                    onPrevious = uiState.previousSubtopicId?.let { id -> { navigateToSubtopic(id) } },
+                    expanded = expanded,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = -ScreenOffset, y = -ScreenOffset),
+                )
+            }
         }
     }
 }
@@ -331,51 +338,62 @@ private fun SubtopicToolbar(
     expanded: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    HorizontalFloatingToolbar(
-        modifier = modifier,
-        expanded = expanded,
-        colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
-        floatingActionButton = {
-            onCheck?.let {
-                VibrantFloatingActionButton(onClick = it) {
+
+    val content: @Composable RowScope.() -> Unit = {
+        onPrevious?.let {
+            IconButton(onClick = it) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_navigate_before_24),
+                    contentDescription = stringResource(R.string.go_to_previous_subtopic)
+                )
+            }
+        }
+        onNext?.let {
+            IconButton(onClick = it) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_navigate_next_24),
+                    contentDescription = stringResource(R.string.go_to_next_subtopic)
+                )
+            }
+        }
+        IconButton(onClick = onDelete) {
+            Icon(
+                painter = painterResource(R.drawable.baseline_delete_24),
+                contentDescription = stringResource(R.string.open_delete_subtopic_dialog)
+            )
+        }
+        IconButton(onClick = onEdit) {
+            Icon(
+                painter = painterResource(R.drawable.baseline_edit_24),
+                contentDescription = stringResource(R.string.open_edit_subtopic_dialog)
+            )
+        }
+    }
+
+    if (onCheck == null) {
+        HorizontalFloatingToolbar(
+            modifier = modifier,
+            expanded = expanded,
+            colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+            content = content
+        )
+    } else {
+        HorizontalFloatingToolbar(
+            modifier = modifier,
+            expanded = expanded,
+            colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+            floatingActionButton = {
+                VibrantFloatingActionButton(onClick = onCheck) {
                     Icon(
                         painter = painterResource(R.drawable.baseline_check_24),
                         contentDescription = stringResource(R.string.create_subtopic),
                     )
+
                 }
-            }
-        },
-        content = {
-            onPrevious?.let {
-                IconButton(onClick = it) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_navigate_before_24),
-                        contentDescription = stringResource(R.string.go_to_previous_subtopic)
-                    )
-                }
-            }
-            onNext?.let {
-                IconButton(onClick = it) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_navigate_next_24),
-                        contentDescription = stringResource(R.string.go_to_next_subtopic)
-                    )
-                }
-            }
-            IconButton(onClick = onDelete) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_delete_24),
-                    contentDescription = stringResource(R.string.open_delete_subtopic_dialog)
-                )
-            }
-            IconButton(onClick = onEdit) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_edit_24),
-                    contentDescription = stringResource(R.string.open_edit_subtopic_dialog)
-                )
-            }
-        }
-    )
+            },
+            content = content
+        )
+    }
 }
 
 @Preview(showSystemUi = true)
