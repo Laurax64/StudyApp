@@ -1,1 +1,2 @@
+# StudyApp
 StudyApp is an Android app I am continuously developing to practice as many Android development concepts as possible. Currently, it lets users add and store flashcards and decks. The app adapts to different screen sizes, and the UI was recently updated following Material 3 Expressive guidelines. More details about covered components and planned features can be found in the wiki and open issues.
