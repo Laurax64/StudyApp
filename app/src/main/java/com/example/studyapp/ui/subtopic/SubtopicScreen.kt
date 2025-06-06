@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.screens
+package com.example.studyapp.ui.subtopic
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,14 +11,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.FloatingToolbarDefaults.VibrantFloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,25 +49,26 @@ import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
-import com.example.studyapp.ui.viewmodels.SubtopicViewModel
 
 private enum class SubtopicDialog {
-    EDIT_SUBTOPIC,
-    DELETE_SUBTOPIC
+    EDIT_SUBTOPIC, DELETE_SUBTOPIC
 }
 
 @Composable
 fun SubtopicScreen(
-    subtopicViewModel: SubtopicViewModel,
+    viewModel: SubtopicViewModel,
     navigateBack: () -> Unit,
+    navigateToSubtopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val subtopic by subtopicViewModel.subtopic.collectAsStateWithLifecycle(null)
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     SubtopicScreen(
-        subtopic = subtopic,
-        updateSubtopic = subtopicViewModel::updateSubtopic,
-        deleteSubtopic = subtopicViewModel::deleteSubtopic,
+        uiState = uiState,
+        updateSubtopic = viewModel::updateSubtopic,
+        deleteSubtopic = viewModel::deleteSubtopic,
         modifier = modifier.padding(horizontal = 16.dp),
+        navigateToSubtopic = navigateToSubtopic,
         navigateBack = navigateBack
     )
 }
@@ -78,38 +76,44 @@ fun SubtopicScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SubtopicScreen(
-    subtopic: Subtopic?,
+    uiState: SubtopicUiState,
     updateSubtopic: (Subtopic) -> Unit,
     deleteSubtopic: () -> Unit,
     navigateBack: () -> Unit,
+    navigateToSubtopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (subtopic == null) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            LoadingIndicator()
-        }
-    } else {
-        SubtopicScaffold(
-            subtopic = subtopic,
-            updateSubtopic = updateSubtopic,
-            deleteSubtopic = deleteSubtopic,
-            navigateBack = navigateBack,
-            modifier = modifier,
-        )
+    when (uiState) {
+        SubtopicUiState.Loading ->
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                LoadingIndicator()
+            }
+
+        is SubtopicUiState.Success ->
+            SubtopicScaffold(
+                uiState = uiState,
+                updateSubtopic = updateSubtopic,
+                deleteSubtopic = deleteSubtopic,
+                navigateBack = navigateBack,
+                navigateToSubtopic = navigateToSubtopic,
+                modifier = modifier,
+            )
     }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SubtopicScaffold(
-    subtopic: Subtopic,
+    uiState: SubtopicUiState.Success,
     updateSubtopic: (Subtopic) -> Unit,
     deleteSubtopic: () -> Unit,
     navigateBack: () -> Unit,
+    navigateToSubtopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var dialogType by rememberSaveable { mutableStateOf<SubtopicDialog?>(null) }
     var expanded by rememberSaveable { mutableStateOf(true) }
+    val subtopic = uiState.subtopic
     val isScreenWidthCompact =
         !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
             WIDTH_DP_MEDIUM_LOWER_BOUND
@@ -133,15 +137,9 @@ private fun SubtopicScaffold(
         topBar = {
             SubtopicTopAppBar(
                 subtopic = subtopic,
-                onDeleteSubtopic = { dialogType = SubtopicDialog.DELETE_SUBTOPIC },
-                onEditSubtopic = { dialogType = SubtopicDialog.EDIT_SUBTOPIC },
                 navigateBack = navigateBack,
-                toggleBookmarked = { updateSubtopic(subtopic.copy(bookmarked = !subtopic.bookmarked)) }
-            )
+                toggleBookmarked = { updateSubtopic(subtopic.copy(bookmarked = !subtopic.bookmarked)) })
         },
-        floatingActionButton = {
-
-        }
     ) { innerPadding ->
         Box(Modifier.padding(innerPadding)) {
             SubtopicAnswerCard(
@@ -155,14 +153,13 @@ private fun SubtopicScaffold(
             SubtopicToolbar(
                 onDelete = { dialogType = SubtopicDialog.DELETE_SUBTOPIC },
                 onEdit = { dialogType = SubtopicDialog.EDIT_SUBTOPIC },
-                onCheck = {/*TODO*/ },
-                onNext = { /*TODO*/ },
-                onPrevious = { /*TODO*/ },
+                onCheck = { updateSubtopic(subtopic.copy(checked = true)) },
+                onNext = { uiState.nextSubtopicId?.let { navigateToSubtopic(it) } },
+                onPrevious = { uiState.previousSubtopicId?.let { navigateToSubtopic(it) } },
                 expanded = expanded,
-                modifier =
-                    Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset(x = -ScreenOffset, y = -ScreenOffset),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = -ScreenOffset, y = -ScreenOffset),
             )
         }
     }
@@ -170,14 +167,11 @@ private fun SubtopicScaffold(
 
 @Composable
 private fun SubtopicAnswerCard(
-    isScreenWidthCompact: Boolean,
-    subtopic: Subtopic,
-    modifier: Modifier = Modifier
+    isScreenWidthCompact: Boolean, subtopic: Subtopic, modifier: Modifier = Modifier
 ) {
     if (isScreenWidthCompact) {
         Column(
-            modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AsyncImage(
                 model = subtopic.imageUri,
@@ -217,51 +211,11 @@ private fun SubtopicAnswerCard(
     }
 }
 
-@Composable
-private fun MoreActionsMenu(
-    shareSubtopic: () -> Unit,
-    onDeleteSubtopic: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
-
-    Column(modifier, horizontalAlignment = Alignment.End) {
-        Icon(
-            painter = painterResource(R.drawable.baseline_more_vert_24),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            contentDescription = stringResource(R.string.menu),
-            modifier = Modifier.clickable { expanded = true })
-
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.share)) },
-                onClick = { shareSubtopic() },
-                leadingIcon = {
-
-                }
-            )
-            HorizontalDivider()
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.delete)) },
-                onClick = { onDeleteSubtopic() },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_delete_outline_24),
-                        contentDescription = stringResource(R.string.open_delete_topic_dialog)
-                    )
-                }
-            )
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun SubtopicTopAppBar(
     subtopic: Subtopic,
-    onDeleteSubtopic: () -> Unit,
     navigateBack: () -> Unit,
-    onEditSubtopic: () -> Unit,
     toggleBookmarked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -294,10 +248,6 @@ private fun SubtopicTopAppBar(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     contentDescription = null
                 )
-                MoreActionsMenu(
-                    shareSubtopic = { /* TODO: Implement share functionality */ },
-                    onDeleteSubtopic = onDeleteSubtopic
-                )
             }
         }
     )
@@ -314,31 +264,27 @@ private fun SubtopicDialog(
     modifier: Modifier = Modifier
 ) {
     when (dialogType) {
-        SubtopicDialog.DELETE_SUBTOPIC ->
-            DeleteSubtopicDialog(
-                modifier = modifier,
-                onDismiss = dismissDialog,
-                deleteSubtopic = deleteSubtopic,
-                subtopicTitle = subtopic.title
-            )
+        SubtopicDialog.DELETE_SUBTOPIC -> DeleteSubtopicDialog(
+            modifier = modifier,
+            onDismiss = dismissDialog,
+            deleteSubtopic = deleteSubtopic,
+            subtopicTitle = subtopic.title
+        )
 
-        SubtopicDialog.EDIT_SUBTOPIC ->
-            SaveSubtopicDialog(
-                modifier = modifier,
-                titleId = R.string.edit_subtopic,
-                onDismiss = dismissDialog,
-                isFullScreenDialog = isScreenWidthCompact,
-                saveSubtopic = { title, description, imageUri ->
-                    updateSubtopic(
-                        subtopic.copy(
-                            title = title,
-                            description = description,
-                            imageUri = imageUri
-                        )
+        SubtopicDialog.EDIT_SUBTOPIC -> SaveSubtopicDialog(
+            modifier = modifier,
+            titleId = R.string.edit_subtopic,
+            onDismiss = dismissDialog,
+            isFullScreenDialog = isScreenWidthCompact,
+            saveSubtopic = { title, description, imageUri ->
+                updateSubtopic(
+                    subtopic.copy(
+                        title = title, description = description, imageUri = imageUri
                     )
-                },
-                subtopic = subtopic
-            )
+                )
+            },
+            subtopic = subtopic
+        )
     }
 }
 
@@ -354,12 +300,7 @@ private fun DeleteSubtopicDialog(
         title = { Text(stringResource(R.string.delete_subtopic_dialog_title)) },
         text = { Text(stringResource(R.string.delete_subtopic_dialog_description, subtopicTitle)) },
         confirmButton = {
-            TextButton(onClick = {
-                deleteSubtopic()
-                onDismiss()
-            }
-            )
-            {
+            TextButton(onClick = deleteSubtopic) {
                 Text(stringResource(R.string.delete))
             }
         },
@@ -368,42 +309,58 @@ private fun DeleteSubtopicDialog(
     )
 }
 
+/**
+ * A horizontal floating toolbar for the subtopic screen.
+ *
+ * @param onDelete the action to perform when the delete button is clicked.
+ * @param onEdit the action to perform when the edit button is clicked.
+ * @param onCheck the function to check the topic or null if it is already checked.
+ * @param onNext the action to perform when the next button is clicked or null if there is no next subtopic.
+ * @param onPrevious the action to perform when the previous button is clicked or null if there is no previous subtopic.
+ * @param expanded whether the toolbar is expanded or not.
+ * @param modifier the modifier to apply to this layout.
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SubtopicToolbar(
     onDelete: () -> Unit,
     onEdit: () -> Unit,
-    onCheck: () -> Unit,
-    onNext: () -> Unit,
-    onPrevious: () -> Unit,
+    onCheck: (() -> Unit)?,
+    onNext: (() -> Unit)?,
+    onPrevious: (() -> Unit)?,
+    expanded: Boolean,
     modifier: Modifier = Modifier,
-    expanded: Boolean
 ) {
     HorizontalFloatingToolbar(
         modifier = modifier,
         expanded = expanded,
         colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
-        floatingActionButton =
-            {
-                VibrantFloatingActionButton(onClick = onCheck) {
+        floatingActionButton = {
+            onCheck?.let {
+                VibrantFloatingActionButton(onClick = it) {
                     Icon(
                         painter = painterResource(R.drawable.baseline_check_24),
                         contentDescription = stringResource(R.string.create_subtopic),
                     )
                 }
-            },
-        content = {
-            IconButton(onClick = onNext) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_navigate_before_24),
-                    contentDescription = stringResource(R.string.go_to_previous_subtopic)
-                )
             }
-            IconButton(onClick = onPrevious) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_navigate_next_24),
-                    contentDescription = stringResource(R.string.go_to_next_subtopic)
-                )
+        },
+        content = {
+            onPrevious?.let {
+                IconButton(onClick = it) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_navigate_before_24),
+                        contentDescription = stringResource(R.string.go_to_previous_subtopic)
+                    )
+                }
+            }
+            onNext?.let {
+                IconButton(onClick = it) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_navigate_next_24),
+                        contentDescription = stringResource(R.string.go_to_next_subtopic)
+                    )
+                }
             }
             IconButton(onClick = onDelete) {
                 Icon(
@@ -430,16 +387,24 @@ private fun SubtopicToolbar(
 private fun SubtopicScreenPreview() {
     StudyAppTheme {
         SubtopicScreen(
-            subtopic = Subtopic(
-                id = 1,
-                title = "Subtopic Title",
-                description = "Subtopic Description",
-                checked = false,
-                bookmarked = false,
-                topicId = 1,
-                imageUri = null
+            uiState = SubtopicUiState.Success(
+                subtopic = Subtopic(
+                    id = 1,
+                    title = "Subtopic Title",
+                    description = "Subtopic Description",
+                    checked = false,
+                    bookmarked = false,
+                    topicId = 1,
+                    imageUri = null,
+                    index = 1
+                ),
+                previousSubtopicId = 0,
+                nextSubtopicId = 2,
             ),
-            updateSubtopic = {}, deleteSubtopic = {}, navigateBack = {}
+            updateSubtopic = {},
+            deleteSubtopic = {},
+            navigateBack = {},
+            navigateToSubtopic = {}
         )
     }
 }

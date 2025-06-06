@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.screens
+package com.example.studyapp.ui.topics
 
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
@@ -37,7 +37,6 @@ import com.example.studyapp.ui.components.study.AdaptiveFAB
 import com.example.studyapp.ui.components.study.SaveTopicDialog
 import com.example.studyapp.ui.components.study.TopicsLazyColumn
 import com.example.studyapp.ui.theme.StudyAppTheme
-import com.example.studyapp.ui.viewmodels.TopicsViewModel
 
 @Composable
 fun TopicsScreen(

@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.viewmodels
+package com.example.studyapp.ui.topics
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -18,7 +18,7 @@ class TopicsViewModel @Inject constructor(
     val topics = topicsRepository.getAllTopics()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
+            started = SharingStarted.Companion.WhileSubscribed(5_000),
             initialValue = null
         )
 

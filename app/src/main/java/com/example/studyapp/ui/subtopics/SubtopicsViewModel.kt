@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.viewmodels
+package com.example.studyapp.ui.subtopics
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -24,21 +24,21 @@ class SubtopicsViewModel @Inject constructor(
     val topic = topicsRepository.getTopic(id = topicId)
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
+            started = SharingStarted.Companion.WhileSubscribed(5_000),
             initialValue = null,
         )
 
     val subtopics = subtopicsRepository.getAllSubtopics(topicId = topicId)
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
+            started = SharingStarted.Companion.WhileSubscribed(5_000),
             initialValue = null
         )
 
     val topics = topicsRepository.getAllTopics()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
+            started = SharingStarted.Companion.WhileSubscribed(5_000),
             initialValue = null
         )
 
@@ -55,7 +55,8 @@ class SubtopicsViewModel @Inject constructor(
                     bookmarked = false,
                     description = description,
                     imageUri = imageUri,
-                    topicId = topicId
+                    topicId = topicId,
+                    index = subtopics.value?.size ?: 0
                 )
             )
         }
@@ -74,4 +75,5 @@ class SubtopicsViewModel @Inject constructor(
             }
         }
     }
+
 }
