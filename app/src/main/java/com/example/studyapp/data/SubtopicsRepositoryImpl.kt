@@ -6,8 +6,8 @@ class SubtopicsRepositoryImpl(private val subtopicDao: SubtopicDao) : SubtopicsR
     override suspend fun insertSubtopic(subtopic: Subtopic) =
         subtopicDao.insert(subtopic = subtopic)
 
-    override suspend fun deleteSubtopic(subtopic: Subtopic) =
-        subtopicDao.delete(subtopic = subtopic)
+    override suspend fun deleteSubtopic(id: Int) =
+        subtopicDao.delete(id = id)
 
     override suspend fun updateSubtopic(subtopic: Subtopic) =
         subtopicDao.update(subtopic = subtopic)

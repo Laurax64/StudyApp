@@ -6,9 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.SubtopicsRepository
 import com.example.studyapp.data.Topic
+import com.example.studyapp.data.TopicWithProgress
 import com.example.studyapp.data.TopicsRepository
+import com.example.studyapp.domain.GetTopicWithProgressUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -17,16 +20,11 @@ import javax.inject.Inject
 @HiltViewModel
 class SubtopicsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    getTopicWithProgressUseCase: GetTopicWithProgressUseCase,
     private val topicsRepository: TopicsRepository,
     private val subtopicsRepository: SubtopicsRepository,
 ) : ViewModel() {
     private val topicId: Int = savedStateHandle["topicId"] ?: -1
-    val topic = topicsRepository.getTopic(id = topicId)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5_000),
-            initialValue = null,
-        )
 
     val subtopics = subtopicsRepository.getAllSubtopics(topicId = topicId)
         .stateIn(
@@ -35,12 +33,18 @@ class SubtopicsViewModel @Inject constructor(
             initialValue = null
         )
 
-    val topics = topicsRepository.getAllTopics()
+    val topics = getTopicWithProgressUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Companion.WhileSubscribed(5_000),
             initialValue = null
         )
+
+    val topic: StateFlow<TopicWithProgress?> = getTopicWithProgressUseCase(id = topicId).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Companion.WhileSubscribed(5_000),
+        initialValue = null
+    )
 
     fun createSubtopic(
         title: String,

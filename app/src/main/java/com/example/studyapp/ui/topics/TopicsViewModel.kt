@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studyapp.data.Topic
 import com.example.studyapp.data.TopicsRepository
-import com.example.studyapp.domain.GetTopicsUseCase
+import com.example.studyapp.domain.GetTopicsWithProgressUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TopicsViewModel @Inject constructor(
-    getTopicsWithProgress: GetTopicsUseCase,
+    getTopicsWithProgress: GetTopicsWithProgressUseCase,
     private val topicsRepository: TopicsRepository
 ) : ViewModel() {
     val topics = getTopicsWithProgress().stateIn(

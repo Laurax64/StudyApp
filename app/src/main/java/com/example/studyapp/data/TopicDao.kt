@@ -1,7 +1,6 @@
 package com.example.studyapp.data
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -16,8 +15,8 @@ interface TopicDao {
     @Update
     suspend fun update(topic: Topic)
 
-    @Delete
-    suspend fun delete(topic: Topic)
+    @Query("DELETE from topics WHERE id = :id")
+    suspend fun delete(id: Int)
 
     @Query("SELECT * from topics WHERE id = :id")
     fun getTopic(id: Int): Flow<Topic?>
