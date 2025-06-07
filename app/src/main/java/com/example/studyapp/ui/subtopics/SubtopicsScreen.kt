@@ -295,11 +295,13 @@ private fun <T> SubtopicsNavigableListDetailPaneScaffold(
         listPane = {
             AnimatedPane {
                 if (paneAdaptedValue == PaneAdaptedValue.Expanded) {
-                    TopicsLazyColumn(
-                        topics = topics,
-                        navigateToTopic = navigateToTopic,
-                        selectedTopicId = topic.id,
-                    )
+                    AnimatedContent(targetState = topics) {
+                        TopicsLazyColumn(
+                            topics = it,
+                            navigateToTopic = navigateToTopic,
+                            selectedTopicId = topic.id,
+                        )
+                    }
                 } else {
                     if (paneAdaptedValue == PaneAdaptedValue.Hidden) {
                         SubtopicsPaneContent(
