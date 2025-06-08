@@ -8,7 +8,7 @@ import com.example.studyapp.data.SubtopicsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,36 +20,25 @@ class SubtopicViewModel @Inject constructor(
 ) : ViewModel() {
     private val subtopicId: Int = savedStateHandle["subtopicId"] ?: -1
     private val topicId: Int = savedStateHandle["topicId"] ?: -1
-    private val subtopics = subtopicsRepository.getAllSubtopics(topicId = topicId)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
-        )
 
-    private val subtopic = subtopicsRepository.getSubtopic(id = subtopicId)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
-        )
-
-    val uiState: StateFlow<SubtopicUiState> = subtopic.combine(subtopics) { subtopic, subtopics ->
-        if (subtopics != null && subtopic != null) {
+    val uiState: StateFlow<SubtopicUiState> =
+        subtopicsRepository.getAllSubtopics(topicId = topicId).map { subtopics ->
+            val subtopic = subtopics.find { it.id == subtopicId }
             val index = subtopics.indexOfFirst { it.id == subtopicId }
-            SubtopicUiState.Success(
-                subtopic = subtopic,
-                previousSubtopicId = subtopics.getOrNull(index - 1)?.id,
-                nextSubtopicId = subtopics.getOrNull(index + 1)?.id
-            )
-        } else {
-            SubtopicUiState.Loading
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = SubtopicUiState.Loading
-    )
+            if (subtopic != null) {
+                SubtopicUiState.Success(
+                    subtopic = subtopic,
+                    previousSubtopicId = subtopics.getOrNull(index - 1)?.id,
+                    nextSubtopicId = subtopics.getOrNull(index + 1)?.id
+                )
+            } else {
+                SubtopicUiState.Loading
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = SubtopicUiState.Loading
+        )
 
     fun updateSubtopic(subtopic: Subtopic) {
         viewModelScope.launch {

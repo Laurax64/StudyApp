@@ -17,7 +17,6 @@ class GetTopicsWithProgressUseCase @Inject constructor(
 ) {
     /**
      * Returns a list of topics with their associated progress.
-     *
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<List<TopicWithProgress>> =
