@@ -180,7 +180,7 @@ private fun TopicsPaneContent(
             )
         } else {
             TopicsLazyColumn(
-                topics = topics,
+                topicsWithProgress = topics,
                 navigateToTopic = navigateToTopic,
                 modifier = modifier
                     .fillMaxSize()
@@ -204,7 +204,7 @@ private fun TopicsSearchBar(
         placeholderText = stringResource(R.string.search_in_topics)
     ) {
         TopicsLazyColumn(
-            topics = it,
+            topicsWithProgress = it,
             navigateToTopic = navigateToTopic,
             modifier = modifier
                 .fillMaxSize()

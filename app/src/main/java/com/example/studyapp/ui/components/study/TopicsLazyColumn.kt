@@ -19,10 +19,11 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.studyapp.data.Topic
+import com.example.studyapp.data.TopicWithProgress
 
 @Composable
 internal fun TopicsLazyColumn(
-    topics: List<Topic>,
+    topicsWithProgress: List<TopicWithProgress>,
     navigateToTopic: (Int) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState(),
@@ -36,17 +37,17 @@ internal fun TopicsLazyColumn(
 
 
     LazyColumn(modifier = modifier, state = state) {
-        items(topics) { topic ->
+        items(topicsWithProgress) { topicWithProgress ->
             var colors = ListItemDefaults.colors()
-            if (selectedTopicId == topic.id) {
+            if (selectedTopicId == topicWithProgress.topic.id) {
                 colors =
                     ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             }
             TopicListItem(
-                topic = topic,
+                topic = topicWithProgress,
                 colors = colors,
                 modifier = Modifier
-                    .clickable { navigateToTopic(topic.id) }
+                    .clickable { navigateToTopic(topicWithProgress.id) }
                     .fillMaxWidth()
             )
         }
