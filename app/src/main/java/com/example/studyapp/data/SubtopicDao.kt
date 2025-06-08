@@ -15,11 +15,11 @@ interface SubtopicDao {
     @Update
     suspend fun update(subtopic: Subtopic)
 
-    @Query("DELETE from subtopics WHERE id = :id")
-    suspend fun delete(id: Int)
+    @Query("DELETE from subtopics WHERE id = :subtopicId")
+    suspend fun delete(subtopicId: Int)
 
-    @Query("SELECT * from subtopics WHERE id = :id")
-    fun getSubtopic(id: Int): Flow<Subtopic?>
+    @Query("SELECT * from subtopics WHERE id = :subtopicId")
+    fun getSubtopic(subtopicId: Int): Flow<Subtopic?>
 
     @Query("SELECT * from subtopics")
     fun getAllSubtopics(topicId: Int): Flow<List<Subtopic>>

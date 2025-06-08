@@ -20,13 +20,17 @@ fun StudyAppNavHost(
     NavHost(navController = navController, startDestination = TopicsRoute, modifier = modifier) {
         topicsScreen(navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) })
         subtopicsScreen(
-            navigateToSubtopic = { navController.navigate(route = SubtopicRoute(subtopicId = it)) },
+            navigateToSubtopic = {
+                navController.navigate(route = SubtopicRoute(subtopicId = it))
+            },
             navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) },
             navigateBack = { navController.popBackStack() },
         )
         subtopicScreen(
             navigateBack = navController::popBackStack,
-            navigateToSubtopic = { navController.navigate(route = SubtopicRoute(subtopicId = it)) }
+            navigateToSubtopic = {
+                navController.navigate(route = SubtopicRoute(subtopicId = it))
+            }
         )
         datesScreen()
         aIAssistantScreen()

@@ -6,7 +6,7 @@ interface TopicsRepository {
 
     suspend fun insertTopic(topic: Topic)
 
-    suspend fun deleteTopic(id: Int)
+    suspend fun deleteTopic(topicId: Int)
 
     suspend fun updateTopic(topic: Topic)
 

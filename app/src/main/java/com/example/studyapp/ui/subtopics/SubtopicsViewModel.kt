@@ -73,7 +73,8 @@ class SubtopicsViewModel @Inject constructor(
 
     fun deleteTopic() {
         viewModelScope.launch {
-            topicsRepository.deleteTopic(id = topicId)
+            topicsRepository.deleteTopic(topicId = topicId)
+            subtopicsRepository.deleteAssociatedSubtopics(topicId = topicId)
         }
     }
 }
