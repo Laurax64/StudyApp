@@ -28,7 +28,7 @@ class SubtopicsViewModel @Inject constructor(
 
     val uiState: StateFlow<SubtopicsUiState> = combine(
         getTopicsWithProgressUseCase(),
-        subtopicsRepository.getAllSubtopics(topicId = topicId)
+        subtopicsRepository.getAllAssociatedSubtopics(topicId = topicId)
     ) { topics, subtopics ->
         val selectedTopic = topics.find { it.topic.id == topicId }?.topic
         if (selectedTopic != null) {

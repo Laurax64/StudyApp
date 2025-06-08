@@ -716,13 +716,11 @@ private fun SubtopicsScreenPreview() {
                 ),
                 topicsWithProgress = listOf(
                     TopicWithProgress(
-                        topic = Topic(id = 1, title = "Topic 1", checked = false),
+                        topic = Topic(id = 1, title = "Topic 1"),
                         checked = true
                     )
                 ),
-                selectedTopic = Topic(
-                    id = 1, title = "Android Taint Analysis", checked = false
-                )
+                selectedTopic = Topic(id = 1, title = "Android Taint Analysis")
             ),
             navigateToSubtopic = {},
             navigateToTopic = {},

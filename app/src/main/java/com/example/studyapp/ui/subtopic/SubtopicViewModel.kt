@@ -22,7 +22,7 @@ class SubtopicViewModel @Inject constructor(
     private val topicId: Int = savedStateHandle["topicId"] ?: -1
 
     val uiState: StateFlow<SubtopicUiState> =
-        subtopicsRepository.getAllSubtopics(topicId = topicId).map { subtopics ->
+        subtopicsRepository.getAllAssociatedSubtopics(topicId = topicId).map { subtopics ->
             val subtopic = subtopics.find { it.id == subtopicId }
             val index = subtopics.indexOfFirst { it.id == subtopicId }
             if (subtopic != null) {

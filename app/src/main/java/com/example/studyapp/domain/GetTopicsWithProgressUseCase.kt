@@ -1,11 +1,11 @@
 package com.example.studyapp.domain
 
+import com.example.studyapp.data.SubtopicsRepository
 import com.example.studyapp.data.TopicWithProgress
 import com.example.studyapp.data.TopicsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
 /**
@@ -13,21 +13,23 @@ import javax.inject.Inject
  */
 class GetTopicsWithProgressUseCase @Inject constructor(
     private val topicsRepository: TopicsRepository,
-    private val getTopicWithProgressUseCase: GetTopicWithProgressUseCase,
+    private val subtopicsRepository: SubtopicsRepository
 ) {
     /**
      * Returns a list of topics with their associated progress.
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<List<TopicWithProgress>> =
-        topicsRepository.getAllTopics()
-            .flatMapLatest { topics ->
-                val progressFlows = topics.map { topic ->
-                    getTopicWithProgressUseCase(topic.id)
-                }
-                combine(progressFlows) { progressArray ->
-                    progressArray.toList()
-                }
+        combine(
+            topicsRepository.getAllTopics(),
+            subtopicsRepository.getAllSubtopics()
+        ) { topics, subtopics ->
+            topics.map { topic ->
+                TopicWithProgress(
+                    topic = topic,
+                    checked = subtopics.all { it.checked && it.topicId == topic.id }
+                )
             }
+        }
 
 }

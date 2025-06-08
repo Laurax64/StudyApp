@@ -56,7 +56,7 @@ internal fun SaveTopicDialog(
                     if (topic != null) {
                         onSave(topic.copy(title = topicTitle))
                     } else {
-                        onSave(Topic(title = topicTitle, checked = false))
+                        onSave(Topic(title = topicTitle))
                     }
                     onDismiss()
                 }
