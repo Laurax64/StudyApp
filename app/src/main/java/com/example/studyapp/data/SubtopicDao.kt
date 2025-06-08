@@ -21,7 +21,7 @@ interface SubtopicDao {
     @Query("SELECT * from subtopics WHERE id = :subtopicId")
     fun getSubtopic(subtopicId: Int): Flow<Subtopic?>
 
-    @Query("SELECT * from subtopics")
+    @Query("SELECT * from subtopics WHERE topicId = :topicId")
     fun getAllSubtopics(topicId: Int): Flow<List<Subtopic>>
 
     @Query("DELETE from subtopics WHERE topicId = :topicId")
