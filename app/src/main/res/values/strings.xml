@@ -56,4 +56,6 @@
     <string name="go_to_next_subtopic">Go to next subtopic</string>
     <string name="go_to_previous_subtopic">Go to previous subtopic</string>
     <string name="open_delete_subtopic_dialog">Open delete subtopic dialog</string>
+    <string name="could_not_show_content">Could not show content</string>
+    <string name="Back">Retry</string>
 </resources>

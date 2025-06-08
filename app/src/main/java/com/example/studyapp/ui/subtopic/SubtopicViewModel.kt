@@ -25,7 +25,9 @@ class SubtopicViewModel @Inject constructor(
         subtopicsRepository.getAllAssociatedSubtopics(topicId = topicId).map { subtopics ->
             val subtopic = subtopics.find { it.id == subtopicId }
             val index = subtopics.indexOfFirst { it.id == subtopicId }
-            if (subtopic != null) {
+            if (subtopicId == -1) {
+                SubtopicUiState.Error
+            } else if (subtopic != null) {
                 SubtopicUiState.Success(
                     subtopic = subtopic,
                     previousSubtopicId = subtopics.getOrNull(index - 1)?.id,
@@ -60,6 +62,7 @@ sealed interface SubtopicUiState {
         val previousSubtopicId: Int? = null,
         val nextSubtopicId: Int? = null
     ) : SubtopicUiState
+    object Error : SubtopicUiState
 }
 
 

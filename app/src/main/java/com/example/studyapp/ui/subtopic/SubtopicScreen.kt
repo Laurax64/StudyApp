@@ -1,5 +1,6 @@
 package com.example.studyapp.ui.subtopic
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
@@ -89,7 +91,6 @@ private fun SubtopicScreen(
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 LoadingIndicator()
             }
-
         is SubtopicUiState.Success ->
             SubtopicScaffold(
                 uiState = uiState,
@@ -99,6 +100,8 @@ private fun SubtopicScreen(
                 navigateToSubtopic = navigateToSubtopic,
                 modifier = modifier,
             )
+        SubtopicUiState.Error ->
+            ErrorScreen(onBack = navigateBack)
     }
 }
 
@@ -396,13 +399,34 @@ private fun SubtopicToolbar(
     }
 }
 
+@Composable
+private fun ErrorScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.baseline_error_outline_24),
+            contentDescription = null
+        )
+        Text(
+            text = stringResource(R.string.could_not_show_content),
+            modifier = Modifier.padding(16.dp)
+        )
+        Button(onClick = onBack) {
+            Text(stringResource(R.string.Back))
+        }
+    }
+}
+
 @Preview(showSystemUi = true)
 @PreviewLightDark
 @PreviewScreenSizes
 @PreviewDynamicColors
 @PreviewFontScale
 @Composable
-private fun SubtopicScreenPreview() {
+private fun SubtopicScreenSuccessPreview() {
     StudyAppTheme {
         SubtopicScreen(
             uiState = SubtopicUiState.Success(
