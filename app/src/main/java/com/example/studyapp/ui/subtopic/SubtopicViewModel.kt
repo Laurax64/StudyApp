@@ -51,23 +51,15 @@ class SubtopicViewModel @Inject constructor(
         initialValue = SubtopicUiState.Loading
     )
 
-    fun updateSubtopic(updatedSubtopic: Subtopic) {
+    fun updateSubtopic(subtopic: Subtopic) {
         viewModelScope.launch {
-            subtopicsRepository.updateSubtopic(subtopic = updatedSubtopic)
+            subtopicsRepository.updateSubtopic(subtopic = subtopic)
         }
     }
 
-    /**
-     * Deletes the current subtopic and updates the index of all subtopics that come after it by
-     * decreasing their index by 1.
-     */
     fun deleteSubtopic() {
-        val subtopics = subtopics.value ?: return
-        val subtopic = subtopic.value ?: return
-        val successors = subtopics.drop(subtopic.index + 1)
         viewModelScope.launch {
-            successors.forEach { subtopicsRepository.updateSubtopic(it.copy(index = it.index - 1)) }
-            subtopicsRepository.deleteSubtopic(subtopic = subtopic)
+            subtopicsRepository.deleteSubtopic(id = subtopicId)
         }
     }
 }

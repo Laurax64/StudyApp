@@ -414,7 +414,6 @@ private fun SubtopicScreenPreview() {
                     bookmarked = false,
                     topicId = 1,
                     imageUri = null,
-                    index = 1
                 ),
                 previousSubtopicId = 0,
                 nextSubtopicId = 2,

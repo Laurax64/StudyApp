@@ -48,7 +48,7 @@ fun TopicsScreen(
     Log.d("TopicsScreen", "Collected topics: $topics")
     TopicsScreen(
         topics = topics,
-        saveTopic = topicsViewModel::saveTopic,
+        saveTopic = topicsViewModel::insertTopic,
         navigateToSubtopics = navigateToTopic,
         modifier = modifier
     )

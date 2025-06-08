@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 data class Subtopic(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val index: Int,
     val topicId: Int,
     val title: String,
     val description: String,

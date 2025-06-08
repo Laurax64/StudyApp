@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 class TopicsRepositoryImpl(private val topicDao: TopicDao) : TopicsRepository {
     override suspend fun insertTopic(topic: Topic) = topicDao.insert(topic = topic)
 
-    override suspend fun deleteTopic(id: Int) = topicDao.delete(topic = id)
+    override suspend fun deleteTopic(id: Int) = topicDao.delete(id = id)
 
     override suspend fun updateTopic(topic: Topic) = topicDao.update(topic = topic)
 

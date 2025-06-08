@@ -9,6 +9,7 @@ import com.example.studyapp.data.Topic
 import com.example.studyapp.data.TopicWithProgress
 import com.example.studyapp.data.TopicsRepository
 import com.example.studyapp.domain.GetTopicWithProgressUseCase
+import com.example.studyapp.domain.GetTopicsWithProgressUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class SubtopicsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     getTopicWithProgressUseCase: GetTopicWithProgressUseCase,
+    getTopicsWithProgressUseCase: GetTopicsWithProgressUseCase,
     private val topicsRepository: TopicsRepository,
     private val subtopicsRepository: SubtopicsRepository,
 ) : ViewModel() {
@@ -33,7 +35,7 @@ class SubtopicsViewModel @Inject constructor(
             initialValue = null
         )
 
-    val topics = getTopicWithProgressUseCase()
+    val topics = getTopicsWithProgressUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Companion.WhileSubscribed(5_000),
@@ -60,7 +62,6 @@ class SubtopicsViewModel @Inject constructor(
                     description = description,
                     imageUri = imageUri,
                     topicId = topicId,
-                    index = subtopics.value?.size ?: 0
                 )
             )
         }
@@ -75,7 +76,7 @@ class SubtopicsViewModel @Inject constructor(
     fun deleteTopic() {
         viewModelScope.launch {
             topic.first()?.let {
-                topicsRepository.deleteTopic(topic = it)
+                topicsRepository.deleteTopic(id = it.topic.id)
             }
         }
     }

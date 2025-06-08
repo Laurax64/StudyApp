@@ -633,7 +633,6 @@ private fun SubtopicsScreenPreview() {
             subtopics = listOf(
                 Subtopic(
                     id = 1,
-                    index = 0,
                     topicId = 0,
                     title = "Golden Retriever",
                     description = "Friendly, intelligent, and great with families.",
@@ -643,7 +642,6 @@ private fun SubtopicsScreenPreview() {
                 ),
                 Subtopic(
                     id = 2,
-                    index = 1,
                     topicId = 0,
                     title = "Labrador Retriever",
                     description = "Outgoing, loyal, and super trainable.",
@@ -653,7 +651,6 @@ private fun SubtopicsScreenPreview() {
                 ),
                 Subtopic(
                     id = 3,
-                    index = 2,
                     topicId = 0,
                     title = "German Shepherd",
                     description = "Brave, confident, and excellent working dogs.",
@@ -663,7 +660,6 @@ private fun SubtopicsScreenPreview() {
                 ),
                 Subtopic(
                     id = 4,
-                    index = 3,
                     topicId = 0,
                     title = "Pomeranian",
                     description = "Small, fluffy, and full of personality.",
@@ -673,7 +669,6 @@ private fun SubtopicsScreenPreview() {
                 ),
                 Subtopic(
                     id = 5,
-                    index = 4,
                     topicId = 0,
                     title = "Border Collie",
                     description = "Highly energetic and the smartest of all breeds.",
@@ -683,7 +678,6 @@ private fun SubtopicsScreenPreview() {
                 ),
                 Subtopic(
                     id = 6,
-                    index = 5,
                     topicId = 0,
                     title = "Dachshund",
                     description = "Long-bodied and playful with a bold attitude.",
@@ -693,7 +687,6 @@ private fun SubtopicsScreenPreview() {
                 ),
                 Subtopic(
                     id = 7,
-                    index = 6,
                     topicId = 0,
                     title = "French Bulldog",
                     description = "Compact and charming with a lovable snort.",
@@ -703,7 +696,6 @@ private fun SubtopicsScreenPreview() {
                 ),
                 Subtopic(
                     id = 8,
-                    index = 7,
                     topicId = 0,
                     title = "Cocker Spaniel",
                     description = "Gentle, sweet, and always ready to cuddle.",
@@ -713,7 +705,6 @@ private fun SubtopicsScreenPreview() {
                 ),
                 Subtopic(
                     id = 9,
-                    index = 8,
                     topicId = 0,
                     title = "Great Dane",
                     description = "A gentle giant with a calm and loving nature.",
@@ -723,7 +714,6 @@ private fun SubtopicsScreenPreview() {
                 ),
                 Subtopic(
                     id = 10,
-                    index = 9,
                     topicId = 0,
                     title = "Siberian Husky",
                     description = "Beautiful, energetic, and known for their striking blue eyes.",

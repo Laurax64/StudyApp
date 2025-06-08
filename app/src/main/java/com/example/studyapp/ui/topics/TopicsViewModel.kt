@@ -22,7 +22,7 @@ class TopicsViewModel @Inject constructor(
         initialValue = null
     )
 
-    fun saveTopic(topic: Topic) {
+    fun insertTopic(topic: Topic) {
         viewModelScope.launch {
             topicsRepository.insertTopic(topic = topic)
         }
