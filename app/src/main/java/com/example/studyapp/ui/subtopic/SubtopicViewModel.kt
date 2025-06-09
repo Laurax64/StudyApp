@@ -8,7 +8,7 @@ import com.example.studyapp.data.SubtopicsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,17 +22,19 @@ class SubtopicViewModel @Inject constructor(
     private val topicId: Int = savedStateHandle["topicId"] ?: -1
 
     val uiState: StateFlow<SubtopicUiState> =
-        subtopicsRepository.getAllAssociatedSubtopics(topicId = topicId).map { subtopics ->
-            val subtopic = subtopics.find { it.id == subtopicId }
-            val index = subtopics.indexOfFirst { it.id == subtopicId }
-            if (subtopicId == -1) {
-                SubtopicUiState.Error
-            } else if (subtopic != null) {
+        combine(
+            subtopicsRepository.getSubtopic(subtopicId = subtopicId),
+            subtopicsRepository.getAllAssociatedSubtopics(topicId = topicId)
+        ) { subtopic, subtopics ->
+            if (subtopic != null) {
+                val index = subtopics.indexOfFirst { it.id == subtopicId }
                 SubtopicUiState.Success(
                     subtopic = subtopic,
                     previousSubtopicId = subtopics.getOrNull(index - 1)?.id,
                     nextSubtopicId = subtopics.getOrNull(index + 1)?.id
                 )
+            } else if (subtopicId == -1) {
+                SubtopicUiState.Error
             } else {
                 SubtopicUiState.Loading
             }
@@ -62,6 +64,7 @@ sealed interface SubtopicUiState {
         val previousSubtopicId: Int? = null,
         val nextSubtopicId: Int? = null
     ) : SubtopicUiState
+
     object Error : SubtopicUiState
 }
 
