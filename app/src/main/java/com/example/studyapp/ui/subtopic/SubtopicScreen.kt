@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
@@ -28,14 +29,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.layout.AnimatedPane
+import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
+import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
@@ -46,8 +55,11 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.AsyncImagePainter.State.Loading
+import coil.compose.rememberAsyncImagePainter
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
@@ -91,6 +103,7 @@ private fun SubtopicScreen(
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 LoadingIndicator()
             }
+
         is SubtopicUiState.Success ->
             SubtopicScaffold(
                 uiState = uiState,
@@ -100,6 +113,7 @@ private fun SubtopicScreen(
                 navigateToSubtopic = navigateToSubtopic,
                 modifier = modifier,
             )
+
         SubtopicUiState.Error ->
             ErrorScreen(onBack = navigateBack)
     }
@@ -118,10 +132,8 @@ private fun SubtopicScaffold(
     var dialogType by rememberSaveable { mutableStateOf<SubtopicDialog?>(null) }
     var expanded by rememberSaveable { mutableStateOf(true) }
     val subtopic = uiState.subtopic
-    val isScreenWidthCompact =
-        !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
-            WIDTH_DP_MEDIUM_LOWER_BOUND
-        )
+    val isScreenWidthCompact = !currentWindowAdaptiveInfo().windowSizeClass
+        .isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
     dialogType?.let {
         SubtopicDialog(
             subtopic = subtopic,
@@ -147,13 +159,13 @@ private fun SubtopicScaffold(
             },
         ) { innerPadding ->
             Box(Modifier.padding(innerPadding)) {
-                SubtopicAnswerCard(
-                    isScreenWidthCompact = isScreenWidthCompact,
-                    subtopic = subtopic,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(paddingValues = innerPadding)
-                        .padding(horizontal = 16.dp)
+                SubtopicSupportingPaneScaffold(
+                    uiState = uiState,
+                    modifier = Modifier.padding(
+                        bottom =
+                            // 40.dp is the margin at the bottom of the screen for the floating toolbar.
+                            FloatingToolbarDefaults.ContainerSize.value.dp + 40.dp
+                    ),
                 )
                 SubtopicToolbar(
                     onDelete = { dialogType = SubtopicDialog.DELETE_SUBTOPIC },
@@ -175,14 +187,51 @@ private fun SubtopicScaffold(
     }
 }
 
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+private fun SubtopicSupportingPaneScaffold(
+    uiState: SubtopicUiState.Success,
+    modifier: Modifier = Modifier
+) {
+    val scaffoldNavigator = rememberSupportingPaneScaffoldNavigator()
+    val subtopic = uiState.subtopic
+    SupportingPaneScaffold(
+        directive = scaffoldNavigator.scaffoldDirective,
+        modifier = modifier,
+        scaffoldState = scaffoldNavigator.scaffoldState,
+        mainPane = {
+            AnimatedPane {
+                AsyncImage(
+                    model = subtopic.imageUri,
+                    contentDescription = null,
+                )
+            }
+        },
+        supportingPane = {
+            AnimatedPane {
+                Text(
+                    text = subtopic.description,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+        }
+    )
+}
+
+
 @Composable
 private fun SubtopicAnswerCard(
-    isScreenWidthCompact: Boolean, subtopic: Subtopic, modifier: Modifier = Modifier
+    subtopic: Subtopic,
+    modifier: Modifier = Modifier
 ) {
-    if (isScreenWidthCompact) {
-        Column(
-            modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+    val isScreenWidthExpanded =
+        currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
+            WIDTH_DP_EXPANDED_LOWER_BOUND
+        )
+
+    if (isScreenWidthExpanded) {
+        Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
             AsyncImage(
                 model = subtopic.imageUri,
                 contentDescription = null,
@@ -199,9 +248,7 @@ private fun SubtopicAnswerCard(
             )
         }
     } else {
-        Row(
-            modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+        Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             AsyncImage(
                 model = subtopic.imageUri,
                 contentDescription = null,
@@ -419,6 +466,45 @@ private fun ErrorScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         }
     }
 }
+
+@Composable
+fun DynamicAsyncImage(
+    imageUrl: String,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    placeholder: Painter = painterResource(R.drawable.outline_interests_24)
+) {
+    var isLoading by remember { mutableStateOf(true) }
+    var isError by remember { mutableStateOf(false) }
+    val imageLoader = rememberAsyncImagePainter(
+        model = imageUrl,
+        onState = { state ->
+            isLoading = state is Loading
+            isError = state is AsyncImagePainter.State.Error
+        },
+    )
+    val isLocalInspection = LocalInspectionMode.current
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        if (isLoading && !isLocalInspection) {
+            // Display a progress bar while loading
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(80.dp),
+                color = MaterialTheme.colorScheme.tertiary,
+            )
+        }
+        Image(
+            contentScale = ContentScale.Crop,
+            painter = if (isError.not() && !isLocalInspection) imageLoader else placeholder,
+            contentDescription = contentDescription,
+        )
+    }
+}
+
 
 @Preview(showSystemUi = true)
 @PreviewLightDark
