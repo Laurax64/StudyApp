@@ -51,11 +51,11 @@ internal fun SaveSubtopicDialog(
     val titleId = subtopic?.let { R.string.edit_subtopic } ?: R.string.edit_subtopic
     val context = LocalContext.current
     val onSave = {
-        saveSubtopic(title, description, imageUri)
-        onDismiss()
-        if (subtopic != null && subtopic.imageUri != imageUri && imageUri.isNotBlank()) {
+        if (subtopic?.imageUri != imageUri && imageUri.isNotBlank()) {
             imageUri = saveToAppSpecificStorage(context = context, uri = imageUri.toUri())
         }
+        saveSubtopic(title, description, imageUri)
+        onDismiss()
     }
 
     if (isFullScreenDialog) {
