@@ -1,18 +1,15 @@
 package com.example.studyapp.ui.components.study
 
-import android.content.Context
+import android.R.attr.description
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -24,7 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -119,29 +115,16 @@ private fun SubtopicInputFields(
     imageUri: String,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    val focusManager = LocalFocusManager.current
+    LocalContext.current
+    LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
     if (scrollState.isScrollInProgress) {
         keyboardController?.hide()
     }
-    val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
-        // Save image to app specific storage
-        if (uri != null) {
-            val filename = uri.lastPathSegment
-            val fileContents = context.contentResolver.openInputStream(uri)?.readBytes()
-            context.openFileOutput(filename, Context.MODE_PRIVATE).use {
-                it.write(fileContents)
-            }
-            /*
-             * Update the imageUri to the path to the image in the app specific storage
-             * Example:
-             * uri = content://media/picker/0/com.android.providers.media.photopicker/media/21
-             * imageUri = /data/user/0/com.example.studyapp/files/21
-             */
-            val imageUri = context.filesDir.toString() + "/$filename"
-            updateImageUri(imageUri)
+    rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
+
+    updateImageUri(imageUri)
         }
     }
     Column(
@@ -183,5 +166,3 @@ private fun SubtopicInputFields(
         AsyncImage(model = imageUri, contentDescription = null, modifier = Modifier.fillMaxWidth())
     }
 }
-
-
