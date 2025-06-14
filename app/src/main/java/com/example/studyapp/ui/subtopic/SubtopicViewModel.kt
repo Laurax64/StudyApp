@@ -19,15 +19,15 @@ class SubtopicViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val subtopicId: Int = savedStateHandle["subtopicId"] ?: -1
-    private val topicId: Int = savedStateHandle["topicId"] ?: -1
 
     val uiState: StateFlow<SubtopicUiState> =
         combine(
             subtopicsRepository.getSubtopic(subtopicId = subtopicId),
-            subtopicsRepository.getAllAssociatedSubtopics(topicId = topicId)
+            subtopicsRepository.getAllSubtopics()
         ) { subtopic, subtopics ->
             if (subtopic != null) {
-                val index = subtopics.indexOfFirst { it.id == subtopicId }
+                val index =
+                    subtopics.indexOfFirst { it.id == subtopicId && it.topicId == subtopic.topicId }
                 SubtopicUiState.Success(
                     subtopic = subtopic,
                     previousSubtopicId = subtopics.getOrNull(index - 1)?.id,

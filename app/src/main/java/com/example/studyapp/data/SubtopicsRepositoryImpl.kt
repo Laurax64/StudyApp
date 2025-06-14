@@ -18,9 +18,6 @@ class SubtopicsRepositoryImpl(private val subtopicDao: SubtopicDao) : SubtopicsR
     override fun getAllSubtopics(): Flow<List<Subtopic>> =
         subtopicDao.getAllSubtopics()
 
-    override fun getAllAssociatedSubtopics(topicId: Int): Flow<List<Subtopic>> =
-        subtopicDao.getAllAssociatedSubtopics(topicId = topicId)
-
     override suspend fun deleteAssociatedSubtopics(topicId: Int) {
         subtopicDao.deleteAssociatedSubtopics(topicId = topicId)
     }
