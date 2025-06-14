@@ -193,7 +193,6 @@ private fun SubtopicSupportingPaneScaffold(
 ) {
     val scaffoldNavigator = rememberSupportingPaneScaffoldNavigator()
     val subtopic = uiState.subtopic
-    //content://media/picker/0/com.android.providers.media.photopicker/media/22
     val imageUri = subtopic.imageUri
     SupportingPaneScaffold(
         directive = scaffoldNavigator.scaffoldDirective,

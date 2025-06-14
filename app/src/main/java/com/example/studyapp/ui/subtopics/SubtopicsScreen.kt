@@ -159,7 +159,6 @@ private fun SubtopicsScaffold(
         )
     if (dialogType == SubtopicsDialog.CREATE_SUBTOPIC && isScreenWidthCompact) {
         SaveSubtopicDialog(
-            titleId = R.string.create_subtopic,
             onDismiss = { dialogType = null },
             isFullScreenDialog = true,
             modifier = modifier,
@@ -259,7 +258,6 @@ private fun SubtopicsDialog(
         SubtopicsDialog.CREATE_SUBTOPIC ->
             SaveSubtopicDialog(
                 modifier = modifier,
-                titleId = R.string.create_subtopic,
                 onDismiss = dismissDialog,
                 isFullScreenDialog = false,
                 saveSubtopic = saveSubtopic

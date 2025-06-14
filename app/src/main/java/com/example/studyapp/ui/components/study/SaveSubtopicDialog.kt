@@ -1,5 +1,6 @@
 package com.example.studyapp.ui.components.study
 
+import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
@@ -24,6 +25,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -38,7 +40,6 @@ import com.example.studyapp.ui.components.FullScreenDialog
 internal fun SaveSubtopicDialog(
     onDismiss: () -> Unit,
     saveSubtopic: (String, String, String?) -> Unit,
-    saveToAppSpecificStorage: () -> Unit,
     modifier: Modifier = Modifier,
     isFullScreenDialog: Boolean,
     subtopic: Subtopic? = null,
@@ -59,7 +60,6 @@ internal fun SaveSubtopicDialog(
         ) { innerPadding ->
             SubtopicInputFields(
                 updateTitle = { title = it },
-                saveToAppSpecificStorage = saveToAppSpecificStorage,
                 updateDescription = { description = it },
                 updateImageUri = { imageUri = it },
                 title = title,
@@ -84,7 +84,6 @@ internal fun SaveSubtopicDialog(
                     title = title,
                     description = description,
                     imageUri = imageUri,
-                    saveToAppSpecificStorage = saveToAppSpecificStorage,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp),
@@ -113,7 +112,6 @@ internal fun SaveSubtopicDialog(
 @Composable
 private fun SubtopicInputFields(
     updateTitle: (String) -> Unit,
-    saveToAppSpecificStorage: () -> Unit,
     updateDescription: (String) -> Unit,
     updateImageUri: (String) -> Unit,
     title: String,
@@ -121,6 +119,7 @@ private fun SubtopicInputFields(
     imageUri: String,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
@@ -128,9 +127,23 @@ private fun SubtopicInputFields(
         keyboardController?.hide()
     }
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
-        updateImageUri(uri.toString())
+        // Save image to app specific storage
+        if (uri != null) {
+            val filename = uri.lastPathSegment
+            val fileContents = context.contentResolver.openInputStream(uri)?.readBytes()
+            context.openFileOutput(filename, Context.MODE_PRIVATE).use {
+                it.write(fileContents)
+            }
+            /*
+             * Update the imageUri to the path to the image in the app specific storage
+             * Example:
+             * uri = content://media/picker/0/com.android.providers.media.photopicker/media/21
+             * imageUri = /data/user/0/com.example.studyapp/files/21
+             */
+            val imageUri = context.filesDir.toString() + "/$filename"
+            updateImageUri(imageUri)
+        }
     }
-    Byte
     Column(
         modifier = modifier
             .verticalScroll(state = scrollState)
