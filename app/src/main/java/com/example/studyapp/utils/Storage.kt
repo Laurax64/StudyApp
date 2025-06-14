@@ -18,7 +18,7 @@ import android.net.Uri
  * @return The absolute file path of the content in the app specific storage
  * @throws IllegalArgumentException If the [uri] has no valid filename or the content cannot be read.
  */
-fun saveToAppSpecificStorage(context: Context, uri: Uri): String? {
+fun saveToAppSpecificStorage(context: Context, uri: Uri): String {
     val filename = uri.lastPathSegment
         ?: throw IllegalArgumentException("Uri must have a valid last path segment as filename")
     val fileContents =

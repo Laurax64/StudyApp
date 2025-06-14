@@ -54,7 +54,7 @@ internal fun SaveSubtopicDialog(
         saveSubtopic(title, description, imageUri)
         onDismiss()
         if (subtopic != null && subtopic.imageUri != imageUri && imageUri.isNotBlank()) {
-            saveToAppSpecificStorage(context = context, uri = imageUri.toUri())
+            imageUri = saveToAppSpecificStorage(context = context, uri = imageUri.toUri())
         }
     }
 
