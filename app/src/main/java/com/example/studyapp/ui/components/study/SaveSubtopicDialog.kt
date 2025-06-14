@@ -1,15 +1,17 @@
 package com.example.studyapp.ui.components.study
 
-import android.R.attr.description
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -21,16 +23,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.components.FullScreenDialog
+import com.example.studyapp.utils.saveToAppSpecificStorage
 
 @Composable
 internal fun SaveSubtopicDialog(
@@ -44,14 +49,20 @@ internal fun SaveSubtopicDialog(
     var description by rememberSaveable { mutableStateOf(subtopic?.description ?: "") }
     var imageUri by rememberSaveable { mutableStateOf(subtopic?.imageUri ?: "") }
     val titleId = subtopic?.let { R.string.edit_subtopic } ?: R.string.edit_subtopic
+    val context = LocalContext.current
+    val onSave = {
+        saveSubtopic(title, description, imageUri)
+        onDismiss()
+        if (subtopic != null && subtopic.imageUri != imageUri && imageUri.isNotBlank()) {
+            saveToAppSpecificStorage(context = context, uri = imageUri.toUri())
+        }
+    }
+
     if (isFullScreenDialog) {
         FullScreenDialog(
             titleId = titleId,
             onDismiss = onDismiss,
-            onConfirm = {
-                saveSubtopic(title, description, imageUri)
-                onDismiss()
-            },
+            onConfirm = onSave,
             modifier = modifier.padding(horizontal = 16.dp)
         ) { innerPadding ->
             SubtopicInputFields(
@@ -86,12 +97,7 @@ internal fun SaveSubtopicDialog(
                 )
             },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        saveSubtopic(title, description, imageUri)
-                        onDismiss()
-                    }
-                ) {
+                TextButton(onClick = onSave) {
                     Text(stringResource(R.string.save))
                 }
             },
@@ -115,18 +121,16 @@ private fun SubtopicInputFields(
     imageUri: String,
     modifier: Modifier = Modifier,
 ) {
-    LocalContext.current
-    LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
     if (scrollState.isScrollInProgress) {
         keyboardController?.hide()
     }
-    rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
-
-    updateImageUri(imageUri)
-        }
+    val mediaPickerLauncher = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
+        updateImageUri(uri.toString())
     }
+
     Column(
         modifier = modifier
             .verticalScroll(state = scrollState)
@@ -158,7 +162,7 @@ private fun SubtopicInputFields(
                     modifier = Modifier
                         .size(24.dp)
                         .clickable {
-                            pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                            mediaPickerLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
                         }
                 )
             },
