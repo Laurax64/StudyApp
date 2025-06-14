@@ -36,9 +36,9 @@ import com.example.studyapp.ui.components.FullScreenDialog
 
 @Composable
 internal fun SaveSubtopicDialog(
-    titleId: Int,
     onDismiss: () -> Unit,
     saveSubtopic: (String, String, String?) -> Unit,
+    saveToAppSpecificStorage: () -> Unit,
     modifier: Modifier = Modifier,
     isFullScreenDialog: Boolean,
     subtopic: Subtopic? = null,
@@ -46,10 +46,10 @@ internal fun SaveSubtopicDialog(
     var title by rememberSaveable { mutableStateOf(subtopic?.title ?: "") }
     var description by rememberSaveable { mutableStateOf(subtopic?.description ?: "") }
     var imageUri by rememberSaveable { mutableStateOf(subtopic?.imageUri ?: "") }
-
+    val titleId = subtopic?.let { R.string.edit_subtopic } ?: R.string.edit_subtopic
     if (isFullScreenDialog) {
         FullScreenDialog(
-            titleRes = titleId,
+            titleId = titleId,
             onDismiss = onDismiss,
             onConfirm = {
                 saveSubtopic(title, description, imageUri)
@@ -59,6 +59,7 @@ internal fun SaveSubtopicDialog(
         ) { innerPadding ->
             SubtopicInputFields(
                 updateTitle = { title = it },
+                saveToAppSpecificStorage = saveToAppSpecificStorage,
                 updateDescription = { description = it },
                 updateImageUri = { imageUri = it },
                 title = title,
@@ -83,6 +84,7 @@ internal fun SaveSubtopicDialog(
                     title = title,
                     description = description,
                     imageUri = imageUri,
+                    saveToAppSpecificStorage = saveToAppSpecificStorage,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp),
@@ -111,6 +113,7 @@ internal fun SaveSubtopicDialog(
 @Composable
 private fun SubtopicInputFields(
     updateTitle: (String) -> Unit,
+    saveToAppSpecificStorage: () -> Unit,
     updateDescription: (String) -> Unit,
     updateImageUri: (String) -> Unit,
     title: String,
@@ -127,6 +130,7 @@ private fun SubtopicInputFields(
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
         updateImageUri(uri.toString())
     }
+    Byte
     Column(
         modifier = modifier
             .verticalScroll(state = scrollState)
@@ -166,3 +170,5 @@ private fun SubtopicInputFields(
         AsyncImage(model = imageUri, contentDescription = null, modifier = Modifier.fillMaxWidth())
     }
 }
+
+

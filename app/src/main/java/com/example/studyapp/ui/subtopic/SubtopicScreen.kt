@@ -193,6 +193,7 @@ private fun SubtopicSupportingPaneScaffold(
 ) {
     val scaffoldNavigator = rememberSupportingPaneScaffoldNavigator()
     val subtopic = uiState.subtopic
+    //content://media/picker/0/com.android.providers.media.photopicker/media/22
     val imageUri = subtopic.imageUri
     SupportingPaneScaffold(
         directive = scaffoldNavigator.scaffoldDirective,
@@ -289,7 +290,6 @@ private fun SubtopicDialog(
 
         SubtopicDialog.EDIT_SUBTOPIC -> SaveSubtopicDialog(
             modifier = modifier,
-            titleId = R.string.edit_subtopic,
             onDismiss = dismissDialog,
             isFullScreenDialog = isScreenWidthCompact,
             saveSubtopic = { title, description, imageUri ->
