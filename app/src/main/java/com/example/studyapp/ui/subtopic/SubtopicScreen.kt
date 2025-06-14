@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
@@ -56,7 +54,6 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
-import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.AsyncImagePainter.State.Loading
 import coil.compose.rememberAsyncImagePainter
@@ -196,76 +193,38 @@ private fun SubtopicSupportingPaneScaffold(
 ) {
     val scaffoldNavigator = rememberSupportingPaneScaffoldNavigator()
     val subtopic = uiState.subtopic
+    val imageUri = subtopic.imageUri
     SupportingPaneScaffold(
         directive = scaffoldNavigator.scaffoldDirective,
         modifier = modifier,
         scaffoldState = scaffoldNavigator.scaffoldState,
         mainPane = {
             AnimatedPane {
-                AsyncImage(
-                    model = subtopic.imageUri,
-                    contentDescription = null,
-                )
+                if (!imageUri.isNullOrBlank()) {
+                    SubtopicAsyncImage(
+                        imageUrl = imageUri,
+                        modifier = Modifier.fillMaxSize(),
+                        contentDescription = null,
+                    )
+                } else {
+                    Text(
+                        text = subtopic.description,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
             }
         },
         supportingPane = {
             AnimatedPane {
-                Text(
-                    text = subtopic.description,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+                if (!imageUri.isNullOrBlank()) {
+                    Text(
+                        text = subtopic.description,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
             }
         }
     )
-}
-
-
-@Composable
-private fun SubtopicAnswerCard(
-    subtopic: Subtopic,
-    modifier: Modifier = Modifier
-) {
-    val isScreenWidthExpanded =
-        currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
-            WIDTH_DP_EXPANDED_LOWER_BOUND
-        )
-
-    if (isScreenWidthExpanded) {
-        Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            AsyncImage(
-                model = subtopic.imageUri,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-            Text(
-                text = subtopic.description,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-        }
-    } else {
-        Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            AsyncImage(
-                model = subtopic.imageUri,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-            Text(
-                text = subtopic.description,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-        }
-
-    }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -467,8 +426,9 @@ private fun ErrorScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun DynamicAsyncImage(
+fun SubtopicAsyncImage(
     imageUrl: String,
     contentDescription: String?,
     modifier: Modifier = Modifier,
@@ -490,7 +450,7 @@ fun DynamicAsyncImage(
     ) {
         if (isLoading && !isLocalInspection) {
             // Display a progress bar while loading
-            CircularProgressIndicator(
+            LoadingIndicator(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .size(80.dp),
