@@ -7,9 +7,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.studyapp.ui.StudyAppState
-import com.example.studyapp.ui.screens.SubtopicScreen
-import com.example.studyapp.ui.screens.SubtopicsScreen
-import com.example.studyapp.ui.screens.TopicsScreen
+import com.example.studyapp.ui.subtopic.SubtopicScreen
+import com.example.studyapp.ui.subtopics.SubtopicsScreen
+import com.example.studyapp.ui.topics.TopicsScreen
 
 @Composable
 fun StudyAppNavHost(
@@ -22,9 +22,20 @@ fun StudyAppNavHost(
         subtopicsScreen(
             navigateToSubtopic = { navController.navigate(route = SubtopicRoute(subtopicId = it)) },
             navigateToTopic = { navController.navigate(route = SubtopicsRoute(topicId = it)) },
-            navigateBack = { navController.popBackStack() }
+            navigateBack = { navController.popBackStack() },
         )
-        subtopicScreen(navigateBack = navController::popBackStack)
+        subtopicScreen(
+            navigateBackToSubtopics = { topicId ->
+                navController.popBackStack(
+                    route = SubtopicsRoute(topicId = topicId),
+                    inclusive = false
+                )
+            },
+            navigateBack = navController::popBackStack,
+            navigateToSubtopic = {
+                navController.navigate(route = SubtopicRoute(subtopicId = it))
+            }
+        )
         datesScreen()
         aIAssistantScreen()
         bookmarksScreen()
@@ -55,10 +66,16 @@ fun NavGraphBuilder.subtopicsScreen(
     }
 }
 
-fun NavGraphBuilder.subtopicScreen(navigateBack: () -> Unit) {
+fun NavGraphBuilder.subtopicScreen(
+    navigateBackToSubtopics: (Int) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToSubtopic: (Int) -> Unit
+) {
     composable<SubtopicRoute> {
         SubtopicScreen(
-            subtopicViewModel = hiltViewModel(),
+            viewModel = hiltViewModel(),
+            navigateToSubtopic = navigateToSubtopic,
+            navigateBackToSubtopics = navigateBackToSubtopics,
             navigateBack = navigateBack
         )
     }

@@ -1,6 +1,5 @@
-package com.example.studyapp.ui.screens
+package com.example.studyapp.ui.topics
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.data.Topic
+import com.example.studyapp.data.TopicWithProgress
 import com.example.studyapp.ui.components.DockedSearchBar
 import com.example.studyapp.ui.components.PlaceholderColumn
 import com.example.studyapp.ui.components.SearchAppBar
@@ -37,7 +37,6 @@ import com.example.studyapp.ui.components.study.AdaptiveFAB
 import com.example.studyapp.ui.components.study.SaveTopicDialog
 import com.example.studyapp.ui.components.study.TopicsLazyColumn
 import com.example.studyapp.ui.theme.StudyAppTheme
-import com.example.studyapp.ui.viewmodels.TopicsViewModel
 
 @Composable
 fun TopicsScreen(
@@ -45,11 +44,10 @@ fun TopicsScreen(
     navigateToTopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val topics by topicsViewModel.topics.collectAsStateWithLifecycle()
-    Log.d("TopicsScreen", "Collected topics: $topics")
+    val uiState by topicsViewModel.uiState.collectAsStateWithLifecycle()
     TopicsScreen(
-        topics = topics,
-        saveTopic = topicsViewModel::saveTopic,
+        uiState = uiState,
+        addTopic = topicsViewModel::addTopic,
         navigateToSubtopics = navigateToTopic,
         modifier = modifier
     )
@@ -58,29 +56,31 @@ fun TopicsScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun TopicsScreen(
-    topics: List<Topic>?,
-    saveTopic: (Topic) -> Unit,
+    uiState: TopicsUiState,
+    addTopic: (Topic) -> Unit,
     navigateToSubtopics: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (topics == null) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            LoadingIndicator()
-        }
-    } else {
-        TopicsScaffold(
-            topics = topics,
-            saveTopic = saveTopic,
-            navigateToSubtopics = navigateToSubtopics,
-            modifier = modifier
-        )
+    when (uiState) {
+        TopicsUiState.Loading ->
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                LoadingIndicator()
+            }
+
+        is TopicsUiState.Success ->
+            TopicsScaffold(
+                topicsWithProgress = uiState.topicsWithProgress,
+                saveTopic = addTopic,
+                navigateToSubtopics = navigateToSubtopics,
+                modifier = modifier
+            )
     }
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 private fun TopicsScaffold(
-    topics: List<Topic>,
+    topicsWithProgress: List<TopicWithProgress>,
     saveTopic: (Topic) -> Unit,
     navigateToSubtopics: (Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -90,7 +90,14 @@ private fun TopicsScaffold(
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showDialog) {
-        SaveTopicDialog(onDismiss = { showDialog = false }, topic = null, onSave = saveTopic)
+        SaveTopicDialog(
+            onDismiss = { showDialog = false },
+            topic = null,
+            onSave = {
+                saveTopic(it)
+                showDialog = false
+            }
+        )
     }
     Scaffold(
         modifier = modifier,
@@ -115,9 +122,9 @@ private fun TopicsScaffold(
             navigator = scaffoldNavigator,
             listPane = {
                 AnimatedPane {
-                    AnimatedContent(targetState = topics) {
+                    AnimatedContent(targetState = topicsWithProgress) {
                         TopicsPaneContent(
-                            topics = it,
+                            topicsWithProgress = it,
                             navigateToTopic = {
                                 // Not scaffoldNavigator.navigateTo because the app needs to
                                 // change more than just the detail pane
@@ -131,7 +138,7 @@ private fun TopicsScaffold(
             },
             detailPane = {
                 AnimatedPane {
-                    AnimatedContent(targetState = topics) {
+                    AnimatedContent(targetState = topicsWithProgress) {
                         PlaceholderColumn(
                             textId = if (it.isEmpty()) {
                                 R.string.no_subtopics_exist
@@ -155,25 +162,21 @@ private fun TopicsScaffold(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun TopicsPaneContent(
-    topics: List<Topic>?,
+    topicsWithProgress: List<TopicWithProgress>,
     modifier: Modifier = Modifier,
     navigateToTopic: (Int) -> Unit,
     closeSearchBar: () -> Unit,
     showSearchBar: Boolean
 ) {
-    if (topics == null) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            LoadingIndicator()
-        }
-    } else if (showSearchBar) {
+    if (showSearchBar) {
         TopicsSearchBar(
             modifier = modifier.fillMaxWidth(),
             navigateToTopic = navigateToTopic,
             closeSearchBar = closeSearchBar,
-            topics = topics
+            topicsWithProgress = topicsWithProgress
         )
     } else {
-        if (topics.isEmpty()) {
+        if (topicsWithProgress.isEmpty()) {
             PlaceholderColumn(
                 textId = R.string.no_topics_exist,
                 iconId = R.drawable.outline_topic_24,
@@ -181,7 +184,7 @@ private fun TopicsPaneContent(
             )
         } else {
             TopicsLazyColumn(
-                topics = topics,
+                topicsWithProgress = topicsWithProgress,
                 navigateToTopic = navigateToTopic,
                 modifier = modifier
                     .fillMaxSize()
@@ -194,18 +197,18 @@ private fun TopicsPaneContent(
 private fun TopicsSearchBar(
     modifier: Modifier = Modifier,
     navigateToTopic: (Int) -> Unit,
-    topics: List<Topic>,
+    topicsWithProgress: List<TopicWithProgress>,
     closeSearchBar: () -> Unit
 ) {
     DockedSearchBar(
         modifier = modifier,
-        items = topics,
+        items = topicsWithProgress,
         closeSearchBar = closeSearchBar,
-        itemLabel = { it.title },
+        itemLabel = { it.topic.title },
         placeholderText = stringResource(R.string.search_in_topics)
     ) {
         TopicsLazyColumn(
-            topics = it,
+            topicsWithProgress = it,
             navigateToTopic = navigateToTopic,
             modifier = modifier
                 .fillMaxSize()
@@ -223,19 +226,51 @@ private fun TopicsSearchBar(
 private fun TopicsScreenPreview() {
     StudyAppTheme {
         TopicsScreen(
-            topics = listOf(
-                Topic(1, "Dogs", false),
-                Topic(2, "Cats", false),
-                Topic(3, "Horses", false),
-                Topic(4, "Rabbits", false),
-                Topic(5, "Fish", false),
-                Topic(6, "Birds", false),
-                Topic(7, "Hamsters", false),
-                Topic(8, "Guinea pigs", false),
-                Topic(9, "Turtles", false),
-                Topic(10, "Elephants", false)
+            uiState = TopicsUiState.Success(
+                topicsWithProgress = listOf(
+                    TopicWithProgress(
+                        topic = Topic(1, "Dogs"),
+                        checked = false
+                    ),
+                    TopicWithProgress(
+                        topic = Topic(2, "Cats"),
+                        checked = false
+                    ),
+                    TopicWithProgress(
+                        topic = Topic(3, "Horses"),
+                        checked = false
+                    ),
+                    TopicWithProgress(
+                        topic = Topic(4, "Rabbits"),
+                        checked = false
+                    ),
+                    TopicWithProgress(
+                        topic = Topic(5, "Fish"),
+                        checked = false
+                    ),
+                    TopicWithProgress(
+                        topic = Topic(6, "Birds"),
+                        checked = false
+                    ),
+                    TopicWithProgress(
+                        topic = Topic(7, "Hamsters"),
+                        checked = false
+                    ),
+                    TopicWithProgress(
+                        topic = Topic(8, "Guinea pigs"),
+                        checked = false
+                    ),
+                    TopicWithProgress(
+                        topic = Topic(9, "Turtles"),
+                        checked = false
+                    ),
+                    TopicWithProgress(
+                        topic = Topic(10, "Elephants"),
+                        checked = false
+                    )
+                )
             ),
-            saveTopic = {},
+            addTopic = {},
             navigateToSubtopics = {},
         )
     }
@@ -250,9 +285,9 @@ private fun TopicsScreenPreview() {
 private fun TopicsScreenLoadingPreview() {
     StudyAppTheme {
         TopicsScreen(
-            topics = null,
+            uiState = TopicsUiState.Loading,
             navigateToSubtopics = {},
-            saveTopic = {},
+            addTopic = {},
         )
     }
 }

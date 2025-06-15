@@ -1,7 +1,6 @@
 package com.example.studyapp.data
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -16,12 +15,16 @@ interface SubtopicDao {
     @Update
     suspend fun update(subtopic: Subtopic)
 
-    @Delete
-    suspend fun delete(subtopic: Subtopic)
+    @Query("DELETE from subtopics WHERE id = :subtopicId")
+    suspend fun delete(subtopicId: Int)
 
-    @Query("SELECT * from subtopics WHERE id = :id")
-    fun getSubtopic(id: Int): Flow<Subtopic>
+    @Query("SELECT * from subtopics WHERE id = :subtopicId")
+    fun getSubtopic(subtopicId: Int): Flow<Subtopic?>
 
-    @Query("SELECT * from subtopics WHERE topicId = :topicId")
-    fun getAllSubtopics(topicId: Int): Flow<List<Subtopic>>
+    @Query("SELECT * from subtopics")
+    fun getAllSubtopics(): Flow<List<Subtopic>>
+
+    @Query("DELETE from subtopics WHERE topicId = :topicId")
+    suspend fun deleteAssociatedSubtopics(topicId: Int)
+
 }

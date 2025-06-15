@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.screens
+package com.example.studyapp.ui.subtopics
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.clickable
@@ -44,6 +44,7 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -63,16 +64,17 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOW
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
+import com.example.studyapp.data.TopicWithProgress
 import com.example.studyapp.ui.components.DockedSearchBar
 import com.example.studyapp.ui.components.PlaceholderColumn
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.components.study.SaveTopicDialog
 import com.example.studyapp.ui.components.study.TopicsLazyColumn
 import com.example.studyapp.ui.theme.StudyAppTheme
-import com.example.studyapp.ui.viewmodels.SubtopicsViewModel
+import kotlinx.coroutines.launch
 
 
-private enum class SubtopicsDialog {
+private enum class SubtopicsDialogType {
     EDIT_TOPIC,
     DELETE_TOPIC,
     CREATE_SUBTOPIC,
@@ -86,24 +88,15 @@ fun SubtopicsScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val topic by subtopicsViewModel.topic.collectAsStateWithLifecycle()
-    val subtopics by subtopicsViewModel.subtopics.collectAsStateWithLifecycle()
-    val topics by subtopicsViewModel.topics.collectAsStateWithLifecycle()
-
+    val uiState by subtopicsViewModel.uiState.collectAsStateWithLifecycle()
     SubtopicsScreen(
-        subtopics = subtopics,
-        topics = topics,
-        saveSubtopic = { title, description, imageUri ->
-            subtopicsViewModel.createSubtopic(
-                title = title, description = description, imageUri = imageUri
-            )
-        },
+        uiState = uiState,
+        saveSubtopic = subtopicsViewModel::addSubtopic,
         deleteTopic = subtopicsViewModel::deleteTopic,
         updateTopic = subtopicsViewModel::updateTopic,
         navigateToSubtopic = navigateToSubtopic,
         navigateToTopic = navigateToTopic,
         navigateBack = navigateBack,
-        topic = topic ?: return,
         modifier = modifier
     )
 }
@@ -111,10 +104,8 @@ fun SubtopicsScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SubtopicsScreen(
-    subtopics: List<Subtopic>?,
-    topics: List<Topic>?,
-    topic: Topic?,
-    saveSubtopic: (String, String, String?) -> Unit,
+    uiState: SubtopicsUiState,
+    saveSubtopic: (Subtopic) -> Unit,
     deleteTopic: () -> Unit,
     updateTopic: (Topic) -> Unit,
     navigateToSubtopic: (Int) -> Unit,
@@ -122,33 +113,31 @@ private fun SubtopicsScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (topic == null || subtopics == null || topics == null) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            LoadingIndicator()
-        }
-    } else {
-        SubtopicsScaffold(
-            subtopics = subtopics,
-            topics = topics,
-            topic = topic,
-            navigateToSubtopic = navigateToSubtopic,
-            navigateToTopic = navigateToTopic,
-            saveSubtopic = saveSubtopic,
-            deleteTopic = deleteTopic,
-            updateTopic = updateTopic,
-            navigateBack = navigateBack,
-            modifier = modifier.fillMaxWidth()
-        )
+    when (uiState) {
+        SubtopicsUiState.Loading ->
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                LoadingIndicator()
+            }
+
+        is SubtopicsUiState.Success ->
+            SubtopicsScaffold(
+                uiState = uiState,
+                navigateToSubtopic = navigateToSubtopic,
+                navigateToTopic = navigateToTopic,
+                saveSubtopic = saveSubtopic,
+                deleteTopic = deleteTopic,
+                updateTopic = updateTopic,
+                navigateBack = navigateBack,
+                modifier = modifier.fillMaxWidth()
+            )
     }
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SubtopicsScaffold(
-    subtopics: List<Subtopic>,
-    topics: List<Topic>,
-    topic: Topic,
-    saveSubtopic: (String, String, String?) -> Unit,
+    uiState: SubtopicsUiState.Success,
+    saveSubtopic: (Subtopic) -> Unit,
     deleteTopic: () -> Unit,
     updateTopic: (Topic) -> Unit,
     navigateToSubtopic: (Int) -> Unit,
@@ -156,24 +145,24 @@ private fun SubtopicsScaffold(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val topic = uiState.selectedTopic
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     val paneAdaptedValue = scaffoldNavigator.scaffoldState.currentState.primary
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
-    var dialogType by rememberSaveable { mutableStateOf<SubtopicsDialog?>(null) }
+    var dialogType by rememberSaveable { mutableStateOf<SubtopicsDialogType?>(null) }
     var expanded by rememberSaveable { mutableStateOf(true) }
+    val coroutineScope = rememberCoroutineScope()
     val isScreenWidthCompact =
         !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
             WIDTH_DP_MEDIUM_LOWER_BOUND
         )
-    if (dialogType == SubtopicsDialog.CREATE_SUBTOPIC && isScreenWidthCompact) {
+    if (dialogType == SubtopicsDialogType.CREATE_SUBTOPIC && isScreenWidthCompact) {
         SaveSubtopicDialog(
-            titleId = R.string.create_subtopic,
             onDismiss = { dialogType = null },
             isFullScreenDialog = true,
             modifier = modifier,
-            saveSubtopic = { title, description, imageUri ->
-                saveSubtopic(title, description, imageUri)
-            },
+            topicId = topic.id,
+            saveSubtopic = saveSubtopic
         )
     } else {
         dialogType?.let {
@@ -186,7 +175,11 @@ private fun SubtopicsScaffold(
                 },
                 dismissDialog = { dialogType = null },
                 dialogType = it,
-                saveSubtopic = saveSubtopic
+                saveSubtopic = {
+                    coroutineScope.launch {
+                        saveSubtopic(it)
+                    }
+                }
             )
         }
         Scaffold(
@@ -194,8 +187,9 @@ private fun SubtopicsScaffold(
             topBar = {
                 if (!showSearchBar) {
                     SubtopicsTopAppBar(
-                        topic = topic,
+                        topicTitle = topic.title,
                         onSearch = { showSearchBar = true },
+                        onShare = {},
                         navigateBack = navigateBack
                     )
                 }
@@ -205,9 +199,7 @@ private fun SubtopicsScaffold(
                 SubtopicsNavigableListDetailPaneScaffold(
                     scaffoldNavigator = scaffoldNavigator,
                     paneAdaptedValue = paneAdaptedValue,
-                    subtopics = subtopics,
-                    topics = topics,
-                    topic = topic,
+                    uiState = uiState,
                     navigateToSubtopic = navigateToSubtopic,
                     navigateToTopic = navigateToTopic,
                     showSearchBar = showSearchBar,
@@ -221,10 +213,9 @@ private fun SubtopicsScaffold(
                         )
                 )
                 SubtopicsToolbar(
-                    onDelete = { dialogType = SubtopicsDialog.DELETE_TOPIC },
-                    onEdit = { dialogType = SubtopicsDialog.EDIT_TOPIC },
-                    onShare = { /*TODO*/ },
-                    onCreate = { dialogType = SubtopicsDialog.CREATE_SUBTOPIC },
+                    onDelete = { dialogType = SubtopicsDialogType.DELETE_TOPIC },
+                    onEdit = { dialogType = SubtopicsDialogType.EDIT_TOPIC },
+                    onCreate = { dialogType = SubtopicsDialogType.CREATE_SUBTOPIC },
                     expanded = expanded,
                     modifier =
                         Modifier
@@ -242,12 +233,12 @@ private fun SubtopicsDialog(
     updateTopic: (Topic) -> Unit,
     deleteTopic: () -> Unit,
     dismissDialog: () -> Unit,
-    dialogType: SubtopicsDialog,
-    saveSubtopic: (String, String, String?) -> Unit,
+    dialogType: SubtopicsDialogType,
+    saveSubtopic: (Subtopic) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (dialogType) {
-        SubtopicsDialog.EDIT_TOPIC ->
+        SubtopicsDialogType.EDIT_TOPIC ->
             SaveTopicDialog(
                 modifier = modifier,
                 topic = topic,
@@ -258,7 +249,7 @@ private fun SubtopicsDialog(
                 }
             )
 
-        SubtopicsDialog.DELETE_TOPIC ->
+        SubtopicsDialogType.DELETE_TOPIC ->
             DeleteTopicDialog(
                 modifier = modifier,
                 onDismiss = dismissDialog,
@@ -266,13 +257,13 @@ private fun SubtopicsDialog(
                 topicTitle = topic.title
             )
 
-        SubtopicsDialog.CREATE_SUBTOPIC ->
+        SubtopicsDialogType.CREATE_SUBTOPIC ->
             SaveSubtopicDialog(
                 modifier = modifier,
-                titleId = R.string.create_subtopic,
                 onDismiss = dismissDialog,
                 isFullScreenDialog = false,
-                saveSubtopic = saveSubtopic
+                saveSubtopic = saveSubtopic,
+                topicId = topic.id
             )
     }
 }
@@ -282,22 +273,22 @@ private fun SubtopicsDialog(
 private fun <T> SubtopicsNavigableListDetailPaneScaffold(
     scaffoldNavigator: ThreePaneScaffoldNavigator<T>,
     paneAdaptedValue: PaneAdaptedValue,
-    subtopics: List<Subtopic>,
-    topics: List<Topic>,
-    topic: Topic,
+    uiState: SubtopicsUiState.Success,
     navigateToSubtopic: (Int) -> Unit,
     navigateToTopic: (Int) -> Unit,
     showSearchBar: Boolean,
     closeSearchBar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val topic = uiState.selectedTopic
+    val subtopics = uiState.subtopics
     NavigableListDetailPaneScaffold(
         navigator = scaffoldNavigator,
         listPane = {
             AnimatedPane {
                 if (paneAdaptedValue == PaneAdaptedValue.Expanded) {
                     TopicsLazyColumn(
-                        topics = topics,
+                        topicsWithProgress = uiState.topicsWithProgress,
                         navigateToTopic = navigateToTopic,
                         selectedTopicId = topic.id,
                     )
@@ -363,8 +354,9 @@ private fun DeleteTopicDialog(
 @Composable
 private fun SubtopicsTopAppBar(
     modifier: Modifier = Modifier,
-    topic: Topic,
+    topicTitle: String,
     onSearch: () -> Unit,
+    onShare: () -> Unit,
     navigateBack: () -> Unit
 ) {
     LargeFlexibleTopAppBar(
@@ -387,8 +379,14 @@ private fun SubtopicsTopAppBar(
                     contentDescription = stringResource(R.string.subtopics_search),
                 )
             }
+            IconButton(onClick = onShare) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_share_24),
+                    contentDescription = null
+                )
+            }
         },
-        title = { Text(text = topic.title, overflow = Ellipsis) },
+        title = { Text(text = topicTitle, overflow = Ellipsis) },
         modifier = modifier
     )
 }
@@ -398,7 +396,6 @@ private fun SubtopicsTopAppBar(
 private fun SubtopicsToolbar(
     onDelete: () -> Unit,
     onEdit: () -> Unit,
-    onShare: () -> Unit,
     onCreate: () -> Unit,
     modifier: Modifier = Modifier,
     expanded: Boolean
@@ -415,22 +412,16 @@ private fun SubtopicsToolbar(
             }
         },
         content = {
-            IconButton(onClick = onShare) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_share_24),
-                    contentDescription = "Localized description"
-                )
-            }
             IconButton(onClick = onDelete) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_delete_24),
-                    contentDescription = "Localized description"
+                    contentDescription = stringResource(R.string.open_delete_topic_dialog)
                 )
             }
             IconButton(onClick = onEdit) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_edit_24),
-                    contentDescription = "Localized description"
+                    contentDescription = stringResource(R.string.open_edit_topic_dialog)
                 )
             }
         }
@@ -631,106 +622,111 @@ private fun SubtopicListItem(subtopic: Subtopic, modifier: Modifier) {
 private fun SubtopicsScreenPreview() {
     StudyAppTheme {
         SubtopicsScreen(
-            subtopics = listOf(
-                Subtopic(
-                    id = 1,
-                    topicId = 0,
-                    title = "Golden Retriever",
-                    description = "Friendly, intelligent, and great with families.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
+            uiState = SubtopicsUiState.Success(
+                subtopics = listOf(
+                    Subtopic(
+                        id = 1,
+                        topicId = 0,
+                        title = "Golden Retriever",
+                        description = "Friendly, intelligent, and great with families.",
+                        checked = false,
+                        bookmarked = false,
+                        imageUri = null
+                    ),
+                    Subtopic(
+                        id = 2,
+                        topicId = 0,
+                        title = "Labrador Retriever",
+                        description = "Outgoing, loyal, and super trainable.",
+                        checked = false,
+                        bookmarked = false,
+                        imageUri = null
+                    ),
+                    Subtopic(
+                        id = 3,
+                        topicId = 0,
+                        title = "German Shepherd",
+                        description = "Brave, confident, and excellent working dogs.",
+                        checked = false,
+                        bookmarked = false,
+                        imageUri = null
+                    ),
+                    Subtopic(
+                        id = 4,
+                        topicId = 0,
+                        title = "Pomeranian",
+                        description = "Small, fluffy, and full of personality.",
+                        checked = false,
+                        bookmarked = false,
+                        imageUri = null
+                    ),
+                    Subtopic(
+                        id = 5,
+                        topicId = 0,
+                        title = "Border Collie",
+                        description = "Highly energetic and the smartest of all breeds.",
+                        checked = false,
+                        bookmarked = false,
+                        imageUri = null
+                    ),
+                    Subtopic(
+                        id = 6,
+                        topicId = 0,
+                        title = "Dachshund",
+                        description = "Long-bodied and playful with a bold attitude.",
+                        checked = false,
+                        bookmarked = false,
+                        imageUri = null
+                    ),
+                    Subtopic(
+                        id = 7,
+                        topicId = 0,
+                        title = "French Bulldog",
+                        description = "Compact and charming with a lovable snort.",
+                        checked = false,
+                        bookmarked = false,
+                        imageUri = null
+                    ),
+                    Subtopic(
+                        id = 8,
+                        topicId = 0,
+                        title = "Cocker Spaniel",
+                        description = "Gentle, sweet, and always ready to cuddle.",
+                        checked = false,
+                        bookmarked = false,
+                        imageUri = null
+                    ),
+                    Subtopic(
+                        id = 9,
+                        topicId = 0,
+                        title = "Great Dane",
+                        description = "A gentle giant with a calm and loving nature.",
+                        checked = false,
+                        bookmarked = false,
+                        imageUri = null
+                    ),
+                    Subtopic(
+                        id = 10,
+                        topicId = 0,
+                        title = "Siberian Husky",
+                        description = "Beautiful, energetic, and known for their striking blue eyes.",
+                        checked = false,
+                        bookmarked = false,
+                        imageUri = null
+                    )
                 ),
-                Subtopic(
-                    id = 2,
-                    topicId = 0,
-                    title = "Labrador Retriever",
-                    description = "Outgoing, loyal, and super trainable.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
+                topicsWithProgress = listOf(
+                    TopicWithProgress(
+                        topic = Topic(id = 1, title = "Topic 1"),
+                        checked = true
+                    )
                 ),
-                Subtopic(
-                    id = 3,
-                    topicId = 0,
-                    title = "German Shepherd",
-                    description = "Brave, confident, and excellent working dogs.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 4,
-                    topicId = 0,
-                    title = "Pomeranian",
-                    description = "Small, fluffy, and full of personality.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 5,
-                    topicId = 0,
-                    title = "Border Collie",
-                    description = "Highly energetic and the smartest of all breeds.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 6,
-                    topicId = 0,
-                    title = "Dachshund",
-                    description = "Long-bodied and playful with a bold attitude.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 7,
-                    topicId = 0,
-                    title = "French Bulldog",
-                    description = "Compact and charming with a lovable snort.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 8,
-                    topicId = 0,
-                    title = "Cocker Spaniel",
-                    description = "Gentle, sweet, and always ready to cuddle.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 9,
-                    topicId = 0,
-                    title = "Great Dane",
-                    description = "A gentle giant with a calm and loving nature.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                ),
-                Subtopic(
-                    id = 10,
-                    topicId = 0,
-                    title = "Siberian Husky",
-                    description = "Beautiful, energetic, and known for their striking blue eyes.",
-                    checked = false,
-                    bookmarked = false,
-                    imageUri = null
-                )
-            ),
-            topics = listOf(Topic(id = 1, title = "Topic 1", checked = false)),
-            topic = Topic(
-                id = 1, title = "Android Taint Analysis", checked = false
+                selectedTopic = Topic(id = 1, title = "Android Taint Analysis")
             ),
             navigateToSubtopic = {},
             navigateToTopic = {},
             navigateBack = {},
-            saveSubtopic = { _, _, _ -> },
+            saveSubtopic = {},
             deleteTopic = {},
             updateTopic = {}
         )
@@ -746,13 +742,11 @@ private fun SubtopicsScreenPreview() {
 private fun SubtopicsScreenLoadingPreview() {
     StudyAppTheme {
         SubtopicsScreen(
-            subtopics = null,
-            topics = null,
-            topic = null,
+            uiState = SubtopicsUiState.Loading,
             navigateToSubtopic = {},
             navigateToTopic = {},
             navigateBack = {},
-            saveSubtopic = { _, _, _ -> },
+            saveSubtopic = {},
             deleteTopic = {},
             updateTopic = {},
         )

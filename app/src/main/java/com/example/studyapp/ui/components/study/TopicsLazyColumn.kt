@@ -18,11 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.studyapp.data.Topic
+import com.example.studyapp.data.TopicWithProgress
 
 @Composable
 internal fun TopicsLazyColumn(
-    topics: List<Topic>,
+    topicsWithProgress: List<TopicWithProgress>,
     navigateToTopic: (Int) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState(),
@@ -34,19 +34,18 @@ internal fun TopicsLazyColumn(
         keyboardController?.hide()
     }
 
-
     LazyColumn(modifier = modifier, state = state) {
-        items(topics) { topic ->
+        items(topicsWithProgress) { topicWithProgress ->
             var colors = ListItemDefaults.colors()
-            if (selectedTopicId == topic.id) {
+            if (selectedTopicId == topicWithProgress.topic.id) {
                 colors =
                     ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             }
             TopicListItem(
-                topic = topic,
+                topicWithProgress = topicWithProgress,
                 colors = colors,
                 modifier = Modifier
-                    .clickable { navigateToTopic(topic.id) }
+                    .clickable { navigateToTopic(topicWithProgress.topic.id) }
                     .fillMaxWidth()
             )
         }
@@ -55,14 +54,14 @@ internal fun TopicsLazyColumn(
 
 @Composable
 private fun TopicListItem(
-    topic: Topic,
+    topicWithProgress: TopicWithProgress,
     modifier: Modifier = Modifier,
     colors: ListItemColors = ListItemDefaults.colors(),
 ) {
     ListItem(
         headlineContent = {
             Text(
-                text = topic.title,
+                text = topicWithProgress.topic.title,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1
             )
@@ -70,7 +69,7 @@ private fun TopicListItem(
         modifier = modifier,
         trailingContent = {
             Checkbox(
-                checked = topic.checked,
+                checked = topicWithProgress.checked,
                 enabled = false,
                 onCheckedChange = null,
                 modifier = Modifier.size(size = 24.dp)

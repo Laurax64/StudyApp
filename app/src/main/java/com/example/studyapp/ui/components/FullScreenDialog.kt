@@ -27,7 +27,7 @@ import com.example.studyapp.ui.theme.StudyAppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FullScreenDialog(
-    titleRes: Int,
+    titleId: Int,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
@@ -40,7 +40,7 @@ fun FullScreenDialog(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(id = titleRes),
+                        text = stringResource(id = titleId),
                         modifier = Modifier.padding(start = 16.dp)
                     )
                 },
@@ -61,8 +61,8 @@ fun FullScreenDialog(
             )
         },
         modifier = modifier,
-    ) {
-        content(it)
+    ) { innerPadding ->
+        content(innerPadding)
     }
 }
 
@@ -75,7 +75,7 @@ fun FullScreenDialog(
 private fun SubtopicFullScreenDialogPreview() {
     StudyAppTheme {
         FullScreenDialog(
-            titleRes = R.string.create_subtopic,
+            titleId = R.string.create_subtopic,
             onConfirm = {},
             onDismiss = {},
             content = {

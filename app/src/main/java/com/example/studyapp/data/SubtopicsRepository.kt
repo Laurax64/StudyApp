@@ -6,11 +6,13 @@ interface SubtopicsRepository {
 
     suspend fun insertSubtopic(subtopic: Subtopic)
 
-    suspend fun deleteSubtopic(subtopic: Subtopic)
+    suspend fun deleteSubtopic(subtopicId: Int)
 
     suspend fun updateSubtopic(subtopic: Subtopic)
 
-    fun getSubtopic(id: Int): Flow<Subtopic>
+    fun getSubtopic(subtopicId: Int): Flow<Subtopic?>
 
-    fun getAllSubtopics(topicId: Int): Flow<List<Subtopic>>
+    fun getAllSubtopics(): Flow<List<Subtopic>>
+
+    suspend fun deleteAssociatedSubtopics(topicId: Int)
 }

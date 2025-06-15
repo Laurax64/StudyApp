@@ -53,4 +53,11 @@
     <string name="toggle_checked">Toggle checked</string>
     <string name="open_login">Open login</string>
     <string name="open_search">Open search</string>
+    <string name="go_to_next_subtopic">Go to next subtopic</string>
+    <string name="go_to_previous_subtopic">Go to previous subtopic</string>
+    <string name="open_delete_subtopic_dialog">Open delete subtopic dialog</string>
+    <string name="could_not_show_content">Could not show content</string>
+    <string name="Back">Retry</string>
+    <string name="i_did_not_know">I did not know</string>
+    <string name="i_knew_this">I knew this</string>
 </resources>
