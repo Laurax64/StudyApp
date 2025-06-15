@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -164,7 +166,8 @@ private fun SubtopicScaffold(
                             FloatingToolbarDefaults.ContainerSize.value.dp + 40.dp
                     ),
                 )
-                SubtopicToolbar(
+                SubtopicToolbarRow(
+                    isScreenWidthCompact = isScreenWidthCompact,
                     onDelete = { dialogType = SubtopicDialogType.DELETE_SUBTOPIC },
                     onEdit = { dialogType = SubtopicDialogType.EDIT_SUBTOPIC },
                     onCheck = if (!subtopic.checked) {
@@ -177,7 +180,8 @@ private fun SubtopicScaffold(
                     expanded = expanded,
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .offset(x = -ScreenOffset, y = -ScreenOffset),
+                        .offset(y = -ScreenOffset)
+                        .padding(horizontal = ScreenOffset)
                 )
             }
         }
@@ -320,8 +324,10 @@ private fun DeleteSubtopicDialog(
 }
 
 /**
- * A horizontal floating toolbar for the subtopic screen.
+ * A row that contains the toolbar(s) for the subtopic screen.
+ * In compact screens, it contains one toolbar and two toolbars in large screens.
  *
+ * @param isScreenWidthCompact whether the screen is in compact width or not.
  * @param onDelete the action to perform when the delete button is clicked.
  * @param onEdit the action to perform when the edit button is clicked.
  * @param onCheck the function to check the topic or null if it is already checked.
@@ -332,7 +338,8 @@ private fun DeleteSubtopicDialog(
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SubtopicToolbar(
+private fun SubtopicToolbarRow(
+    isScreenWidthCompact: Boolean,
     onDelete: () -> Unit,
     onEdit: () -> Unit,
     onCheck: (() -> Unit)?,
@@ -341,23 +348,7 @@ private fun SubtopicToolbar(
     expanded: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val content: @Composable RowScope.() -> Unit = {
-        onPrevious?.let {
-            IconButton(onClick = it) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_navigate_before_24),
-                    contentDescription = stringResource(R.string.go_to_previous_subtopic)
-                )
-            }
-        }
-        onNext?.let {
-            IconButton(onClick = it) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_navigate_next_24),
-                    contentDescription = stringResource(R.string.go_to_next_subtopic)
-                )
-            }
-        }
+    val deleteEditButtons: @Composable RowScope.() -> Unit = {
         IconButton(onClick = onDelete) {
             Icon(
                 painter = painterResource(R.drawable.baseline_delete_24),
@@ -371,11 +362,68 @@ private fun SubtopicToolbar(
             )
         }
     }
+    var floatingActionButton: (@Composable () -> Unit)? = null
+    if (onCheck != null) {
+        floatingActionButton = {
+            VibrantFloatingActionButton(onClick = onCheck) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_check_24),
+                    contentDescription = stringResource(R.string.create_subtopic),
+                )
+            }
+        }
+    }
 
-    if (onCheck == null) {
-        HorizontalFloatingToolbar(
-            modifier = modifier,
+    val previousNextButtons: @Composable RowScope.() -> Unit = {
+
+        IconButton(onClick = onPrevious ?: {}, enabled = onPrevious != null) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_navigate_before_24),
+                    contentDescription = stringResource(R.string.go_to_previous_subtopic),
+                )
+        }
+        IconButton(onClick = onNext ?: {}, enabled = onNext != null) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_navigate_next_24),
+                    contentDescription = stringResource(R.string.go_to_next_subtopic)
+                )
+            }
+    }
+
+    if (isScreenWidthCompact) {
+        SubtopicToolbar(
+            floatingActionButton = floatingActionButton,
+            content = {
+                deleteEditButtons()
+                previousNextButtons()
+            },
             expanded = expanded,
+            modifier = modifier
+
+        )
+    } else {
+        SubtopicsToolbarsRow(
+            floatingActionButton = floatingActionButton,
+            previousNextButtons = previousNextButtons,
+            deleteEditButtons = deleteEditButtons,
+            expanded = expanded,
+            modifier = modifier.fillMaxWidth()
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun SubtopicToolbar(
+    floatingActionButton: (@Composable () -> Unit)?,
+    content: @Composable RowScope.() -> Unit,
+    expanded: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    if (floatingActionButton == null) {
+        HorizontalFloatingToolbar(
+            expanded = expanded,
+            modifier = modifier,
             colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
             content = content
         )
@@ -384,19 +432,48 @@ private fun SubtopicToolbar(
             modifier = modifier,
             expanded = expanded,
             colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
-            floatingActionButton = {
-                VibrantFloatingActionButton(onClick = onCheck) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_check_24),
-                        contentDescription = stringResource(R.string.create_subtopic),
-                    )
-
-                }
-            },
+            floatingActionButton = floatingActionButton,
             content = content
         )
     }
 }
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun SubtopicsToolbarsRow(
+    floatingActionButton: (@Composable () -> Unit)?,
+    previousNextButtons: @Composable RowScope.() -> Unit,
+    deleteEditButtons: @Composable RowScope.() -> Unit,
+    expanded: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.height(
+            FloatingToolbarDefaults.ContainerSize.value.dp
+        ), horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        HorizontalFloatingToolbar(
+            expanded = expanded,
+            content = deleteEditButtons,
+        )
+        if (floatingActionButton == null) {
+            HorizontalFloatingToolbar(
+                expanded = expanded,
+                colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+                content = previousNextButtons,
+                modifier = Modifier
+            )
+        } else {
+            HorizontalFloatingToolbar(
+                expanded = expanded,
+                colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+                floatingActionButton = floatingActionButton,
+                content = previousNextButtons,
+            )
+        }
+    }
+}
+
 
 @Composable
 private fun ErrorScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
