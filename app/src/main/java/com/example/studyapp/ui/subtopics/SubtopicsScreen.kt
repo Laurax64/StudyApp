@@ -89,11 +89,7 @@ fun SubtopicsScreen(
     val uiState by subtopicsViewModel.uiState.collectAsStateWithLifecycle()
     SubtopicsScreen(
         uiState = uiState,
-        saveSubtopic = { title, description, imageUri ->
-            subtopicsViewModel.createSubtopic(
-                title = title, description = description, imageUri = imageUri
-            )
-        },
+        saveSubtopic = subtopicsViewModel::addSubtopic,
         deleteTopic = subtopicsViewModel::deleteTopic,
         updateTopic = subtopicsViewModel::updateTopic,
         navigateToSubtopic = navigateToSubtopic,
@@ -107,7 +103,7 @@ fun SubtopicsScreen(
 @Composable
 private fun SubtopicsScreen(
     uiState: SubtopicsUiState,
-    saveSubtopic: (String, String, String?) -> Unit,
+    saveSubtopic: (Subtopic) -> Unit,
     deleteTopic: () -> Unit,
     updateTopic: (Topic) -> Unit,
     navigateToSubtopic: (Int) -> Unit,
@@ -139,7 +135,7 @@ private fun SubtopicsScreen(
 @Composable
 private fun SubtopicsScaffold(
     uiState: SubtopicsUiState.Success,
-    saveSubtopic: (String, String, String?) -> Unit,
+    saveSubtopic: (Subtopic) -> Unit,
     deleteTopic: () -> Unit,
     updateTopic: (Topic) -> Unit,
     navigateToSubtopic: (Int) -> Unit,
@@ -162,9 +158,8 @@ private fun SubtopicsScaffold(
             onDismiss = { dialogType = null },
             isFullScreenDialog = true,
             modifier = modifier,
-            saveSubtopic = { title, description, imageUri ->
-                saveSubtopic(title, description, imageUri)
-            },
+            topicId = topic.id,
+            saveSubtopic = { saveSubtopic(it) },
         )
     } else {
         dialogType?.let {
@@ -232,7 +227,7 @@ private fun SubtopicsDialog(
     deleteTopic: () -> Unit,
     dismissDialog: () -> Unit,
     dialogType: SubtopicsDialog,
-    saveSubtopic: (String, String, String?) -> Unit,
+    saveSubtopic: (Subtopic) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (dialogType) {
@@ -260,7 +255,8 @@ private fun SubtopicsDialog(
                 modifier = modifier,
                 onDismiss = dismissDialog,
                 isFullScreenDialog = false,
-                saveSubtopic = saveSubtopic
+                saveSubtopic = saveSubtopic,
+                topicId = topic.id
             )
     }
 }
@@ -723,7 +719,7 @@ private fun SubtopicsScreenPreview() {
             navigateToSubtopic = {},
             navigateToTopic = {},
             navigateBack = {},
-            saveSubtopic = { _, _, _ -> },
+            saveSubtopic = {},
             deleteTopic = {},
             updateTopic = {}
         )
@@ -743,7 +739,7 @@ private fun SubtopicsScreenLoadingPreview() {
             navigateToSubtopic = {},
             navigateToTopic = {},
             navigateBack = {},
-            saveSubtopic = { _, _, _ -> },
+            saveSubtopic = {},
             deleteTopic = {},
             updateTopic = {},
         )

@@ -46,22 +46,9 @@ class SubtopicsViewModel @Inject constructor(
         initialValue = SubtopicsUiState.Loading
     )
 
-    fun createSubtopic(
-        title: String,
-        description: String,
-        imageUri: String?
-    ) {
+    fun addSubtopic(subtopic: Subtopic) {
         viewModelScope.launch {
-            subtopicsRepository.insertSubtopic(
-                Subtopic(
-                    title = title,
-                    checked = false,
-                    bookmarked = false,
-                    description = description,
-                    imageUri = imageUri,
-                    topicId = topicId,
-                )
-            )
+            subtopicsRepository.insertSubtopic(subtopic)
         }
     }
 

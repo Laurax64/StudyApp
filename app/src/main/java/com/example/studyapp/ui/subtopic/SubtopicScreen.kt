@@ -291,13 +291,8 @@ private fun SubtopicDialog(
             modifier = modifier,
             onDismiss = dismissDialog,
             isFullScreenDialog = isScreenWidthCompact,
-            saveSubtopic = { title, description, imageUri ->
-                updateSubtopic(
-                    subtopic.copy(
-                        title = title, description = description, imageUri = imageUri
-                    )
-                )
-            },
+            topicId = subtopic.topicId,
+            saveSubtopic = { updateSubtopic(it) },
             subtopic = subtopic
         )
     }

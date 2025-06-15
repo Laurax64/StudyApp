@@ -45,9 +45,10 @@ import com.example.studyapp.utils.saveToAppSpecificStorage
 @Composable
 internal fun SaveSubtopicDialog(
     onDismiss: () -> Unit,
-    saveSubtopic: (String, String, String?) -> Unit,
+    saveSubtopic: (Subtopic) -> Unit,
     modifier: Modifier = Modifier,
     isFullScreenDialog: Boolean,
+    topicId: Int,
     subtopic: Subtopic? = null,
 ) {
     var title by rememberSaveable { mutableStateOf(subtopic?.title ?: "") }
@@ -60,9 +61,23 @@ internal fun SaveSubtopicDialog(
         if (subtopic?.imageUri != imageUri && imageUri.isNotBlank()) {
             imageUri = saveToAppSpecificStorage(context = context, uri = imageUri.toUri())
         }
-        saveSubtopic(title, description, imageUri)
+        val subtopicToSave = subtopic?.copy(
+            title = title,
+            description = description,
+            imageUri = imageUri,
+            checked = checked == true
+        ) ?: Subtopic(
+            title = title,
+            description = description,
+            imageUri = imageUri,
+            checked = checked == true,
+            bookmarked = false,
+            topicId = topicId
+        )
+        saveSubtopic(subtopicToSave)
         onDismiss()
     }
+
     val inputFields = @Composable { innerPadding: PaddingValues ->
         SubtopicInputFields(
             updateTitle = { title = it },
