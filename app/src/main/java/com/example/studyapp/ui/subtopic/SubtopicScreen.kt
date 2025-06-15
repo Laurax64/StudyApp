@@ -71,6 +71,7 @@ private enum class SubtopicDialogType {
 @Composable
 fun SubtopicScreen(
     viewModel: SubtopicViewModel,
+    navigateBackToSubtopics: (Int) -> Unit,
     navigateBack: () -> Unit,
     navigateToSubtopic: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -83,6 +84,7 @@ fun SubtopicScreen(
         deleteSubtopic = viewModel::deleteSubtopic,
         modifier = modifier.padding(horizontal = 16.dp),
         navigateToSubtopic = navigateToSubtopic,
+        navigateBackToSubtopics = navigateBackToSubtopics,
         navigateBack = navigateBack
     )
 }
@@ -93,6 +95,7 @@ private fun SubtopicScreen(
     uiState: SubtopicUiState,
     updateSubtopic: (Subtopic) -> Unit,
     deleteSubtopic: () -> Unit,
+    navigateBackToSubtopics: (Int) -> Unit,
     navigateBack: () -> Unit,
     navigateToSubtopic: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -108,7 +111,7 @@ private fun SubtopicScreen(
                 uiState = uiState,
                 updateSubtopic = updateSubtopic,
                 deleteSubtopic = deleteSubtopic,
-                navigateBack = navigateBack,
+                navigateBack = { navigateBackToSubtopics(uiState.subtopic.topicId) },
                 navigateToSubtopic = navigateToSubtopic,
                 modifier = modifier,
             )
@@ -377,17 +380,17 @@ private fun SubtopicToolbarRow(
     val previousNextButtons: @Composable RowScope.() -> Unit = {
 
         IconButton(onClick = onPrevious ?: {}, enabled = onPrevious != null) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_navigate_before_24),
-                    contentDescription = stringResource(R.string.go_to_previous_subtopic),
-                )
+            Icon(
+                painter = painterResource(R.drawable.baseline_navigate_before_24),
+                contentDescription = stringResource(R.string.go_to_previous_subtopic),
+            )
         }
         IconButton(onClick = onNext ?: {}, enabled = onNext != null) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_navigate_next_24),
-                    contentDescription = stringResource(R.string.go_to_next_subtopic)
-                )
-            }
+            Icon(
+                painter = painterResource(R.drawable.baseline_navigate_next_24),
+                contentDescription = stringResource(R.string.go_to_next_subtopic)
+            )
+        }
     }
 
     if (isScreenWidthCompact) {
@@ -560,6 +563,7 @@ private fun SubtopicScreenSuccessPreview() {
             ),
             updateSubtopic = {},
             deleteSubtopic = {},
+            navigateBackToSubtopics = {},
             navigateBack = {},
             navigateToSubtopic = {}
         )

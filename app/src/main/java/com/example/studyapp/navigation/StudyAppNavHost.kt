@@ -25,6 +25,12 @@ fun StudyAppNavHost(
             navigateBack = { navController.popBackStack() },
         )
         subtopicScreen(
+            navigateBackToSubtopics = { topicId ->
+                navController.popBackStack(
+                    route = SubtopicsRoute(topicId = topicId),
+                    inclusive = false
+                )
+            },
             navigateBack = navController::popBackStack,
             navigateToSubtopic = {
                 navController.navigate(route = SubtopicRoute(subtopicId = it))
@@ -60,11 +66,16 @@ fun NavGraphBuilder.subtopicsScreen(
     }
 }
 
-fun NavGraphBuilder.subtopicScreen(navigateBack: () -> Unit, navigateToSubtopic: (Int) -> Unit) {
+fun NavGraphBuilder.subtopicScreen(
+    navigateBackToSubtopics: (Int) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToSubtopic: (Int) -> Unit
+) {
     composable<SubtopicRoute> {
         SubtopicScreen(
             viewModel = hiltViewModel(),
             navigateToSubtopic = navigateToSubtopic,
+            navigateBackToSubtopics = navigateBackToSubtopics,
             navigateBack = navigateBack
         )
     }
