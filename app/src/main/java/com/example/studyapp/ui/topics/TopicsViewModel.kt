@@ -7,6 +7,7 @@ import com.example.studyapp.data.TopicWithProgress
 import com.example.studyapp.data.TopicsRepository
 import com.example.studyapp.domain.GetTopicsWithProgressUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -19,6 +20,7 @@ class TopicsViewModel @Inject constructor(
     getTopicsWithProgress: GetTopicsWithProgressUseCase,
     private val topicsRepository: TopicsRepository
 ) : ViewModel() {
+    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<TopicsUiState> = getTopicsWithProgress().map {
         TopicsUiState.Success(topicsWithProgress = it)
     }.stateIn(
@@ -27,7 +29,7 @@ class TopicsViewModel @Inject constructor(
         initialValue = TopicsUiState.Loading
     )
 
-    fun insertTopic(topic: Topic) {
+    fun addTopic(topic: Topic) {
         viewModelScope.launch {
             topicsRepository.insertTopic(topic = topic)
         }

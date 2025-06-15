@@ -39,8 +39,8 @@ class StudyAppState(val navController: NavHostController) {
     val currentDestination: NavDestination?
         @Composable get() {
             // Collect the currentBackStackEntryFlow as a state
-            val currentEntry = navController.currentBackStackEntryFlow
-                .collectAsState(initial = null)
+            val currentEntry =
+                navController.currentBackStackEntryFlow.collectAsState(initial = null)
 
             // Fallback to previousDestination if currentEntry is null
             return currentEntry.value?.destination.also { destination ->

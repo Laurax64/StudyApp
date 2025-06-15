@@ -56,7 +56,6 @@ class SubtopicViewModel @Inject constructor(
     }
 }
 
-
 sealed interface SubtopicUiState {
     object Loading : SubtopicUiState
     data class Success(

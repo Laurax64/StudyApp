@@ -27,10 +27,10 @@ class SubtopicsViewModel @Inject constructor(
     private val topicId: Int = savedStateHandle["topicId"] ?: -1
 
     val uiState: StateFlow<SubtopicsUiState> = combine(
+        topicsRepository.getTopic(topicId),
         getTopicsWithProgressUseCase(),
-        subtopicsRepository.getAllSubtopics()
-    ) { topics, subtopics ->
-        val selectedTopic = topics.find { it.topic.id == topicId }?.topic
+        subtopicsRepository.getAllSubtopics(),
+    ) { selectedTopic, topics, subtopics ->
         if (selectedTopic != null) {
             SubtopicsUiState.Success(
                 selectedTopic = selectedTopic,
@@ -45,6 +45,7 @@ class SubtopicsViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = SubtopicsUiState.Loading
     )
+
 
     fun addSubtopic(subtopic: Subtopic) {
         viewModelScope.launch {

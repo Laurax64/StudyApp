@@ -47,7 +47,7 @@ fun TopicsScreen(
     val uiState by topicsViewModel.uiState.collectAsStateWithLifecycle()
     TopicsScreen(
         uiState = uiState,
-        saveTopic = topicsViewModel::insertTopic,
+        addTopic = topicsViewModel::addTopic,
         navigateToSubtopics = navigateToTopic,
         modifier = modifier
     )
@@ -57,7 +57,7 @@ fun TopicsScreen(
 @Composable
 private fun TopicsScreen(
     uiState: TopicsUiState,
-    saveTopic: (Topic) -> Unit,
+    addTopic: (Topic) -> Unit,
     navigateToSubtopics: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -70,11 +70,10 @@ private fun TopicsScreen(
         is TopicsUiState.Success ->
             TopicsScaffold(
                 topicsWithProgress = uiState.topicsWithProgress,
-                saveTopic = saveTopic,
+                saveTopic = addTopic,
                 navigateToSubtopics = navigateToSubtopics,
                 modifier = modifier
             )
-
     }
 }
 
@@ -91,7 +90,14 @@ private fun TopicsScaffold(
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showDialog) {
-        SaveTopicDialog(onDismiss = { showDialog = false }, topic = null, onSave = saveTopic)
+        SaveTopicDialog(
+            onDismiss = { showDialog = false },
+            topic = null,
+            onSave = {
+                saveTopic(it)
+                showDialog = false
+            }
+        )
     }
     Scaffold(
         modifier = modifier,
@@ -264,7 +270,7 @@ private fun TopicsScreenPreview() {
                     )
                 )
             ),
-            saveTopic = {},
+            addTopic = {},
             navigateToSubtopics = {},
         )
     }
@@ -281,7 +287,7 @@ private fun TopicsScreenLoadingPreview() {
         TopicsScreen(
             uiState = TopicsUiState.Loading,
             navigateToSubtopics = {},
-            saveTopic = {},
+            addTopic = {},
         )
     }
 }

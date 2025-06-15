@@ -58,7 +58,6 @@ internal fun SaveTopicDialog(
                     } else {
                         onSave(Topic(title = topicTitle))
                     }
-                    onDismiss()
                 }
             ) {
                 Text(stringResource(R.string.save))

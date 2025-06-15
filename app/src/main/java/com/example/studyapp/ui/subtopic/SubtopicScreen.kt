@@ -62,7 +62,7 @@ import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 
-private enum class SubtopicDialog {
+private enum class SubtopicDialogType {
     EDIT_SUBTOPIC, DELETE_SUBTOPIC
 }
 
@@ -126,7 +126,7 @@ private fun SubtopicScaffold(
     navigateToSubtopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var dialogType by rememberSaveable { mutableStateOf<SubtopicDialog?>(null) }
+    var dialogType by rememberSaveable { mutableStateOf<SubtopicDialogType?>(null) }
     var expanded by rememberSaveable { mutableStateOf(true) }
     val subtopic = uiState.subtopic
     val isScreenWidthCompact = !currentWindowAdaptiveInfo().windowSizeClass
@@ -145,7 +145,7 @@ private fun SubtopicScaffold(
             dialogType = it
         )
     }
-    if (!(dialogType == SubtopicDialog.EDIT_SUBTOPIC && isScreenWidthCompact)) {
+    if (!(dialogType == SubtopicDialogType.EDIT_SUBTOPIC && isScreenWidthCompact)) {
         Scaffold(
             modifier = modifier,
             topBar = {
@@ -165,8 +165,8 @@ private fun SubtopicScaffold(
                     ),
                 )
                 SubtopicToolbar(
-                    onDelete = { dialogType = SubtopicDialog.DELETE_SUBTOPIC },
-                    onEdit = { dialogType = SubtopicDialog.EDIT_SUBTOPIC },
+                    onDelete = { dialogType = SubtopicDialogType.DELETE_SUBTOPIC },
+                    onEdit = { dialogType = SubtopicDialogType.EDIT_SUBTOPIC },
                     onCheck = if (!subtopic.checked) {
                         { updateSubtopic(subtopic.copy(checked = true)) }
                     } else {
@@ -275,19 +275,19 @@ private fun SubtopicDialog(
     isScreenWidthCompact: Boolean,
     deleteSubtopic: () -> Unit,
     dismissDialog: () -> Unit,
-    dialogType: SubtopicDialog,
+    dialogType: SubtopicDialogType,
     updateSubtopic: (Subtopic) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (dialogType) {
-        SubtopicDialog.DELETE_SUBTOPIC -> DeleteSubtopicDialog(
+        SubtopicDialogType.DELETE_SUBTOPIC -> DeleteSubtopicDialog(
             modifier = modifier,
             onDismiss = dismissDialog,
             deleteSubtopic = deleteSubtopic,
             subtopicTitle = subtopic.title
         )
 
-        SubtopicDialog.EDIT_SUBTOPIC -> SaveSubtopicDialog(
+        SubtopicDialogType.EDIT_SUBTOPIC -> SaveSubtopicDialog(
             modifier = modifier,
             onDismiss = dismissDialog,
             isFullScreenDialog = isScreenWidthCompact,

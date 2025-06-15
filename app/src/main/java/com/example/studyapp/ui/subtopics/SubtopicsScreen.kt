@@ -44,6 +44,7 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -70,9 +71,10 @@ import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.components.study.SaveTopicDialog
 import com.example.studyapp.ui.components.study.TopicsLazyColumn
 import com.example.studyapp.ui.theme.StudyAppTheme
+import kotlinx.coroutines.launch
 
 
-private enum class SubtopicsDialog {
+private enum class SubtopicsDialogType {
     EDIT_TOPIC,
     DELETE_TOPIC,
     CREATE_SUBTOPIC,
@@ -147,19 +149,20 @@ private fun SubtopicsScaffold(
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     val paneAdaptedValue = scaffoldNavigator.scaffoldState.currentState.primary
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
-    var dialogType by rememberSaveable { mutableStateOf<SubtopicsDialog?>(null) }
+    var dialogType by rememberSaveable { mutableStateOf<SubtopicsDialogType?>(null) }
     var expanded by rememberSaveable { mutableStateOf(true) }
+    val coroutineScope = rememberCoroutineScope()
     val isScreenWidthCompact =
         !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
             WIDTH_DP_MEDIUM_LOWER_BOUND
         )
-    if (dialogType == SubtopicsDialog.CREATE_SUBTOPIC && isScreenWidthCompact) {
+    if (dialogType == SubtopicsDialogType.CREATE_SUBTOPIC && isScreenWidthCompact) {
         SaveSubtopicDialog(
             onDismiss = { dialogType = null },
             isFullScreenDialog = true,
             modifier = modifier,
             topicId = topic.id,
-            saveSubtopic = { saveSubtopic(it) },
+            saveSubtopic = saveSubtopic
         )
     } else {
         dialogType?.let {
@@ -172,7 +175,11 @@ private fun SubtopicsScaffold(
                 },
                 dismissDialog = { dialogType = null },
                 dialogType = it,
-                saveSubtopic = saveSubtopic
+                saveSubtopic = {
+                    coroutineScope.launch {
+                        saveSubtopic(it)
+                    }
+                }
             )
         }
         Scaffold(
@@ -206,9 +213,9 @@ private fun SubtopicsScaffold(
                         )
                 )
                 SubtopicsToolbar(
-                    onDelete = { dialogType = SubtopicsDialog.DELETE_TOPIC },
-                    onEdit = { dialogType = SubtopicsDialog.EDIT_TOPIC },
-                    onCreate = { dialogType = SubtopicsDialog.CREATE_SUBTOPIC },
+                    onDelete = { dialogType = SubtopicsDialogType.DELETE_TOPIC },
+                    onEdit = { dialogType = SubtopicsDialogType.EDIT_TOPIC },
+                    onCreate = { dialogType = SubtopicsDialogType.CREATE_SUBTOPIC },
                     expanded = expanded,
                     modifier =
                         Modifier
@@ -226,12 +233,12 @@ private fun SubtopicsDialog(
     updateTopic: (Topic) -> Unit,
     deleteTopic: () -> Unit,
     dismissDialog: () -> Unit,
-    dialogType: SubtopicsDialog,
+    dialogType: SubtopicsDialogType,
     saveSubtopic: (Subtopic) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (dialogType) {
-        SubtopicsDialog.EDIT_TOPIC ->
+        SubtopicsDialogType.EDIT_TOPIC ->
             SaveTopicDialog(
                 modifier = modifier,
                 topic = topic,
@@ -242,7 +249,7 @@ private fun SubtopicsDialog(
                 }
             )
 
-        SubtopicsDialog.DELETE_TOPIC ->
+        SubtopicsDialogType.DELETE_TOPIC ->
             DeleteTopicDialog(
                 modifier = modifier,
                 onDismiss = dismissDialog,
@@ -250,7 +257,7 @@ private fun SubtopicsDialog(
                 topicTitle = topic.title
             )
 
-        SubtopicsDialog.CREATE_SUBTOPIC ->
+        SubtopicsDialogType.CREATE_SUBTOPIC ->
             SaveSubtopicDialog(
                 modifier = modifier,
                 onDismiss = dismissDialog,

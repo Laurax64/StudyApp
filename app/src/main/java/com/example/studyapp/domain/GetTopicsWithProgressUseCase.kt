@@ -24,12 +24,13 @@ class GetTopicsWithProgressUseCase @Inject constructor(
             topicsRepository.getAllTopics(),
             subtopicsRepository.getAllSubtopics()
         ) { topics, subtopics ->
+            val subtopicsByTopic = subtopics.groupBy { it.topicId }
             topics.map { topic ->
+                val topicSubtopics = subtopicsByTopic[topic.id].orEmpty()
                 TopicWithProgress(
                     topic = topic,
-                    checked = subtopics.all { it.checked && it.topicId == topic.id }
+                    checked = topicSubtopics.all { it.checked }
                 )
             }
         }
-
 }
