@@ -346,7 +346,6 @@ private fun SubtopicToolbar(
     expanded: Boolean,
     modifier: Modifier = Modifier,
 ) {
-
     val content: @Composable RowScope.() -> Unit = {
         onPrevious?.let {
             IconButton(onClick = it) {

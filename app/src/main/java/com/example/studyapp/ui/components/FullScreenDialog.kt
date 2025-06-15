@@ -61,8 +61,8 @@ fun FullScreenDialog(
             )
         },
         modifier = modifier,
-    ) {
-        content(it)
+    ) { innerPadding ->
+        content(innerPadding)
     }
 }
 

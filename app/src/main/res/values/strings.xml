@@ -58,4 +58,6 @@
     <string name="open_delete_subtopic_dialog">Open delete subtopic dialog</string>
     <string name="could_not_show_content">Could not show content</string>
     <string name="Back">Retry</string>
+    <string name="i_did_not_know">I did not know</string>
+    <string name="i_knew_this">I knew this</string>
 </resources>

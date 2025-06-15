@@ -20,8 +20,7 @@ class SubtopicViewModel @Inject constructor(
 ) : ViewModel() {
     private val subtopicId: Int = savedStateHandle["subtopicId"] ?: -1
 
-    val uiState: StateFlow<SubtopicUiState> =
-        combine(
+    val uiState: StateFlow<SubtopicUiState> = combine(
             subtopicsRepository.getSubtopic(subtopicId = subtopicId),
             subtopicsRepository.getAllSubtopics()
         ) { subtopic, subtopics ->
