@@ -55,7 +55,7 @@ internal fun SaveSubtopicDialog(
     var description by rememberSaveable { mutableStateOf(subtopic?.description ?: "") }
     var imageUri by rememberSaveable { mutableStateOf(subtopic?.imageUri ?: "") }
     var checked by rememberSaveable { mutableStateOf(subtopic?.checked) }
-    val titleId = subtopic?.let { R.string.edit_subtopic } ?: R.string.edit_subtopic
+    val titleId = subtopic?.let { R.string.edit_subtopic } ?: R.string.create_subtopic
     val context = LocalContext.current
     val onSave = {
         if (subtopic?.imageUri != imageUri && imageUri.isNotBlank()) {
