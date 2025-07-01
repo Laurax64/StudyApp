@@ -29,7 +29,7 @@ class TopicsViewModel @Inject constructor(
         initialValue = TopicsUiState.Loading
     )
 
-    fun addTopic(topic: Topic) {
+    internal fun addTopic(topic: Topic) {
         viewModelScope.launch {
             topicsRepository.insertTopic(topic = topic)
         }
