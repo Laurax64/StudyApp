@@ -31,7 +31,6 @@ class SubtopicsViewModelTest {
     @MockK
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var viewModel: SubtopicsViewModel
-
     private val topic = Topic(id = 0, title = "Test Topic")
     private val topicsWithProgress: Flow<List<TopicWithProgress>> = flowOf(
         listOf(

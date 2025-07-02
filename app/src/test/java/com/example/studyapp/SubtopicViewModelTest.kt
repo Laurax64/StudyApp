@@ -22,7 +22,6 @@ class SubtopicViewModelTest {
     @MockK
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var viewModel: SubtopicViewModel
-
     private val subtopic = Subtopic(
         title = "Test Subtopic",
         topicId = 1,

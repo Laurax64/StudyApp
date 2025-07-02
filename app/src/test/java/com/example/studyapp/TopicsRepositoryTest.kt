@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
 class TopicsRepositoryTest {
-
     @MockK
     private lateinit var topicDao: TopicDao
     private lateinit var topicsRepository: TopicsRepository
