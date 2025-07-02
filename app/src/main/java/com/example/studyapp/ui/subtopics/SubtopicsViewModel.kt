@@ -47,19 +47,19 @@ class SubtopicsViewModel @Inject constructor(
     )
 
 
-    fun addSubtopic(subtopic: Subtopic) {
+    internal fun addSubtopic(subtopic: Subtopic) {
         viewModelScope.launch {
             subtopicsRepository.insertSubtopic(subtopic)
         }
     }
 
-    fun updateTopic(updatedTopic: Topic) {
+    internal fun updateTopic(updatedTopic: Topic) {
         viewModelScope.launch {
             topicsRepository.updateTopic(topic = updatedTopic)
         }
     }
 
-    fun deleteTopic() {
+    internal fun deleteTopic() {
         viewModelScope.launch {
             topicsRepository.deleteTopic(topicId = topicId)
             subtopicsRepository.deleteAssociatedSubtopics(topicId = topicId)

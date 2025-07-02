@@ -1,8 +1,9 @@
 package com.example.studyapp.data
 
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.annotations.VisibleForTesting
 
-class TopicsRepositoryImpl(private val topicDao: TopicDao) : TopicsRepository {
+class TopicsRepositoryImpl(@VisibleForTesting val topicDao: TopicDao) : TopicsRepository {
     override suspend fun insertTopic(topic: Topic) = topicDao.insert(topic = topic)
 
     override suspend fun deleteTopic(topicId: Int) = topicDao.delete(topicId = topicId)

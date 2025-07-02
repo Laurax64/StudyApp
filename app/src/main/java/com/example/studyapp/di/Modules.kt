@@ -36,8 +36,7 @@ object Modules {
     fun provideSubtopicDao(appDatabase: AppDatabase) = appDatabase.subtopicDao()
 
     @Provides
-    fun provideTopicsRepository(topicDao: TopicDao): TopicsRepository =
-        TopicsRepositoryImpl(topicDao = topicDao)
+    fun provideTopicsRepository(topicDao: TopicDao): TopicsRepository = TopicsRepositoryImpl(topicDao = topicDao)
 
     @Provides
     fun provideSubtopicsRepository(subtopicDao: SubtopicDao): SubtopicsRepository =
