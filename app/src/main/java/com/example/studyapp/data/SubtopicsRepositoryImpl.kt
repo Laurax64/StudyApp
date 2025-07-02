@@ -1,8 +1,9 @@
 package com.example.studyapp.data
 
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.annotations.VisibleForTesting
 
-class SubtopicsRepositoryImpl(private val subtopicDao: SubtopicDao) : SubtopicsRepository {
+class SubtopicsRepositoryImpl(@VisibleForTesting val subtopicDao: SubtopicDao) : SubtopicsRepository {
     override suspend fun insertSubtopic(subtopic: Subtopic) =
         subtopicDao.insert(subtopic = subtopic)
 
