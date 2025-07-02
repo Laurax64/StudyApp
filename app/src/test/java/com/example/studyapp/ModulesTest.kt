@@ -27,13 +27,10 @@ class ModulesTest {
 
     @MockK
     private lateinit var appDatabase: AppDatabase_Impl
-
     @MockK
     private lateinit var topicDao: TopicDao
-
     @MockK
     private lateinit var subtopicDao: SubtopicDao
-
     private lateinit var topicsRepository: TopicsRepositoryImpl
     private lateinit var subtopicsRepository: SubtopicsRepositoryImpl
     private val modules = Modules
