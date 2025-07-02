@@ -9,16 +9,13 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @ExtendWith(MockKExtension::class)
 class TopicsViewModelTest {
 
@@ -44,7 +41,7 @@ class TopicsViewModelTest {
         coEvery { topicsRepository.insertTopic(topic) } returns Unit
         coEvery { getTopicsWithProgressUseCase.invoke() } returns topicsWithProgress
         viewModel = TopicsViewModel(
-            getTopicsWithProgress = getTopicsWithProgressUseCase,
+            getTopicsWithProgressUseCase = getTopicsWithProgressUseCase,
             topicsRepository = topicsRepository
         )
     }
@@ -52,7 +49,6 @@ class TopicsViewModelTest {
     @Test
     fun testAddTopic() = runTest {
         viewModel.addTopic(topic)
-        advanceUntilIdle()
         coVerify { topicsRepository.insertTopic(topic) }
     }
 }

@@ -17,11 +17,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TopicsViewModel @Inject constructor(
-    getTopicsWithProgress: GetTopicsWithProgressUseCase,
+    getTopicsWithProgressUseCase: GetTopicsWithProgressUseCase,
     private val topicsRepository: TopicsRepository
 ) : ViewModel() {
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<TopicsUiState> = getTopicsWithProgress().map {
+    val uiState: StateFlow<TopicsUiState> = getTopicsWithProgressUseCase().map {
         TopicsUiState.Success(topicsWithProgress = it)
     }.stateIn(
         scope = viewModelScope,
