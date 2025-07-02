@@ -27,8 +27,10 @@ class ModulesTest {
 
     @MockK
     private lateinit var appDatabase: AppDatabase_Impl
+
     @MockK
     private lateinit var topicDao: TopicDao
+
     @MockK
     private lateinit var subtopicDao: SubtopicDao
     private lateinit var topicsRepository: TopicsRepositoryImpl
@@ -50,10 +52,9 @@ class ModulesTest {
             Room.databaseBuilder(context, AppDatabase::class.java, "app-database").build()
         } returns appDatabase
 
-        val result = modules.providesAppDatabase(context)
 
+        assertEquals(appDatabase, modules.providesAppDatabase(context))
         verify { Room.databaseBuilder(context, AppDatabase::class.java, "app-database").build() }
-        assertEquals(appDatabase, result)
     }
 
     @Test
