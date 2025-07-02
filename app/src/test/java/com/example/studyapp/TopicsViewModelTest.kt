@@ -18,13 +18,10 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
 class TopicsViewModelTest {
-
     @MockK
     private lateinit var topicsRepository: TopicsRepository
-
     @MockK
     private lateinit var getTopicsWithProgressUseCase: GetTopicsWithProgressUseCase
-
     private lateinit var viewModel: TopicsViewModel
     private val topic = Topic(title = "Test Topic")
     private val topicsWithProgress: Flow<List<TopicWithProgress>> = flowOf(

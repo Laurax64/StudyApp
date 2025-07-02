@@ -24,24 +24,19 @@ import org.junit.jupiter.api.extension.ExtendWith
 class SubtopicsViewModelTest {
     @MockK
     private lateinit var subtopicsRepository: SubtopicsRepository
-
     @MockK
     private lateinit var topicsRepository: TopicsRepository
-
     @MockK
     private lateinit var getTopicsWithProgressUseCase: GetTopicsWithProgressUseCase
-
     @MockK
     private lateinit var savedStateHandle: SavedStateHandle
-
     private lateinit var viewModel: SubtopicsViewModel
 
     private val topic = Topic(id = 0, title = "Test Topic")
     private val topicsWithProgress: Flow<List<TopicWithProgress>> = flowOf(
         listOf(
             TopicWithProgress(
-                topic = topic,
-                checked = true
+                topic = topic, checked = true
             )
         )
     )

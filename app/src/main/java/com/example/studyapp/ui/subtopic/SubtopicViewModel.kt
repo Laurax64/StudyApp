@@ -43,13 +43,13 @@ class SubtopicViewModel @Inject constructor(
             initialValue = SubtopicUiState.Loading
         )
 
-    fun updateSubtopic(subtopic: Subtopic) {
+    internal fun updateSubtopic(subtopic: Subtopic) {
         viewModelScope.launch {
             subtopicsRepository.updateSubtopic(subtopic = subtopic)
         }
     }
 
-    fun deleteSubtopic() {
+    internal fun deleteSubtopic() {
         viewModelScope.launch {
             subtopicsRepository.deleteSubtopic(subtopicId = subtopicId)
         }
