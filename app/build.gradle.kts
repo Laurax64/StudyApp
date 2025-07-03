@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
-    id("de.mannodermaus.android-junit5") version "1.13.1.0"
+    alias(libs.plugins.android.junit5)
 }
 
 android {
