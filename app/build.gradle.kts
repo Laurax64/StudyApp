@@ -81,10 +81,10 @@ dependencies {
     ksp(libs.hilt.compiler)
     ksp(libs.room.runtime)
     ksp(libs.room.compiler)
-
+    // UI behavior tests
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.test.manifest)
-
+    // Unit tests
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.junit.jupiter.api)
