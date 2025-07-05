@@ -29,7 +29,7 @@ import com.example.studyapp.ui.theme.StudyAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
-fun FabWithConnectedButtons() {
+internal fun FabWithConnectedButtons() {
     var expanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
