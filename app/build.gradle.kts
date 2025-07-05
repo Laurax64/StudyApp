@@ -13,12 +13,12 @@ android {
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
     namespace = "com.example.studyapp"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.studyapp"
         minSdk = 27
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -38,12 +38,10 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.current()
+        targetCompatibility = JavaVersion.current()
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+
     buildFeatures {
         compose = true
     }
@@ -81,6 +79,7 @@ dependencies {
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.material3)
     implementation(libs.androidx.core.splashscreen)
+    debugImplementation(libs.ui.tooling)
     ksp(libs.hilt.compiler)
     ksp(libs.room.runtime)
     ksp(libs.room.compiler)

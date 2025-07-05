@@ -55,7 +55,7 @@ fun TopicsScreen(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun TopicsScreen(
+internal fun TopicsScreen(
     uiState: TopicsUiState,
     addTopic: (Topic) -> Unit,
     navigateToSubtopics: (Int) -> Unit,
