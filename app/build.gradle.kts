@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
-    id("de.mannodermaus.android-junit5") version "1.13.1.0"
+    alias(libs.plugins.android.junit5)
 }
 
 android {
@@ -81,6 +81,10 @@ dependencies {
     ksp(libs.hilt.compiler)
     ksp(libs.room.runtime)
     ksp(libs.room.compiler)
+
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.junit.jupiter.api)
