@@ -61,6 +61,7 @@ import coil.compose.AsyncImagePainter.State.Loading
 import coil.compose.rememberAsyncImagePainter
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
+import com.example.studyapp.ui.components.study.LoadingIndicatorBox
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 
@@ -102,9 +103,7 @@ private fun SubtopicScreen(
 ) {
     when (uiState) {
         SubtopicUiState.Loading ->
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                LoadingIndicator()
-            }
+            LoadingIndicatorBox()
 
         is SubtopicUiState.Success ->
             SubtopicScaffold(

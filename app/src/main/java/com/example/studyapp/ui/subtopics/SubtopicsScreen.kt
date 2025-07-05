@@ -29,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -67,6 +66,7 @@ import com.example.studyapp.data.Topic
 import com.example.studyapp.data.TopicWithProgress
 import com.example.studyapp.ui.components.DockedSearchBar
 import com.example.studyapp.ui.components.PlaceholderColumn
+import com.example.studyapp.ui.components.study.LoadingIndicatorBox
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.components.study.SaveTopicDialog
 import com.example.studyapp.ui.components.study.TopicsLazyColumn
@@ -81,7 +81,7 @@ private enum class SubtopicsDialogType {
 }
 
 @Composable
-fun SubtopicsScreen(
+internal fun SubtopicsScreen(
     subtopicsViewModel: SubtopicsViewModel,
     navigateToSubtopic: (Int) -> Unit,
     navigateToTopic: (Int) -> Unit,
@@ -115,9 +115,7 @@ private fun SubtopicsScreen(
 ) {
     when (uiState) {
         SubtopicsUiState.Loading ->
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                LoadingIndicator()
-            }
+            LoadingIndicatorBox()
 
         is SubtopicsUiState.Success ->
             SubtopicsScaffold(

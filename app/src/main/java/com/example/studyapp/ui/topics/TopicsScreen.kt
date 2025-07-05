@@ -1,12 +1,10 @@
 package com.example.studyapp.ui.topics
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
@@ -17,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,12 +31,13 @@ import com.example.studyapp.ui.components.DockedSearchBar
 import com.example.studyapp.ui.components.PlaceholderColumn
 import com.example.studyapp.ui.components.SearchAppBar
 import com.example.studyapp.ui.components.study.AdaptiveFAB
+import com.example.studyapp.ui.components.study.LoadingIndicatorBox
 import com.example.studyapp.ui.components.study.SaveTopicDialog
 import com.example.studyapp.ui.components.study.TopicsLazyColumn
 import com.example.studyapp.ui.theme.StudyAppTheme
 
 @Composable
-fun TopicsScreen(
+internal fun TopicsScreen(
     topicsViewModel: TopicsViewModel,
     navigateToTopic: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -55,7 +53,7 @@ fun TopicsScreen(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun TopicsScreen(
+fun TopicsScreen(
     uiState: TopicsUiState,
     addTopic: (Topic) -> Unit,
     navigateToSubtopics: (Int) -> Unit,
@@ -63,9 +61,7 @@ private fun TopicsScreen(
 ) {
     when (uiState) {
         TopicsUiState.Loading ->
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                LoadingIndicator()
-            }
+            LoadingIndicatorBox()
 
         is TopicsUiState.Success ->
             TopicsScaffold(
