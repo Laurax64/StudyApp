@@ -5,8 +5,6 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.printToLog
 import com.example.studyapp.data.Topic
 import com.example.studyapp.data.TopicWithProgress
 import com.example.studyapp.ui.topics.TopicsScreen
@@ -92,9 +90,6 @@ class TopicsScreenTest {
                 )
             }
         }
-        composeTestRule.onRoot(
-            useUnmergedTree = true
-        ).printToLog("currentLabelExists")
 
         // Assert that each subtopic is displayed.
         composeTestRule.onNodeWithText("Dogs").assertIsDisplayed()
@@ -139,9 +134,6 @@ class TopicsScreenTest {
                 )
             }
         }
-        composeTestRule.onRoot(
-            useUnmergedTree = true
-        ).printToLog("currentLabelExists")
 
         // Assert that each subtopic is displayed.
         composeTestRule.onNodeWithText("Dogs").assertIsDisplayed()
