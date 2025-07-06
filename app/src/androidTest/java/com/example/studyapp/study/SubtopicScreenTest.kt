@@ -1,4 +1,4 @@
-package com.example.studyapp.subtopic
+package com.example.studyapp.study
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -14,7 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * Tests for [SubtopicScreen].
+ * Tests for [com.example.studyapp.ui.subtopic.SubtopicScreen].
  *
  * It contains methods for each relevant screen height and width for the different uiStates.
  * The assertions in each method are grouped by the different views defined in the
