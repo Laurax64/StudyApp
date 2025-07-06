@@ -15,20 +15,24 @@ import org.junit.Rule
 import org.junit.Test
 
 class TopicsScreenTest {
-    private val topics = listOf(
-        TopicWithProgress(
-            topic = Topic(1, "Dogs"),
-            checked = false
-        ),
-        TopicWithProgress(
-            topic = Topic(2, "Cats"),
-            checked = false
-        ),
-        TopicWithProgress(
-            topic = Topic(3, "Horses"),
-            checked = false
+    private val successUiState = TopicsUiState.Success(
+        topicsWithProgress = listOf(
+            TopicWithProgress(
+                topic = Topic(1, "Dogs"),
+                checked = false
+            ),
+            TopicWithProgress(
+                topic = Topic(2, "Cats"),
+                checked = false
+            ),
+            TopicWithProgress(
+                topic = Topic(3, "Horses"),
+                checked = false
+            )
         )
     )
+
+    private val loadingUiState = TopicsUiState.Loading
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -40,7 +44,7 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.COMPACT_WIDTH_EXPANDED_HEIGHT,
             ) {
                 TopicsScreen(
-                    uiState = TopicsUiState.Success(topicsWithProgress = topics),
+                    uiState = successUiState,
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
@@ -63,7 +67,7 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.COMPACT_WIDTH_EXPANDED_HEIGHT,
             ) {
                 TopicsScreen(
-                    uiState = TopicsUiState.Loading,
+                    uiState = loadingUiState,
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
@@ -84,7 +88,7 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.MEDIUM_WIDTH_EXPANDED_HEIGHT,
             ) {
                 TopicsScreen(
-                    uiState = TopicsUiState.Success(topicsWithProgress = topics),
+                    uiState = successUiState,
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
@@ -108,7 +112,7 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.MEDIUM_WIDTH_EXPANDED_HEIGHT
             ) {
                 TopicsScreen(
-                    uiState = TopicsUiState.Loading,
+                    uiState = loadingUiState,
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
@@ -128,7 +132,7 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.EXPANDED_WIDTH_COMPACT_HEIGHT
             ) {
                 TopicsScreen(
-                    uiState = TopicsUiState.Success(topicsWithProgress = topics),
+                    uiState = successUiState,
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
@@ -153,7 +157,7 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.MEDIUM_WIDTH_EXPANDED_HEIGHT
             ) {
                 TopicsScreen(
-                    uiState = TopicsUiState.Loading,
+                    uiState = loadingUiState,
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
