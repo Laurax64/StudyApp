@@ -1,5 +1,6 @@
 package com.example.studyapp.ui.subtopic
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
@@ -61,6 +63,7 @@ import coil.compose.AsyncImagePainter.State.Loading
 import coil.compose.rememberAsyncImagePainter
 import com.example.studyapp.R
 import com.example.studyapp.data.Subtopic
+import com.example.studyapp.ui.components.study.LoadingIndicatorBox
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 
@@ -89,9 +92,10 @@ fun SubtopicScreen(
     )
 }
 
+@VisibleForTesting
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SubtopicScreen(
+fun SubtopicScreen(
     uiState: SubtopicUiState,
     updateSubtopic: (Subtopic) -> Unit,
     deleteSubtopic: () -> Unit,
@@ -102,9 +106,7 @@ private fun SubtopicScreen(
 ) {
     when (uiState) {
         SubtopicUiState.Loading ->
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                LoadingIndicator()
-            }
+            LoadingIndicatorBox()
 
         is SubtopicUiState.Success ->
             SubtopicScaffold(
@@ -405,7 +407,7 @@ private fun SubtopicToolbarRow(
 
         )
     } else {
-        SubtopicsToolbarsRow(
+        SubtopicToolbarsRow(
             floatingActionButton = floatingActionButton,
             previousNextButtons = previousNextButtons,
             deleteEditButtons = deleteEditButtons,
@@ -426,13 +428,13 @@ private fun SubtopicToolbar(
     if (floatingActionButton == null) {
         HorizontalFloatingToolbar(
             expanded = expanded,
-            modifier = modifier,
+            modifier = modifier.testTag("SubtopicToolbar"),
             colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
             content = content
         )
     } else {
         HorizontalFloatingToolbar(
-            modifier = modifier,
+            modifier = modifier.testTag("SubtopicToolbar"),
             expanded = expanded,
             colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
             floatingActionButton = floatingActionButton,
@@ -443,7 +445,7 @@ private fun SubtopicToolbar(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SubtopicsToolbarsRow(
+private fun SubtopicToolbarsRow(
     floatingActionButton: (@Composable () -> Unit)?,
     previousNextButtons: @Composable RowScope.() -> Unit,
     deleteEditButtons: @Composable RowScope.() -> Unit,
@@ -451,9 +453,10 @@ private fun SubtopicsToolbarsRow(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.height(
-            FloatingToolbarDefaults.ContainerSize.value.dp
-        ), horizontalArrangement = Arrangement.SpaceBetween
+        modifier = modifier
+            .height(FloatingToolbarDefaults.ContainerSize.value.dp)
+            .testTag("SubtopicToolbarRow"),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         HorizontalFloatingToolbar(
             expanded = expanded,
@@ -538,7 +541,6 @@ fun SubtopicAsyncImage(
     }
 }
 
-
 @Preview(showSystemUi = true)
 @PreviewLightDark
 @PreviewScreenSizes
@@ -561,6 +563,26 @@ private fun SubtopicScreenSuccessPreview() {
                 previousSubtopicId = 0,
                 nextSubtopicId = 2,
             ),
+            updateSubtopic = {},
+            deleteSubtopic = {},
+            navigateBackToSubtopics = {},
+            navigateBack = {},
+            navigateToSubtopic = {}
+        )
+    }
+}
+
+
+@Preview(showSystemUi = true)
+@PreviewLightDark
+@PreviewScreenSizes
+@PreviewDynamicColors
+@PreviewFontScale
+@Composable
+private fun SubtopicScreenLoadingPreview() {
+    StudyAppTheme {
+        SubtopicScreen(
+            uiState = SubtopicUiState.Loading,
             updateSubtopic = {},
             deleteSubtopic = {},
             navigateBackToSubtopics = {},

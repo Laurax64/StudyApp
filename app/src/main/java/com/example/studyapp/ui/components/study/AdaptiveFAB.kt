@@ -12,6 +12,7 @@ import androidx.compose.material3.MediumFloatingActionButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewDynamicColors
@@ -32,13 +33,11 @@ internal fun AdaptiveFAB(
     modifier: Modifier = Modifier,
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
 ) {
-
     if (windowSizeClass.isWidthAtLeastBreakpoint(widthDpBreakpoint = WIDTH_DP_EXPANDED_LOWER_BOUND)) {
         LargeFloatingActionButton(
             onClick = onClick,
-            modifier = modifier,
-        )
-        {
+            modifier = modifier.testTag("LargeFloatingActionButton"),
+        ) {
             Icon(
                 painter = painterResource(iconId),
                 contentDescription = stringResource(contentDescriptionId),
@@ -46,8 +45,10 @@ internal fun AdaptiveFAB(
             )
         }
     } else if (windowSizeClass.isWidthAtLeastBreakpoint(widthDpBreakpoint = WIDTH_DP_MEDIUM_LOWER_BOUND)) {
-        MediumFloatingActionButton(onClick = onClick, modifier = modifier)
-        {
+        MediumFloatingActionButton(
+            onClick = onClick,
+            modifier = modifier.testTag("MediumFloatingActionButton")
+        ) {
             Icon(
                 painter = painterResource(iconId),
                 contentDescription = stringResource(contentDescriptionId),
@@ -55,7 +56,10 @@ internal fun AdaptiveFAB(
             )
         }
     } else {
-        FloatingActionButton(onClick = onClick, modifier = modifier) {
+        FloatingActionButton(
+            onClick = onClick,
+            modifier = modifier.testTag("FloatingActionButton")
+        ) {
             Icon(
                 painter = painterResource(iconId),
                 contentDescription = stringResource(contentDescriptionId),

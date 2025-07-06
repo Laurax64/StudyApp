@@ -1,5 +1,6 @@
 package com.example.studyapp.ui.subtopics
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +30,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -50,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
@@ -67,6 +68,7 @@ import com.example.studyapp.data.Topic
 import com.example.studyapp.data.TopicWithProgress
 import com.example.studyapp.ui.components.DockedSearchBar
 import com.example.studyapp.ui.components.PlaceholderColumn
+import com.example.studyapp.ui.components.study.LoadingIndicatorBox
 import com.example.studyapp.ui.components.study.SaveSubtopicDialog
 import com.example.studyapp.ui.components.study.SaveTopicDialog
 import com.example.studyapp.ui.components.study.TopicsLazyColumn
@@ -81,7 +83,7 @@ private enum class SubtopicsDialogType {
 }
 
 @Composable
-fun SubtopicsScreen(
+internal fun SubtopicsScreen(
     subtopicsViewModel: SubtopicsViewModel,
     navigateToSubtopic: (Int) -> Unit,
     navigateToTopic: (Int) -> Unit,
@@ -101,9 +103,10 @@ fun SubtopicsScreen(
     )
 }
 
+@VisibleForTesting
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SubtopicsScreen(
+fun SubtopicsScreen(
     uiState: SubtopicsUiState,
     saveSubtopic: (Subtopic) -> Unit,
     deleteTopic: () -> Unit,
@@ -115,9 +118,7 @@ private fun SubtopicsScreen(
 ) {
     when (uiState) {
         SubtopicsUiState.Loading ->
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                LoadingIndicator()
-            }
+            LoadingIndicatorBox()
 
         is SubtopicsUiState.Success ->
             SubtopicsScaffold(
@@ -175,9 +176,9 @@ private fun SubtopicsScaffold(
                 },
                 dismissDialog = { dialogType = null },
                 dialogType = it,
-                saveSubtopic = {
+                saveSubtopic = { subtopic ->
                     coroutineScope.launch {
-                        saveSubtopic(it)
+                        saveSubtopic(subtopic)
                     }
                 }
             )
@@ -186,7 +187,7 @@ private fun SubtopicsScaffold(
             modifier = modifier,
             topBar = {
                 if (!showSearchBar) {
-                    SubtopicsTopAppBar(
+                    SubtopicsAppBar(
                         topicTitle = topic.title,
                         onSearch = { showSearchBar = true },
                         onShare = {},
@@ -352,7 +353,7 @@ private fun DeleteTopicDialog(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SubtopicsTopAppBar(
+private fun SubtopicsAppBar(
     modifier: Modifier = Modifier,
     topicTitle: String,
     onSearch: () -> Unit,
@@ -401,7 +402,7 @@ private fun SubtopicsToolbar(
     expanded: Boolean
 ) {
     HorizontalFloatingToolbar(
-        modifier = modifier,
+        modifier = modifier.testTag("SubtopicsToolbar"),
         expanded = expanded,
         floatingActionButton = {
             StandardFloatingActionButton(onClick = onCreate) {
@@ -442,7 +443,6 @@ fun SubtopicsPaneContent(
             CircularProgressIndicator()
         }
     } else {
-
         if (showSearchBar) {
             SubtopicsSearchBar(
                 modifier = modifier,
@@ -717,11 +717,11 @@ private fun SubtopicsScreenPreview() {
                 ),
                 topicsWithProgress = listOf(
                     TopicWithProgress(
-                        topic = Topic(id = 1, title = "Topic 1"),
+                        topic = Topic(id = 0, title = "Topic 0"),
                         checked = true
                     )
                 ),
-                selectedTopic = Topic(id = 1, title = "Android Taint Analysis")
+                selectedTopic = Topic(id = 0, title = "Android Taint Analysis")
             ),
             navigateToSubtopic = {},
             navigateToTopic = {},
