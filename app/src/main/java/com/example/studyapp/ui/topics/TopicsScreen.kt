@@ -1,5 +1,6 @@
 package com.example.studyapp.ui.topics
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,6 +52,7 @@ internal fun TopicsScreen(
     )
 }
 
+@VisibleForTesting
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TopicsScreen(

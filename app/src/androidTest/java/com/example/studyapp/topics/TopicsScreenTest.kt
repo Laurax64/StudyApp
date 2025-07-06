@@ -34,6 +34,7 @@ class TopicsScreenTest {
 
     private val loadingUiState = TopicsUiState.Loading
 
+
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -112,7 +113,7 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.MEDIUM_WIDTH_EXPANDED_HEIGHT
             ) {
                 TopicsScreen(
-                    uiState = loadingUiState,
+                    uiState = TopicsUiState.Loading,
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
@@ -157,7 +158,7 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.MEDIUM_WIDTH_EXPANDED_HEIGHT
             ) {
                 TopicsScreen(
-                    uiState = loadingUiState,
+                    uiState = TopicsUiState.Loading,
                     addTopic = {},
                     navigateToSubtopics = {},
                 )

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * A box that displays a loading indicator and fills the maximum size.
@@ -25,4 +26,10 @@ fun LoadingIndicatorBox(modifier: Modifier = Modifier) {
     ) {
         LoadingIndicator()
     }
+}
+
+@Preview
+@Composable
+fun LoadingIndicatorBoxPreview() {
+    LoadingIndicatorBox()
 }

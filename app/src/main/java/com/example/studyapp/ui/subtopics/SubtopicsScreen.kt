@@ -1,5 +1,6 @@
 package com.example.studyapp.ui.subtopics
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
@@ -101,9 +103,10 @@ internal fun SubtopicsScreen(
     )
 }
 
+@VisibleForTesting
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SubtopicsScreen(
+fun SubtopicsScreen(
     uiState: SubtopicsUiState,
     saveSubtopic: (Subtopic) -> Unit,
     deleteTopic: () -> Unit,
@@ -173,9 +176,9 @@ private fun SubtopicsScaffold(
                 },
                 dismissDialog = { dialogType = null },
                 dialogType = it,
-                saveSubtopic = {
+                saveSubtopic = { subtopic ->
                     coroutineScope.launch {
-                        saveSubtopic(it)
+                        saveSubtopic(subtopic)
                     }
                 }
             )
@@ -399,7 +402,7 @@ private fun SubtopicsToolbar(
     expanded: Boolean
 ) {
     HorizontalFloatingToolbar(
-        modifier = modifier,
+        modifier = modifier.testTag("SubtopicsToolbar"),
         expanded = expanded,
         floatingActionButton = {
             StandardFloatingActionButton(onClick = onCreate) {
@@ -715,11 +718,11 @@ private fun SubtopicsScreenPreview() {
                 ),
                 topicsWithProgress = listOf(
                     TopicWithProgress(
-                        topic = Topic(id = 1, title = "Topic 1"),
+                        topic = Topic(id = 0, title = "Topic 0"),
                         checked = true
                     )
                 ),
-                selectedTopic = Topic(id = 1, title = "Android Taint Analysis")
+                selectedTopic = Topic(id = 0, title = "Android Taint Analysis")
             ),
             navigateToSubtopic = {},
             navigateToTopic = {},
