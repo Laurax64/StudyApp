@@ -3,8 +3,12 @@ package com.example.studyapp.topics
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.printToLog
 import com.example.studyapp.data.Topic
 import com.example.studyapp.data.TopicWithProgress
 import com.example.studyapp.ui.topics.TopicsScreen
@@ -14,6 +18,14 @@ import com.example.studyapp.utils.DeviceSize
 import org.junit.Rule
 import org.junit.Test
 
+/**
+ * Tests for [TopicsScreen].
+ *
+ * It contains methods for each relevant screen height and width for the different uiStates.
+ * The assertions in each method are grouped by the different views defined in the
+ * [TopicsScreen Figma design file](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=486-112211&t=JPnkfQGNJnCnpTBx-0).
+ *
+ */
 class TopicsScreenTest {
     private val successUiState = TopicsUiState.Success(
         topicsWithProgress = listOf(
@@ -38,6 +50,10 @@ class TopicsScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    /**
+     * Tests the topics screen for compact width and expanded height when
+     * the uiState is [TopicsUiState.Success].
+     */
     @Test
     fun testTopicsScreen_CompactWidthExpandedHeight_Success() {
         composeTestRule.setContent {
@@ -51,16 +67,31 @@ class TopicsScreenTest {
                 )
             }
         }
-        // Assert that each subtopic is displayed.
+        composeTestRule.onRoot().printToLog(
+            "TopicsScreenTest"
+        )
+        // Base view
         composeTestRule.onNodeWithText("Dogs").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cats").assertIsDisplayed()
         composeTestRule.onNodeWithText("Horses").assertIsDisplayed()
-        // Assert that the FAB is displayed.
         composeTestRule.onNodeWithTag("FloatingActionButton").assertIsDisplayed()
-        // Assert that the search bar is displayed.
         composeTestRule.onNodeWithText("Search in topics").assertIsDisplayed()
+
+        // Search view
+        composeTestRule.onNodeWithText("Search in topics").performClick()
+        composeTestRule.onNodeWithContentDescription("Close search").performClick()
+
+        // Create view
+        composeTestRule.onNodeWithTag("FloatingActionButton").performClick()
+        composeTestRule.onNodeWithText("Save").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Cancel").assertIsDisplayed()
+
     }
 
+    /**
+     * Tests the topics screen for compact width and expanded height when
+     * the uiState is [TopicsUiState.Loading].
+     */
     @Test
     fun testTopicsScreen_CompactWidthExpandedHeight_Loading() {
         composeTestRule.setContent {
@@ -74,14 +105,16 @@ class TopicsScreenTest {
                 )
             }
         }
+        // Loading view
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertIsDisplayed()
-        // Assert that the FAB is not displayed.
         composeTestRule.onNodeWithTag("FloatingActionButton").assertIsNotDisplayed()
-        // Assert that the search bar is not displayed.
         composeTestRule.onNodeWithText("Search in topics").assertIsNotDisplayed()
     }
 
-
+    /**
+     * Tests the topics screen for medium width and expanded height when
+     * the uiState is [TopicsUiState.Success].
+     */
     @Test
     fun testTopicsScreen_MediumWidthExpandedHeight_Success() {
         composeTestRule.setContent {
@@ -96,14 +129,23 @@ class TopicsScreenTest {
             }
         }
 
-        // Assert that each subtopic is displayed.
+        // Base view
         composeTestRule.onNodeWithText("Dogs").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cats").assertIsDisplayed()
         composeTestRule.onNodeWithText("Horses").assertIsDisplayed()
-        // Assert that the medium FAB is displayed.
         composeTestRule.onNodeWithTag("MediumFloatingActionButton").assertIsDisplayed()
-        // Assert that the search bar is displayed.
         composeTestRule.onNodeWithText("Search in topics")
+
+
+        // Search view
+        composeTestRule.onNodeWithText("Search in topics").performClick()
+        composeTestRule.onNodeWithContentDescription("Close search").performClick()
+
+        // Create view
+        composeTestRule.onNodeWithTag("MediumFloatingActionButton").performClick()
+        composeTestRule.onNodeWithText("Save").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Cancel").assertIsDisplayed()
+
     }
 
     @Test
@@ -119,10 +161,9 @@ class TopicsScreenTest {
                 )
             }
         }
+        // Loading view
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertIsDisplayed()
-        // Assert that the medium FAB is not displayed.
         composeTestRule.onNodeWithTag("MediumFloatingActionButton").assertIsNotDisplayed()
-        // Assert that the search bar is not displayed.
         composeTestRule.onNodeWithText("Search in topics").assertIsNotDisplayed()
     }
 
@@ -140,14 +181,23 @@ class TopicsScreenTest {
             }
         }
 
-        // Assert that each subtopic is displayed.
+        // Base view
         composeTestRule.onNodeWithText("Dogs").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cats").assertIsDisplayed()
         composeTestRule.onNodeWithText("Horses").assertIsDisplayed()
-        // Assert that the large FAB is displayed.
         composeTestRule.onNodeWithTag("LargeFloatingActionButton").assertIsDisplayed()
-        // Assert that the search bar is displayed.
         composeTestRule.onNodeWithText("Search in topics")
+        composeTestRule.onNodeWithText("Select a topic")
+
+
+        // Search view
+        composeTestRule.onNodeWithText("Search in topics").performClick()
+        composeTestRule.onNodeWithContentDescription("Close search").performClick()
+
+        // Create view
+        composeTestRule.onNodeWithTag("LargeFloatingActionButton").performClick()
+        composeTestRule.onNodeWithText("Save").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Cancel").assertIsDisplayed()
 
     }
 
@@ -164,12 +214,10 @@ class TopicsScreenTest {
                 )
             }
         }
+
+        // Loading view
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertIsDisplayed()
-        // Assert that the large FAB is not displayed.
         composeTestRule.onNodeWithTag("LargeFloatingActionButton").assertIsNotDisplayed()
-        // Assert that the search bar is not displayed.
         composeTestRule.onNodeWithText("Search in topics").assertIsNotDisplayed()
     }
-
-
 }
