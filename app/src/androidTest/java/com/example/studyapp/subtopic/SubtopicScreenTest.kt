@@ -1,8 +1,10 @@
-package com.example.studyapp.topics
+package com.example.studyapp.subtopic
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.ui.subtopic.SubtopicScreen
 import com.example.studyapp.ui.subtopic.SubtopicUiState
@@ -11,6 +13,14 @@ import com.example.studyapp.utils.DeviceSize
 import org.junit.Rule
 import org.junit.Test
 
+/**
+ * Tests for [SubtopicScreen].
+ *
+ * It contains methods for each relevant screen height and width for the different uiStates.
+ * The assertions in each method are grouped by the different views defined in the
+ * [TopicsScreen Figma design file](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=4-1857&p=f&t=JPnkfQGNJnCnpTBx-0).
+ *
+ */
 class SubtopicScreenTest {
     private val successUiState = SubtopicUiState.Success(
         subtopic = Subtopic(
@@ -47,9 +57,18 @@ class SubtopicScreenTest {
                 )
             }
         }
+        // Base
         composeTestRule.onNodeWithText("Subtopic Title").assertExists()
         composeTestRule.onNodeWithText("Subtopic Description").assertExists()
         composeTestRule.onNodeWithTag("SubtopicFloatingToolbar")
+        // Delete
+        composeTestRule.onNodeWithContentDescription("Open delete subtopic dialog").performClick()
+        composeTestRule.onNodeWithText("Delete subtopic?").assertExists()
+        composeTestRule.onNodeWithText("Cancel").performClick()
+        // Edit
+        composeTestRule.onNodeWithContentDescription("Open edit subtopic dialog").performClick()
+        composeTestRule.onNodeWithText("Edit subtopic").assertExists()
+        composeTestRule.onNodeWithContentDescription("Cancel").performClick()
     }
 
     @Test
@@ -68,6 +87,7 @@ class SubtopicScreenTest {
                 )
             }
         }
+        // Loading
         composeTestRule.onNodeWithTag("SubtopicFloatingToolbar").assertDoesNotExist()
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertExists()
     }
@@ -88,9 +108,18 @@ class SubtopicScreenTest {
                 )
             }
         }
+        // Base
         composeTestRule.onNodeWithText("Subtopic Title").assertExists()
         composeTestRule.onNodeWithText("Subtopic Description").assertExists()
         composeTestRule.onNodeWithTag("SubtopicFloatingToolbarRow")
+        // Delete
+        composeTestRule.onNodeWithContentDescription("Open delete subtopic dialog").performClick()
+        composeTestRule.onNodeWithText("Delete subtopic?").assertExists()
+        composeTestRule.onNodeWithText("Cancel").performClick()
+        // Edit
+        composeTestRule.onNodeWithContentDescription("Open edit subtopic dialog").performClick()
+        composeTestRule.onNodeWithText("Edit subtopic").assertExists()
+        composeTestRule.onNodeWithContentDescription("Cancel").performClick()
     }
 
     @Test
@@ -109,6 +138,7 @@ class SubtopicScreenTest {
                 )
             }
         }
+        // Loading
         composeTestRule.onNodeWithTag("SubtopicFloatingToolbarRow").assertDoesNotExist()
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertExists()
     }
@@ -129,9 +159,18 @@ class SubtopicScreenTest {
                 )
             }
         }
+        // Base
         composeTestRule.onNodeWithText("Subtopic Title").assertExists()
         composeTestRule.onNodeWithText("Subtopic Description").assertExists()
         composeTestRule.onNodeWithTag("SubtopicFloatingToolbarRow")
+        // Delete
+        composeTestRule.onNodeWithContentDescription("Open delete subtopic dialog").performClick()
+        composeTestRule.onNodeWithText("Delete subtopic?").assertExists()
+        composeTestRule.onNodeWithText("Cancel").performClick()
+        // Edit
+        composeTestRule.onNodeWithContentDescription("Open edit subtopic dialog").performClick()
+        composeTestRule.onNodeWithText("Edit subtopic").assertExists()
+        composeTestRule.onNodeWithText("Cancel").performClick()
     }
 
     @Test
@@ -150,6 +189,7 @@ class SubtopicScreenTest {
                 )
             }
         }
+        // Loading
         composeTestRule.onNodeWithTag("SubtopicFloatingToolbarRow").assertDoesNotExist()
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertExists()
     }

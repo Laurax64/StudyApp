@@ -187,7 +187,7 @@ private fun SubtopicsScaffold(
             modifier = modifier,
             topBar = {
                 if (!showSearchBar) {
-                    SubtopicsTopAppBar(
+                    SubtopicsAppBar(
                         topicTitle = topic.title,
                         onSearch = { showSearchBar = true },
                         onShare = {},
@@ -353,7 +353,7 @@ private fun DeleteTopicDialog(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SubtopicsTopAppBar(
+private fun SubtopicsAppBar(
     modifier: Modifier = Modifier,
     topicTitle: String,
     onSearch: () -> Unit,
@@ -443,7 +443,6 @@ fun SubtopicsPaneContent(
             CircularProgressIndicator()
         }
     } else {
-
         if (showSearchBar) {
             SubtopicsSearchBar(
                 modifier = modifier,

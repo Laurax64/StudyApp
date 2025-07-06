@@ -70,22 +70,19 @@ class TopicsScreenTest {
         composeTestRule.onRoot().printToLog(
             "TopicsScreenTest"
         )
-        // Base view
+        // Base
         composeTestRule.onNodeWithText("Dogs").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cats").assertIsDisplayed()
         composeTestRule.onNodeWithText("Horses").assertIsDisplayed()
         composeTestRule.onNodeWithTag("FloatingActionButton").assertIsDisplayed()
         composeTestRule.onNodeWithText("Search in topics").assertIsDisplayed()
-
-        // Search view
+        // Search
         composeTestRule.onNodeWithText("Search in topics").performClick()
         composeTestRule.onNodeWithContentDescription("Close search").performClick()
-
-        // Create view
+        // Create
         composeTestRule.onNodeWithTag("FloatingActionButton").performClick()
         composeTestRule.onNodeWithText("Save").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cancel").assertIsDisplayed()
-
     }
 
     /**
@@ -105,7 +102,7 @@ class TopicsScreenTest {
                 )
             }
         }
-        // Loading view
+        // Loading
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertIsDisplayed()
         composeTestRule.onNodeWithTag("FloatingActionButton").assertIsNotDisplayed()
         composeTestRule.onNodeWithText("Search in topics").assertIsNotDisplayed()
@@ -128,20 +125,16 @@ class TopicsScreenTest {
                 )
             }
         }
-
-        // Base view
+        // Base
         composeTestRule.onNodeWithText("Dogs").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cats").assertIsDisplayed()
         composeTestRule.onNodeWithText("Horses").assertIsDisplayed()
         composeTestRule.onNodeWithTag("MediumFloatingActionButton").assertIsDisplayed()
         composeTestRule.onNodeWithText("Search in topics")
-
-
-        // Search view
+        // Search
         composeTestRule.onNodeWithText("Search in topics").performClick()
         composeTestRule.onNodeWithContentDescription("Close search").performClick()
-
-        // Create view
+        // Create
         composeTestRule.onNodeWithTag("MediumFloatingActionButton").performClick()
         composeTestRule.onNodeWithText("Save").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cancel").assertIsDisplayed()
@@ -161,7 +154,7 @@ class TopicsScreenTest {
                 )
             }
         }
-        // Loading view
+        // Loading
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertIsDisplayed()
         composeTestRule.onNodeWithTag("MediumFloatingActionButton").assertIsNotDisplayed()
         composeTestRule.onNodeWithText("Search in topics").assertIsNotDisplayed()
@@ -180,25 +173,20 @@ class TopicsScreenTest {
                 )
             }
         }
-
-        // Base view
+        // Base
         composeTestRule.onNodeWithText("Dogs").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cats").assertIsDisplayed()
         composeTestRule.onNodeWithText("Horses").assertIsDisplayed()
         composeTestRule.onNodeWithTag("LargeFloatingActionButton").assertIsDisplayed()
         composeTestRule.onNodeWithText("Search in topics")
         composeTestRule.onNodeWithText("Select a topic")
-
-
-        // Search view
+        // Search
         composeTestRule.onNodeWithText("Search in topics").performClick()
         composeTestRule.onNodeWithContentDescription("Close search").performClick()
-
-        // Create view
+        // Create
         composeTestRule.onNodeWithTag("LargeFloatingActionButton").performClick()
         composeTestRule.onNodeWithText("Save").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cancel").assertIsDisplayed()
-
     }
 
     @Test
@@ -214,8 +202,7 @@ class TopicsScreenTest {
                 )
             }
         }
-
-        // Loading view
+        // Loading
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertIsDisplayed()
         composeTestRule.onNodeWithTag("LargeFloatingActionButton").assertIsNotDisplayed()
         composeTestRule.onNodeWithText("Search in topics").assertIsNotDisplayed()

@@ -434,7 +434,7 @@ private fun SubtopicToolbar(
         )
     } else {
         HorizontalFloatingToolbar(
-            modifier = modifier,
+            modifier = modifier.testTag("SubtopicToolbar"),
             expanded = expanded,
             colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
             floatingActionButton = floatingActionButton,

@@ -59,7 +59,7 @@ fun SearchAppBar(
     ) {
         Image(
             painter = painterResource(R.drawable.ic_launcher_foreground),
-            contentDescription = stringResource(R.string.close_search),
+            contentDescription = null,
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(90.dp))
                 .background(color = MaterialTheme.colorScheme.surfaceContainerLowest)

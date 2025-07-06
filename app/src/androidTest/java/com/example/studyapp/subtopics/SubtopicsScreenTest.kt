@@ -1,11 +1,13 @@
-package com.example.studyapp.topics
+package com.example.studyapp.subtopics
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import com.example.studyapp.data.Subtopic
 import com.example.studyapp.data.Topic
 import com.example.studyapp.data.TopicWithProgress
@@ -16,6 +18,15 @@ import com.example.studyapp.utils.DeviceSize
 import org.junit.Rule
 import org.junit.Test
 
+
+/**
+ * Tests for [SubtopicsScreen].
+ *
+ * It contains methods for each relevant screen height and width for the different uiStates.
+ * The assertions in each method are grouped by the different views defined in the
+ * [TopicsScreen Figma design file](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-2&p=f&t=JPnkfQGNJnCnpTBx-0).
+ *
+ */
 class SubtopicsScreenTest {
     private val subtopics = listOf(
         Subtopic(
@@ -55,7 +66,7 @@ class SubtopicsScreenTest {
                 checked = true
             )
         ),
-        selectedTopic = Topic(id = 0, title = "Android Taint Analysis")
+        selectedTopic = Topic(id = 0, title = "Dogs")
     )
 
     private val loadingUiState = SubtopicsUiState.Loading
@@ -80,16 +91,32 @@ class SubtopicsScreenTest {
                 )
             }
         }
+        // Base
         composeTestRule.onNodeWithTag("SubtopicsToolbar").assertIsDisplayed()
-        // Assert that each subtopic is displayed.
         composeTestRule.onNodeWithText(text = "Golden Retriever").assertIsDisplayed()
         composeTestRule.onNodeWithText(text = "Labrador Retriever").assertIsDisplayed()
         composeTestRule.onNodeWithText(text = "German Shepherd").assertIsDisplayed()
-        // Assert that the app bar title is displayed.
-        composeTestRule.onNodeWithText(text = "Android Taint Analysis").assertIsDisplayed()
-        // Assert that the filter chips are displayed.
+        composeTestRule.onNodeWithText(text = "Dogs").assertIsDisplayed()
         composeTestRule.onNodeWithText("Unchecked").assertIsNotSelected()
         composeTestRule.onNodeWithText("Bookmarked").assertIsNotSelected()
+        // Edit
+        composeTestRule.onNodeWithContentDescription("Open edit topic dialog").performClick()
+        composeTestRule.onNodeWithText("Edit topic")
+        composeTestRule.onNodeWithText("Cancel").performClick()
+        composeTestRule.onNodeWithText("Open edit topic dialog").assertIsNotDisplayed()
+        // Delete
+        composeTestRule.onNodeWithContentDescription("Open delete topic dialog").performClick()
+        composeTestRule.onNodeWithText("Delete topic?").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Cancel").performClick()
+        composeTestRule.onNodeWithText("Delete topic?").assertIsNotDisplayed()
+        // Create
+        composeTestRule.onNodeWithContentDescription("Create subtopic").performClick()
+        composeTestRule.onNodeWithText("Create subtopic").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Cancel").performClick()
+        composeTestRule.onNodeWithText("Create subtopic").assertIsNotDisplayed()
+        // Search
+        composeTestRule.onNodeWithContentDescription("Subtopics search").performClick()
+        composeTestRule.onNodeWithText("Search in Dogs").assertIsDisplayed()
     }
 
     @Test
@@ -109,11 +136,10 @@ class SubtopicsScreenTest {
                 )
             }
         }
+        // Loading
         composeTestRule.onNodeWithTag("SubtopicsToolbar").assertIsNotDisplayed()
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertIsDisplayed()
-        // Assert that the app bar title is not displayed.
-        composeTestRule.onNodeWithText(text = "Android Taint Analysis").assertIsNotDisplayed()
-        // Assert that the filter chips are not displayed.
+        composeTestRule.onNodeWithText(text = "Dogs").assertIsNotDisplayed()
         composeTestRule.onNodeWithTag("Unchecked").assertIsNotDisplayed()
         composeTestRule.onNodeWithTag("Bookmarked").assertIsNotDisplayed()
     }
