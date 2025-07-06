@@ -3,17 +3,16 @@ package com.example.studyapp.topics
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
-import com.example.studyapp.DeviceConfigurationOverride
-import com.example.studyapp.DeviceSize
 import com.example.studyapp.data.Topic
 import com.example.studyapp.data.TopicWithProgress
 import com.example.studyapp.ui.topics.TopicsScreen
 import com.example.studyapp.ui.topics.TopicsUiState
+import com.example.studyapp.utils.DeviceConfigurationOverride
+import com.example.studyapp.utils.DeviceSize
 import org.junit.Rule
 import org.junit.Test
 
@@ -49,16 +48,12 @@ class TopicsScreenTest {
                 )
             }
         }
-        composeTestRule.onRoot(
-            useUnmergedTree = true
-        ).printToLog("currentLabelExists")
-
         // Assert that each subtopic is displayed.
         composeTestRule.onNodeWithText("Dogs").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cats").assertIsDisplayed()
         composeTestRule.onNodeWithText("Horses").assertIsDisplayed()
         // Assert that the FAB is displayed.
-        composeTestRule.onNodeWithContentDescription("Create topic").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("FloatingActionButton").assertIsDisplayed()
         // Assert that the search bar is displayed.
         composeTestRule.onNodeWithText("Search in topics").assertIsDisplayed()
     }
@@ -78,6 +73,106 @@ class TopicsScreenTest {
         }
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertIsDisplayed()
         // Assert that the FAB is not displayed.
-        composeTestRule.onNodeWithContentDescription("Create topic").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("FloatingActionButton").assertIsNotDisplayed()
+        // Assert that the search bar is not displayed.
+        composeTestRule.onNodeWithText("Search in topics").assertIsNotDisplayed()
     }
+
+
+    @Test
+    fun testTopicsScreen_MediumWidthExpandedHeight_Success() {
+        composeTestRule.setContent {
+            DeviceConfigurationOverride(
+                deviceSize = DeviceSize.MEDIUM_WIDTH_EXPANDED_HEIGHT,
+            ) {
+                TopicsScreen(
+                    uiState = TopicsUiState.Success(topicsWithProgress = topics),
+                    addTopic = {},
+                    navigateToSubtopics = {},
+                )
+            }
+        }
+        composeTestRule.onRoot(
+            useUnmergedTree = true
+        ).printToLog("currentLabelExists")
+
+        // Assert that each subtopic is displayed.
+        composeTestRule.onNodeWithText("Dogs").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Cats").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Horses").assertIsDisplayed()
+        // Assert that the medium FAB is displayed.
+        composeTestRule.onNodeWithTag("MediumFloatingActionButton").assertIsDisplayed()
+        // Assert that the search bar is displayed.
+        composeTestRule.onNodeWithText("Search in topics")
+    }
+
+    @Test
+    fun testTopicsScreen_MediumWidthExpandedHeight_Loading() {
+        composeTestRule.setContent {
+            DeviceConfigurationOverride(
+                deviceSize = DeviceSize.MEDIUM_WIDTH_EXPANDED_HEIGHT
+            ) {
+                TopicsScreen(
+                    uiState = TopicsUiState.Loading,
+                    addTopic = {},
+                    navigateToSubtopics = {},
+                )
+            }
+        }
+        composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertIsDisplayed()
+        // Assert that the medium FAB is not displayed.
+        composeTestRule.onNodeWithTag("MediumFloatingActionButton").assertIsNotDisplayed()
+        // Assert that the search bar is not displayed.
+        composeTestRule.onNodeWithText("Search in topics").assertIsNotDisplayed()
+    }
+
+    @Test
+    fun testTopicsScreen_ExpandedWidthCompactHeight_Success() {
+        composeTestRule.setContent {
+            DeviceConfigurationOverride(
+                deviceSize = DeviceSize.EXPANDED_WIDTH_COMPACT_HEIGHT
+            ) {
+                TopicsScreen(
+                    uiState = TopicsUiState.Success(topicsWithProgress = topics),
+                    addTopic = {},
+                    navigateToSubtopics = {},
+                )
+            }
+        }
+        composeTestRule.onRoot(
+            useUnmergedTree = true
+        ).printToLog("currentLabelExists")
+
+        // Assert that each subtopic is displayed.
+        composeTestRule.onNodeWithText("Dogs").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Cats").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Horses").assertIsDisplayed()
+        // Assert that the large FAB is displayed.
+        composeTestRule.onNodeWithTag("LargeFloatingActionButton").assertIsDisplayed()
+        // Assert that the search bar is displayed.
+        composeTestRule.onNodeWithText("Search in topics")
+
+    }
+
+    @Test
+    fun testTopicsScreen_ExpandedWidthCompactHeight_Loading() {
+        composeTestRule.setContent {
+            DeviceConfigurationOverride(
+                deviceSize = DeviceSize.MEDIUM_WIDTH_EXPANDED_HEIGHT
+            ) {
+                TopicsScreen(
+                    uiState = TopicsUiState.Loading,
+                    addTopic = {},
+                    navigateToSubtopics = {},
+                )
+            }
+        }
+        composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertIsDisplayed()
+        // Assert that the large FAB is not displayed.
+        composeTestRule.onNodeWithTag("LargeFloatingActionButton").assertIsNotDisplayed()
+        // Assert that the search bar is not displayed.
+        composeTestRule.onNodeWithText("Search in topics").assertIsNotDisplayed()
+    }
+
+
 }

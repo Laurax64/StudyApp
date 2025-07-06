@@ -1,4 +1,4 @@
-package com.example.studyapp
+package com.example.studyapp.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.DeviceConfigurationOverride
@@ -9,9 +9,7 @@ import androidx.window.core.layout.WindowSizeClass.Companion.HEIGHT_DP_MEDIUM_LO
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 
-enum class DeviceSize(
-    val dpSize: DpSize
-) {
+enum class DeviceSize(val dpSize: DpSize) {
     COMPACT_WIDTH_EXPANDED_HEIGHT(
         dpSize = DpSize(
             width = (WIDTH_DP_MEDIUM_LOWER_BOUND - 1).dp,
