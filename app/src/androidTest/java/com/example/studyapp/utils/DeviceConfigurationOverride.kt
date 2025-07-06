@@ -46,36 +46,3 @@ fun DeviceConfigurationOverride(
     }
 }
 
-
-@Composable
-fun DeviceConfigurationOverride.MediumWidthExpandedHeight(
-    content: @Composable () -> Unit
-) {
-    DeviceConfigurationOverride(
-        override = DeviceConfigurationOverride.ForcedSize(
-            size = DpSize(
-                width = WIDTH_DP_EXPANDED_LOWER_BOUND.dp,
-                height = WIDTH_DP_EXPANDED_LOWER_BOUND.dp
-            )
-        )
-    ) {
-        content()
-    }
-}
-
-@Composable
-fun DeviceConfigurationOverride.ExpandedWidthCompactHeight(
-    content: @Composable () -> Unit
-) {
-    DeviceConfigurationOverride(
-        override = DeviceConfigurationOverride.ForcedSize(
-            size = DpSize(
-                width = WIDTH_DP_EXPANDED_LOWER_BOUND.dp,
-                height = (HEIGHT_DP_MEDIUM_LOWER_BOUND - 10).dp
-            )
-        )
-    ) {
-        content()
-    }
-}
-
