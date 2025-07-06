@@ -1,4 +1,4 @@
-package com.example.studyapp.subtopics
+package com.example.studyapp.study
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
@@ -18,9 +18,8 @@ import com.example.studyapp.utils.DeviceSize
 import org.junit.Rule
 import org.junit.Test
 
-
 /**
- * Tests for [SubtopicsScreen].
+ * Tests for [com.example.studyapp.ui.subtopics.SubtopicsScreen].
  *
  * It contains methods for each relevant screen height and width for the different uiStates.
  * The assertions in each method are grouped by the different views defined in the

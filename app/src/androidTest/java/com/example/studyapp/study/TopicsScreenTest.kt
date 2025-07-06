@@ -1,4 +1,4 @@
-package com.example.studyapp.topics
+package com.example.studyapp.study
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
@@ -19,7 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * Tests for [TopicsScreen].
+ * Tests for [com.example.studyapp.ui.topics.TopicsScreen].
  *
  * It contains methods for each relevant screen height and width for the different uiStates.
  * The assertions in each method are grouped by the different views defined in the
