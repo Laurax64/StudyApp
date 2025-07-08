@@ -8,10 +8,6 @@ fun NavController.navigateToTopics(navOptions: NavOptions? = null) {
     this.navigate(TopicsRoute, navOptions)
 }
 
-fun NavController.navigateToBookmarks(navOptions: NavOptions? = null) {
-    this.navigate(BookmarksRoute, navOptions)
-}
-
 fun NavController.navigateToDates(navOptions: NavOptions? = null) {
     this.navigate(DatesRoute, navOptions)
 }

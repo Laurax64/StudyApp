@@ -38,7 +38,6 @@ fun StudyAppNavHost(
         )
         datesScreen()
         aIAssistantScreen()
-        bookmarksScreen()
     }
 }
 
@@ -87,8 +86,4 @@ fun NavGraphBuilder.datesScreen() {
 
 fun NavGraphBuilder.aIAssistantScreen() {
     composable<AIAssistantRoute> {/* TODO: Implement AI Assistant screen */ }
-}
-
-fun NavGraphBuilder.bookmarksScreen() {
-    composable<BookmarksRoute> {/* TODO: Implement Bookmarks screen */ }
 }

@@ -15,12 +15,6 @@ enum class TopLevelDestination(
         labelRes = R.string.study,
         route = TopicsRoute::class
     ),
-    BOOKMARKS(
-        iconRes = R.drawable.baseline_bookmarks_24,
-        contentDescriptionRes = R.string.go_to_bookmarks,
-        labelRes = R.string.bookmarks,
-        route = BookmarksRoute::class
-    ),
     DATES(
         iconRes = R.drawable.baseline_event_24,
         contentDescriptionRes = R.string.go_to_dates,

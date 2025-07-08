@@ -11,11 +11,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.studyapp.navigation.TopLevelDestination
 import com.example.studyapp.navigation.TopLevelDestination.AI_ASSISTANT
-import com.example.studyapp.navigation.TopLevelDestination.BOOKMARKS
 import com.example.studyapp.navigation.TopLevelDestination.DATES
 import com.example.studyapp.navigation.TopLevelDestination.STUDY
 import com.example.studyapp.navigation.navigateToAIAssistant
-import com.example.studyapp.navigation.navigateToBookmarks
 import com.example.studyapp.navigation.navigateToDates
 import com.example.studyapp.navigation.navigateToTopics
 import kotlinx.coroutines.CoroutineScope
@@ -59,7 +57,6 @@ class StudyAppState(val navController: NavHostController) {
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         when (topLevelDestination) {
             STUDY -> navController.navigateToTopics()
-            BOOKMARKS -> navController.navigateToBookmarks()
             DATES -> navController.navigateToDates()
             AI_ASSISTANT -> navController.navigateToAIAssistant()
         }
