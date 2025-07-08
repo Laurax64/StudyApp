@@ -78,6 +78,9 @@ dependencies {
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.material3)
     implementation(libs.androidx.core.splashscreen)
+    // Credentials
+    implementation(libs.androidx.credentials)
+    debugImplementation(libs.androidx.ui.tooling)
     ksp(libs.hilt.compiler)
     ksp(libs.room.runtime)
     ksp(libs.room.compiler)

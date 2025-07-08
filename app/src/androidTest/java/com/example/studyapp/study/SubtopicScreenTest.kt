@@ -5,16 +5,16 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.example.studyapp.data.Subtopic
-import com.example.studyapp.ui.subtopic.SubtopicScreen
-import com.example.studyapp.ui.subtopic.SubtopicUiState
+import com.example.studyapp.data.study.Subtopic
+import com.example.studyapp.ui.study.subtopic.SubtopicScreen
+import com.example.studyapp.ui.study.subtopic.SubtopicUiState
 import com.example.studyapp.utils.DeviceConfigurationOverride
 import com.example.studyapp.utils.DeviceSize
 import org.junit.Rule
 import org.junit.Test
 
 /**
- * Tests for [com.example.studyapp.ui.subtopic.SubtopicScreen].
+ * Tests for [SubtopicScreen].
  *
  * It contains methods for each relevant screen height and width for the different uiStates.
  * The assertions in each method are grouped by the different views defined in the

@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.subtopic
+package com.example.studyapp.ui.study.subtopic
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.Image
@@ -63,9 +63,9 @@ import coil.compose.AsyncImagePainter
 import coil.compose.AsyncImagePainter.State.Loading
 import coil.compose.rememberAsyncImagePainter
 import com.example.studyapp.R
-import com.example.studyapp.data.Subtopic
-import com.example.studyapp.ui.components.study.LoadingIndicatorBox
-import com.example.studyapp.ui.components.study.SaveSubtopicDialog
+import com.example.studyapp.data.study.Subtopic
+import com.example.studyapp.ui.study.components.LoadingIndicatorBox
+import com.example.studyapp.ui.study.components.SaveSubtopicDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 
 private enum class SubtopicDialogType {

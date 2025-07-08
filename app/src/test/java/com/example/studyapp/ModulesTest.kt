@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import com.example.studyapp.data.AppDatabase
 import com.example.studyapp.data.AppDatabase_Impl
-import com.example.studyapp.data.SubtopicDao
-import com.example.studyapp.data.SubtopicsRepositoryImpl
-import com.example.studyapp.data.TopicDao
-import com.example.studyapp.data.TopicsRepositoryImpl
+import com.example.studyapp.data.study.SubtopicDao
+import com.example.studyapp.data.study.SubtopicsRepositoryImpl
+import com.example.studyapp.data.study.TopicDao
+import com.example.studyapp.data.study.TopicsRepositoryImpl
 import com.example.studyapp.di.Modules
 import io.mockk.coEvery
 import io.mockk.every

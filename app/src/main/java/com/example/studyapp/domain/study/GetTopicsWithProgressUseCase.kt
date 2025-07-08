@@ -1,8 +1,8 @@
-package com.example.studyapp.domain
+package com.example.studyapp.domain.study
 
-import com.example.studyapp.data.SubtopicsRepository
-import com.example.studyapp.data.TopicWithProgress
-import com.example.studyapp.data.TopicsRepository
+import com.example.studyapp.data.study.SubtopicsRepository
+import com.example.studyapp.data.study.TopicWithProgress
+import com.example.studyapp.data.study.TopicsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject

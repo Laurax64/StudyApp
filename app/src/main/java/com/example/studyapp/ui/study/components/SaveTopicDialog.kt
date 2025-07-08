@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.components.study
+package com.example.studyapp.ui.study.components
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +23,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
-import com.example.studyapp.data.Topic
+import com.example.studyapp.data.study.Topic
 
 @Composable
 internal fun SaveTopicDialog(

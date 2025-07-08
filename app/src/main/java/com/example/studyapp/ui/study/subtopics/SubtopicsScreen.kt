@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.subtopics
+package com.example.studyapp.ui.study.subtopics
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedContent
@@ -62,15 +62,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.studyapp.R
-import com.example.studyapp.data.Subtopic
-import com.example.studyapp.data.Topic
-import com.example.studyapp.data.TopicWithProgress
-import com.example.studyapp.ui.components.DockedSearchBar
-import com.example.studyapp.ui.components.PlaceholderColumn
-import com.example.studyapp.ui.components.study.LoadingIndicatorBox
-import com.example.studyapp.ui.components.study.SaveSubtopicDialog
-import com.example.studyapp.ui.components.study.SaveTopicDialog
-import com.example.studyapp.ui.components.study.TopicsLazyColumn
+import com.example.studyapp.data.study.Subtopic
+import com.example.studyapp.data.study.Topic
+import com.example.studyapp.data.study.TopicWithProgress
+import com.example.studyapp.ui.study.components.DockedSearchBar
+import com.example.studyapp.ui.study.components.LoadingIndicatorBox
+import com.example.studyapp.ui.study.components.PlaceholderColumn
+import com.example.studyapp.ui.study.components.SaveSubtopicDialog
+import com.example.studyapp.ui.study.components.SaveTopicDialog
+import com.example.studyapp.ui.study.components.TopicsLazyColumn
 import com.example.studyapp.ui.theme.StudyAppTheme
 import kotlinx.coroutines.launch
 

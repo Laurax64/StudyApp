@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.components.study
+package com.example.studyapp.ui.study.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi

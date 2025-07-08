@@ -1,10 +1,10 @@
-package com.example.studyapp.ui.subtopic
+package com.example.studyapp.ui.study.subtopic
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.studyapp.data.Subtopic
-import com.example.studyapp.data.SubtopicsRepository
+import com.example.studyapp.data.study.Subtopic
+import com.example.studyapp.data.study.SubtopicsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.components.study
+package com.example.studyapp.ui.study.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.studyapp.data.TopicWithProgress
+import com.example.studyapp.data.study.TopicWithProgress
 
 @Composable
 internal fun TopicsLazyColumn(

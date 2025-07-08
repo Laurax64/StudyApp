@@ -1,13 +1,13 @@
 package com.example.studyapp
 
 import androidx.lifecycle.SavedStateHandle
-import com.example.studyapp.data.Subtopic
-import com.example.studyapp.data.SubtopicsRepository
-import com.example.studyapp.data.Topic
-import com.example.studyapp.data.TopicWithProgress
-import com.example.studyapp.data.TopicsRepository
-import com.example.studyapp.domain.GetTopicsWithProgressUseCase
-import com.example.studyapp.ui.subtopics.SubtopicsViewModel
+import com.example.studyapp.data.study.Subtopic
+import com.example.studyapp.data.study.SubtopicsRepository
+import com.example.studyapp.data.study.Topic
+import com.example.studyapp.data.study.TopicWithProgress
+import com.example.studyapp.data.study.TopicsRepository
+import com.example.studyapp.domain.study.GetTopicsWithProgressUseCase
+import com.example.studyapp.ui.study.subtopics.SubtopicsViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
