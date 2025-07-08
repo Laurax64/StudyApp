@@ -88,7 +88,7 @@ class SubtopicScreenTest {
             }
         }
         // Loading
-        composeTestRule.onNodeWithTag("SubtopicFloatingToolbar").assertDoesNotExist()
+        composeTestRule.onNodeWithTag("SubtopicToolbar").assertDoesNotExist()
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertExists()
     }
 
