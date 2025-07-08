@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.components.study
+package com.example.studyapp.ui.study.components
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -38,8 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.example.studyapp.R
-import com.example.studyapp.data.Subtopic
-import com.example.studyapp.ui.components.FullScreenDialog
+import com.example.studyapp.data.study.Subtopic
 import com.example.studyapp.utils.saveToAppSpecificStorage
 
 @Composable

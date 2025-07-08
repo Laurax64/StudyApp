@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.components
+package com.example.studyapp.ui.study.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues

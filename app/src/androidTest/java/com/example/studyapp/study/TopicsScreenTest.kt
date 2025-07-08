@@ -9,17 +9,17 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
-import com.example.studyapp.data.Topic
-import com.example.studyapp.data.TopicWithProgress
-import com.example.studyapp.ui.topics.TopicsScreen
-import com.example.studyapp.ui.topics.TopicsUiState
+import com.example.studyapp.data.study.Topic
+import com.example.studyapp.data.study.TopicWithProgress
+import com.example.studyapp.ui.study.topics.TopicsScreen
+import com.example.studyapp.ui.study.topics.TopicsUiState
 import com.example.studyapp.utils.DeviceConfigurationOverride
 import com.example.studyapp.utils.DeviceSize
 import org.junit.Rule
 import org.junit.Test
 
 /**
- * Tests for [com.example.studyapp.ui.topics.TopicsScreen].
+ * Tests for [TopicsScreen].
  *
  * It contains methods for each relevant screen height and width for the different uiStates.
  * The assertions in each method are grouped by the different views defined in the

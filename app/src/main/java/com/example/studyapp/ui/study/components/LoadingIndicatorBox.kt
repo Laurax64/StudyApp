@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.components.study
+package com.example.studyapp.ui.study.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

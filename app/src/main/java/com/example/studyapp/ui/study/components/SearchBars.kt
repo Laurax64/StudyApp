@@ -1,4 +1,4 @@
-package com.example.studyapp.ui.components
+package com.example.studyapp.ui.study.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
+import com.example.studyapp.ui.theme.StudyAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -183,8 +184,10 @@ fun <T> DockedSearchBar(
 @Preview
 @Composable
 private fun SearchAppBarPreview() {
-    SearchAppBar(
-        openSearchView = {},
-        placeholderText = "Search",
-    )
+    StudyAppTheme {
+        SearchAppBar(
+            openSearchView = {},
+            placeholderText = "Search",
+        )
+    }
 }

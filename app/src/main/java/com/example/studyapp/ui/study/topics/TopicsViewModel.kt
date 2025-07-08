@@ -1,11 +1,11 @@
-package com.example.studyapp.ui.topics
+package com.example.studyapp.ui.study.topics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.studyapp.data.Topic
-import com.example.studyapp.data.TopicWithProgress
-import com.example.studyapp.data.TopicsRepository
-import com.example.studyapp.domain.GetTopicsWithProgressUseCase
+import com.example.studyapp.data.study.Topic
+import com.example.studyapp.data.study.TopicWithProgress
+import com.example.studyapp.data.study.TopicsRepository
+import com.example.studyapp.domain.study.GetTopicsWithProgressUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
