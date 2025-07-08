@@ -24,6 +24,7 @@ import androidx.compose.material3.FloatingToolbarDefaults.VibrantFloatingActionB
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
@@ -85,7 +86,7 @@ fun SubtopicScreen(
         uiState = uiState,
         updateSubtopic = viewModel::updateSubtopic,
         deleteSubtopic = viewModel::deleteSubtopic,
-        modifier = modifier.padding(horizontal = 16.dp),
+        modifier = modifier,
         navigateToSubtopic = navigateToSubtopic,
         navigateBackToSubtopics = navigateBackToSubtopics,
         navigateBack = navigateBack
@@ -165,11 +166,13 @@ private fun SubtopicScaffold(
             Box(Modifier.padding(innerPadding)) {
                 SubtopicSupportingPaneScaffold(
                     uiState = uiState,
-                    modifier = Modifier.padding(
-                        bottom =
-                            // 40.dp is the margin at the bottom of the screen for the floating toolbar.
-                            FloatingToolbarDefaults.ContainerSize.value.dp + 40.dp
-                    ),
+                    modifier = Modifier
+                        .padding(
+                            bottom =
+                                // 40.dp is the margin at the bottom of the screen for the floating toolbar.
+                                FloatingToolbarDefaults.ContainerSize.value.dp + 40.dp
+                        )
+                        .padding(horizontal = 16.dp),
                 )
                 SubtopicToolbarRow(
                     isScreenWidthCompact = isScreenWidthCompact,
@@ -248,26 +251,30 @@ private fun SubtopicTopAppBar(
         title = { Text(text = subtopic.title, overflow = Ellipsis) },
         modifier = modifier,
         navigationIcon = {
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_arrow_back_24),
-                tint = MaterialTheme.colorScheme.onSurface,
-                contentDescription = stringResource(R.string.go_back_to_subtopics),
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable { navigateBack() })
+            IconButton(onClick = navigateBack) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    contentDescription = stringResource(R.string.go_back_to_subtopics),
+                )
+            }
         },
         actions = {
-            Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+            IconToggleButton(
+                checked = subtopic.bookmarked,
+                onCheckedChange = { toggleBookmarked() },
+            ) {
                 Icon(
                     painter = painterResource(
                         if (subtopic.bookmarked) R.drawable.baseline_bookmark_24 else R.drawable.baseline_bookmark_border_24
                     ),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.clickable { toggleBookmarked() },
                     contentDescription = stringResource(
                         if (subtopic.bookmarked) R.string.add_bookmark else R.string.remove_bookmark
                     )
                 )
+            }
+            IconButton(onClick = { /*TODO*/ }) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_share_24),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -317,7 +324,14 @@ private fun DeleteSubtopicDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.delete_subtopic_dialog_title)) },
-        text = { Text(stringResource(R.string.delete_subtopic_dialog_description, subtopicTitle)) },
+        text = {
+            Text(
+                stringResource(
+                    R.string.delete_subtopic_dialog_description,
+                    subtopicTitle
+                )
+            )
+        },
         confirmButton = {
             TextButton(onClick = deleteSubtopic) {
                 Text(stringResource(R.string.delete))

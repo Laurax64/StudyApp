@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -362,21 +361,19 @@ private fun SubtopicsAppBar(
 ) {
     LargeFlexibleTopAppBar(
         navigationIcon = {
-            IconButton(modifier = Modifier.size(48.dp), onClick = navigateBack) {
+            IconButton(onClick = navigateBack) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_arrow_back_24),
                     tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp),
                     contentDescription = stringResource(R.string.go_back_to_topics),
                 )
             }
         },
         actions = {
-            IconButton(modifier = Modifier.size(48.dp), onClick = onSearch) {
+            IconButton(onClick = onSearch) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_search_24),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(24.dp),
                     contentDescription = stringResource(R.string.subtopics_search),
                 )
             }
