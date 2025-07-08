@@ -15,7 +15,4 @@ data class SubtopicRoute(val subtopicId: Int)
 data object AIAssistantRoute
 
 @Serializable
-data object BookmarksRoute
-
-@Serializable
 data object DatesRoute
