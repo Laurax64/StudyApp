@@ -34,6 +34,8 @@ class TopicsViewModel @Inject constructor(
             topicsRepository.insertTopic(topic = topic)
         }
     }
+
+
 }
 
 sealed interface TopicsUiState {

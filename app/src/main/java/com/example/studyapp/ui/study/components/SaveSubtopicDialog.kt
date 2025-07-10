@@ -39,6 +39,7 @@ import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.study.Subtopic
+import com.example.studyapp.ui.components.FullScreenDialog
 import com.example.studyapp.utils.saveToAppSpecificStorage
 
 @Composable

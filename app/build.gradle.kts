@@ -80,6 +80,8 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     // Credentials
     implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     debugImplementation(libs.androidx.ui.tooling)
     ksp(libs.hilt.compiler)
     ksp(libs.room.runtime)
