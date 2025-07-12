@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.studyapp.R
 import com.example.studyapp.data.study.Topic
 import com.example.studyapp.data.study.TopicWithProgress
@@ -101,7 +101,7 @@ private fun TopicsScaffold(
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     var showSearchView by rememberSaveable { mutableStateOf(false) }
     val isScreenWidthCompact = !currentWindowAdaptiveInfo().windowSizeClass
-        .isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
+        .isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
     when (dialogType) {
         TopicDialogType.CREATE_TOPIC -> SaveTopicDialog(
             topic = null,

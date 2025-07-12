@@ -58,7 +58,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import coil.compose.AsyncImagePainter
 import coil.compose.AsyncImagePainter.State.Loading
 import coil.compose.rememberAsyncImagePainter
@@ -138,7 +138,7 @@ private fun SubtopicScaffold(
     var expanded by rememberSaveable { mutableStateOf(true) }
     val subtopic = uiState.subtopic
     val isScreenWidthCompact = !currentWindowAdaptiveInfo().windowSizeClass
-        .isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
+        .isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
     dialogType?.let {
         SubtopicDialog(
             subtopic = subtopic,
@@ -465,7 +465,7 @@ private fun SubtopicToolbarsRow(
     Row(
         modifier = modifier
             .height(FloatingToolbarDefaults.ContainerSize.value.dp)
-            .testTag("SubtopicToolbarRow"),
+            .testTag("SubtopicToolbarsRow"),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         HorizontalFloatingToolbar(

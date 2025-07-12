@@ -100,7 +100,7 @@ class SubtopicsScreenTest {
         composeTestRule.onNodeWithText("Bookmarked").assertIsNotSelected()
         // Edit
         composeTestRule.onNodeWithContentDescription("Open edit topic dialog").performClick()
-        composeTestRule.onNodeWithText("Edit topic")
+        composeTestRule.onNodeWithText("Edit topic").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cancel").performClick()
         composeTestRule.onNodeWithText("Open edit topic dialog").assertIsNotDisplayed()
         // Delete
