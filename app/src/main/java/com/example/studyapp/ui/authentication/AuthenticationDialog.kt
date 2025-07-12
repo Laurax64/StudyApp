@@ -8,15 +8,20 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.TextObfuscationMode
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,7 +49,6 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_L
 import com.example.studyapp.R
 import com.example.studyapp.ui.components.FullScreenDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
-
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
@@ -96,7 +100,7 @@ private fun AuthenticationDialog(
             titleId = if (isSignedIn) R.string.sign_into_your_account else R.string.create_a_new_account,
             onDismiss = navigateBack,
             onConfirm = onConfirm,
-            modifier = modifier,
+            modifier = modifier.fillMaxSize(),
             confirmButtonStringRes = if (isSignedIn) R.string.sign_in else R.string.sign_up,
             dismissIconRes = R.drawable.baseline_close_24,
             content = inputFields
@@ -121,14 +125,13 @@ private fun AuthentificationInputColumn(
         if (scrollState.isScrollInProgress) {
             keyboardController?.hide()
         }
-        AuthenticationAlternative.entries
         Column(
             modifier = modifier
                 .verticalScroll(state = scrollState)
                 .pointerInput(Unit) {
                     detectTapGestures(onTap = { focusManager.clearFocus() })
                 },
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
                 value = email,
@@ -136,11 +139,7 @@ private fun AuthentificationInputColumn(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.email)) },
             )
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text(stringResource(R.string.password)) })
+            PasswordTextField(password = password, modifier = Modifier.fillMaxWidth())
             AuthentificationOptionsButtonGroup(
                 initiateAuthentication = initiateAuthentication
             )
@@ -162,6 +161,35 @@ private fun AuthentificationInputColumn(
             }
         }
     }
+}
+
+@Composable
+private fun PasswordTextField(password: String, modifier: Modifier = Modifier) {
+    var passwordHidden by rememberSaveable { mutableStateOf(true) }
+    OutlinedSecureTextField(
+        modifier = modifier,
+        state = rememberTextFieldState(initialText = password),
+        label = { Text(stringResource(R.string.password)) },
+        textObfuscationMode =
+            if (passwordHidden) TextObfuscationMode.RevealLastTyped
+            else TextObfuscationMode.Visible,
+        trailingIcon = {
+            IconButton(onClick = { passwordHidden = !passwordHidden }) {
+                Icon(
+                    painter = painterResource(
+                        if (passwordHidden) R.drawable.outline_visibility_off_24 else R.drawable.outline_visibility_24
+                    ),
+                    contentDescription = if (
+                        passwordHidden
+                    ) stringResource(
+                        R.string.show_password
+                    ) else stringResource(
+                        R.string.hide_password
+                    )
+                )
+            }
+        },
+    )
 }
 
 @Composable
