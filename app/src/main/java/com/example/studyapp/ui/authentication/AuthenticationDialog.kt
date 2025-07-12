@@ -15,7 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -26,7 +25,6 @@ import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,9 +44,8 @@ import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.studyapp.R
-import com.example.studyapp.ui.components.FullScreenDialog
+import com.example.studyapp.ui.components.AdaptiveDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -85,52 +82,22 @@ private fun AuthenticationDialog(
 ) {
     val titleResId =
         if (userHasAccount) R.string.sign_into_your_account else R.string.create_a_new_account
-    val inputFields = @Composable { dialogContentModifier: Modifier ->
-        AuthentificationInputColumn(
-            initiateAuthentication = initiateAuthentication,
-            uiState = AuthenticationUiState.Success(),
-            modifier = dialogContentModifier
-        )
-    }
 
-    val isScreenWidthCompact =
-        !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
-            WIDTH_DP_MEDIUM_LOWER_BOUND
-        )
-
-    if (isScreenWidthCompact) {
-        FullScreenDialog(
-            titleResId = titleResId,
-            onDismiss = navigateBack,
-            onConfirm = onConfirm,
-            modifier = modifier.fillMaxSize(),
-            confirmButtonStringRes = if (userHasAccount) R.string.sign_in else R.string.sign_up,
-            dismissIconRes = R.drawable.baseline_close_24,
-            content = inputFields
-        )
-    } else {
-        AlertDialog(
-            onDismissRequest = navigateBack,
-            title = { Text(text = stringResource(titleResId)) },
-            confirmButton = {
-                TextButton(onClick = onConfirm) {
-                    Text(text = stringResource(if (userHasAccount) R.string.sign_in else R.string.sign_up))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = navigateBack) {
-                    Text(text = stringResource(R.string.cancel))
-                }
-            },
-            text = {
-                AuthentificationInputColumn(
-                    initiateAuthentication = initiateAuthentication,
-                    uiState = AuthenticationUiState.Success()
-                )
-            },
-            modifier = modifier
-        )
-    }
+    AdaptiveDialog(
+        titleResId = titleResId,
+        onDismiss = navigateBack,
+        onConfirm = onConfirm,
+        modifier = modifier.fillMaxSize(),
+        confirmButtonTextResId = if (userHasAccount) R.string.sign_in else R.string.sign_up,
+        dismissIconResId = R.drawable.baseline_close_24,
+        content = { dialogContentModifier ->
+            AuthentificationInputColumn(
+                initiateAuthentication = initiateAuthentication,
+                uiState = AuthenticationUiState.Success(),
+                modifier = dialogContentModifier
+            )
+        }
+    )
 }
 
 @Composable

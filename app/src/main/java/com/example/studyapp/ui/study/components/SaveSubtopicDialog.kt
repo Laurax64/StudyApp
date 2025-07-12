@@ -12,13 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.ToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,7 +35,7 @@ import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.study.Subtopic
-import com.example.studyapp.ui.components.FullScreenDialog
+import com.example.studyapp.ui.components.AdaptiveDialog
 import com.example.studyapp.utils.saveToAppSpecificStorage
 
 @Composable
@@ -45,7 +43,6 @@ internal fun SaveSubtopicDialog(
     onDismiss: () -> Unit,
     saveSubtopic: (Subtopic) -> Unit,
     modifier: Modifier = Modifier,
-    isFullScreenDialog: Boolean,
     topicId: Int,
     subtopic: Subtopic? = null,
 ) {
@@ -76,7 +73,12 @@ internal fun SaveSubtopicDialog(
         onDismiss()
     }
 
-    val inputFields = @Composable { dialogContentModifier: Modifier ->
+    AdaptiveDialog(
+        titleResId = titleId,
+        onDismiss = onDismiss,
+        onConfirm = onSave,
+        modifier = modifier
+    ) {
         SubtopicInputFields(
             updateTitle = { title = it },
             updateDescription = { description = it },
@@ -86,36 +88,6 @@ internal fun SaveSubtopicDialog(
             imageUri = imageUri,
             checked = checked,
             updateChecked = { checked = it },
-            modifier = dialogContentModifier
-        )
-    }
-
-    if (isFullScreenDialog) {
-        FullScreenDialog(
-            titleResId = titleId,
-            onDismiss = onDismiss,
-            onConfirm = onSave,
-            modifier = modifier
-        ) { innerPadding ->
-            inputFields(innerPadding)
-        }
-    } else {
-        AlertDialog(
-            // Dialog should not close when clicking outside.
-            onDismissRequest = {},
-            title = { Text(stringResource(titleId)) },
-            text = { inputFields(Modifier.fillMaxWidth()) },
-            confirmButton = {
-                TextButton(onClick = onSave) {
-                    Text(stringResource(R.string.save))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { onDismiss() }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-            modifier = modifier
         )
     }
 }

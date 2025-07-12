@@ -149,7 +149,6 @@ private fun SubtopicScaffold(
             },
             updateSubtopic = updateSubtopic,
             dismissDialog = { dialogType = null },
-            isScreenWidthCompact = isScreenWidthCompact,
             dialogType = it
         )
     }
@@ -288,7 +287,6 @@ private fun SubtopicTopAppBar(
 @Composable
 private fun SubtopicDialog(
     subtopic: Subtopic,
-    isScreenWidthCompact: Boolean,
     deleteSubtopic: () -> Unit,
     dismissDialog: () -> Unit,
     dialogType: SubtopicDialogType,
@@ -302,11 +300,9 @@ private fun SubtopicDialog(
             deleteSubtopic = deleteSubtopic,
             subtopicTitle = subtopic.title
         )
-
         SubtopicDialogType.EDIT_SUBTOPIC -> SaveSubtopicDialog(
             modifier = modifier,
             onDismiss = dismissDialog,
-            isFullScreenDialog = isScreenWidthCompact,
             topicId = subtopic.topicId,
             saveSubtopic = { updateSubtopic(it) },
             subtopic = subtopic

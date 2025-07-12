@@ -35,8 +35,8 @@ fun FullScreenDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
-    confirmButtonStringRes: Int = R.string.save,
-    dismissIconRes: Int = R.drawable.baseline_close_24,
+    confirmButtonTextResId: Int = R.string.save,
+    dismissIconResId: Int = R.drawable.baseline_close_24,
     content: @Composable (Modifier) -> Unit,
 ) {
     Scaffold(
@@ -53,7 +53,7 @@ fun FullScreenDialog(
                         onClick = onDismiss,
                     ) {
                         Icon(
-                            painter = painterResource(id = dismissIconRes),
+                            painter = painterResource(id = dismissIconResId),
                             tint = MaterialTheme.colorScheme.onSurface,
                             contentDescription = stringResource(R.string.cancel),
                             modifier = Modifier
@@ -62,7 +62,7 @@ fun FullScreenDialog(
                     }
                 },
                 actions = {
-                    TextButton(onClick = onConfirm) { Text(stringResource(id = confirmButtonStringRes)) }
+                    TextButton(onClick = onConfirm) { Text(stringResource(id = confirmButtonTextResId)) }
                 },
                 modifier = Modifier.fillMaxWidth()
             )
