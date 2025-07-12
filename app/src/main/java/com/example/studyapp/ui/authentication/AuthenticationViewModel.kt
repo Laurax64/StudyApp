@@ -152,6 +152,7 @@ sealed interface AuthenticationUiState {
     object Loading : AuthenticationUiState
     data class Success(
         val currentAuthenticationAlternative: AuthenticationAlternative? = null,
+        val userHasAccount: Boolean = false,
         val email: String = "",
         val password: String = ""
     ) : AuthenticationUiState

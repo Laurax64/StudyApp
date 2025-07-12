@@ -75,5 +75,6 @@
     <string name="authenticate_with_x">Authenticate with X</string>
     <string name="authenticate_with_facebook">Authenticate with Facebook</string>
     <string name="authenticate_with_phone_number">Authenticate with phone number</string>
-
+    <string name="do_not_have_an_account">Don\'t have an account?</string>
+    <string name="already_have_an_account">Already have an account?</string>
 </resources>

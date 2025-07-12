@@ -7,7 +7,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -16,14 +16,17 @@ import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -124,7 +127,8 @@ private fun AuthentificationInputColumn(
                 .verticalScroll(state = scrollState)
                 .pointerInput(Unit) {
                     detectTapGestures(onTap = { focusManager.clearFocus() })
-                }, verticalArrangement = Arrangement.spacedBy(8.dp)
+                },
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             OutlinedTextField(
                 value = email,
@@ -140,7 +144,45 @@ private fun AuthentificationInputColumn(
             AuthentificationOptionsButtonGroup(
                 initiateAuthentication = initiateAuthentication
             )
+            if (uiState.userHasAccount) {
+                TextTextButtonRow(
+                    textResId = R.string.already_have_an_account,
+                    textButtonResId = R.string.sign_in,
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            if (!uiState.userHasAccount) {
+                TextTextButtonRow(
+                    textResId = R.string.do_not_have_an_account,
+                    textButtonResId = R.string.sign_up,
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+}
 
+@Composable
+private fun TextTextButtonRow(
+    modifier: Modifier = Modifier,
+    textResId: Int,
+    textButtonResId: Int,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(textResId),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        TextButton(onClick = onClick) {
+            Text(text = stringResource(textButtonResId))
         }
     }
 }
@@ -151,7 +193,7 @@ private fun AuthentificationOptionsButtonGroup(
     modifier: Modifier = Modifier,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
 ) {
-    FlowRow(
+    Row(
         modifier = modifier,
         horizontalArrangement = ButtonGroupDefaults.HorizontalArrangement,
     ) {
@@ -162,13 +204,13 @@ private fun AuthentificationOptionsButtonGroup(
                     .size(IconButtonDefaults.smallContainerSize()),
                 onClick = { initiateAuthentication(authOption) }
             ) {
-                    Image(
-                        painter = painterResource(
-                            id = if (isSystemInDarkTheme()) authOption.darkIconResId else authOption.lightIconResId
-                        ),
-                        contentDescription = stringResource(authOption.contentDescriptionResId)
-                    )
-                }
+                Image(
+                    painter = painterResource(
+                        id = if (isSystemInDarkTheme()) authOption.darkIconResId else authOption.lightIconResId
+                    ),
+                    contentDescription = stringResource(authOption.contentDescriptionResId)
+                )
+            }
         }
     }
 }
