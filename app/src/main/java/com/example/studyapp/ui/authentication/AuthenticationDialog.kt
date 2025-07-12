@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -45,7 +46,7 @@ import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.studyapp.R
 import com.example.studyapp.ui.components.FullScreenDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
@@ -64,7 +65,7 @@ fun AuthenticationDialog(
             )
         },
         navigateBack = navigateBack,
-        isSignedIn = true,
+        userHasAccount = true,
         initiateAuthentication = {
             viewModel.initiateAuthentication(
                 context = context, authenticationAlternative = it
@@ -78,10 +79,12 @@ fun AuthenticationDialog(
 private fun AuthenticationDialog(
     onConfirm: () -> Unit,
     navigateBack: () -> Unit,
-    isSignedIn: Boolean,
+    userHasAccount: Boolean,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val titleResId =
+        if (userHasAccount) R.string.sign_into_your_account else R.string.create_a_new_account
     val inputFields = @Composable { dialogContentModifier: Modifier ->
         AuthentificationInputColumn(
             initiateAuthentication = initiateAuthentication,
@@ -92,21 +95,41 @@ private fun AuthenticationDialog(
 
     val isScreenWidthCompact =
         !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
-            WIDTH_DP_EXPANDED_LOWER_BOUND
+            WIDTH_DP_MEDIUM_LOWER_BOUND
         )
 
     if (isScreenWidthCompact) {
         FullScreenDialog(
-            titleId = if (isSignedIn) R.string.sign_into_your_account else R.string.create_a_new_account,
+            titleResId = titleResId,
             onDismiss = navigateBack,
             onConfirm = onConfirm,
             modifier = modifier.fillMaxSize(),
-            confirmButtonStringRes = if (isSignedIn) R.string.sign_in else R.string.sign_up,
+            confirmButtonStringRes = if (userHasAccount) R.string.sign_in else R.string.sign_up,
             dismissIconRes = R.drawable.baseline_close_24,
             content = inputFields
         )
     } else {
-        // TODO: Implement alert dialog for medium and expanded screen width.
+        AlertDialog(
+            onDismissRequest = navigateBack,
+            title = { Text(text = stringResource(titleResId)) },
+            confirmButton = {
+                TextButton(onClick = onConfirm) {
+                    Text(text = stringResource(if (userHasAccount) R.string.sign_in else R.string.sign_up))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = navigateBack) {
+                    Text(text = stringResource(R.string.cancel))
+                }
+            },
+            text = {
+                AuthentificationInputColumn(
+                    initiateAuthentication = initiateAuthentication,
+                    uiState = AuthenticationUiState.Success()
+                )
+            },
+            modifier = modifier
+        )
     }
 }
 
@@ -254,7 +277,7 @@ private fun AuthenticationDialogPreview() {
         AuthenticationDialog(
             onConfirm = {},
             navigateBack = {},
-            isSignedIn = false,
+            userHasAccount = false,
             initiateAuthentication = {})
     }
 }

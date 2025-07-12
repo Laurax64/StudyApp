@@ -92,7 +92,7 @@ internal fun SaveSubtopicDialog(
 
     if (isFullScreenDialog) {
         FullScreenDialog(
-            titleId = titleId,
+            titleResId = titleId,
             onDismiss = onDismiss,
             onConfirm = onSave,
             modifier = modifier

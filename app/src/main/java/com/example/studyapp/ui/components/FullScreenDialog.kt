@@ -31,7 +31,7 @@ private val horizontalContentPadding = 24.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FullScreenDialog(
-    titleId: Int,
+    titleResId: Int,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
@@ -44,7 +44,7 @@ fun FullScreenDialog(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(id = titleId),
+                        text = stringResource(id = titleResId),
                         modifier = Modifier.padding(start = 16.dp)
                     )
                 },
@@ -87,7 +87,7 @@ fun FullScreenDialog(
 private fun SubtopicFullScreenDialogPreview() {
     StudyAppTheme {
         FullScreenDialog(
-            titleId = R.string.create_subtopic,
+            titleResId = R.string.create_subtopic,
             onConfirm = {},
             onDismiss = {},
             content = { modifier ->
