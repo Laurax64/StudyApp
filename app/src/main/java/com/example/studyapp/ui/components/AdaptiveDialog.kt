@@ -29,7 +29,9 @@ fun AdaptiveDialog(
             modifier = modifier,
             confirmButtonTextResId = confirmButtonTextResId,
             dismissIconResId = dismissIconResId,
-            content = content,
+            content = { contentModifier ->
+                content(contentModifier)
+            }
         )
     } else {
         AlertDialog(
@@ -39,7 +41,9 @@ fun AdaptiveDialog(
             modifier = modifier,
             confirmButtonTextResId = confirmButtonTextResId,
             dismissButtonTextResId = dismissButtonTextResId,
-            content = content,
+            content = { contentModifier ->
+                content(contentModifier)
+            }
         )
     }
 }

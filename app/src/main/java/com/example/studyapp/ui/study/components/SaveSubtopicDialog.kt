@@ -78,7 +78,7 @@ internal fun SaveSubtopicDialog(
         onDismiss = onDismiss,
         onConfirm = onSave,
         modifier = modifier
-    ) {
+    ) { contentModifier ->
         SubtopicInputFields(
             updateTitle = { title = it },
             updateDescription = { description = it },
@@ -88,6 +88,7 @@ internal fun SaveSubtopicDialog(
             imageUri = imageUri,
             checked = checked,
             updateChecked = { checked = it },
+            modifier = contentModifier
         )
     }
 }

@@ -156,31 +156,24 @@ private fun SubtopicsScaffold(
         !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
             WIDTH_DP_MEDIUM_LOWER_BOUND
         )
-    if (dialogType == SubtopicsDialogType.CREATE_SUBTOPIC && isScreenWidthCompact) {
-        SaveSubtopicDialog(
-            onDismiss = { dialogType = null },
-            modifier = modifier,
-            topicId = topic.id,
-            saveSubtopic = saveSubtopic
-        )
-    } else {
-        dialogType?.let {
-            SubtopicsDialog(
-                topic = topic,
-                updateTopic = updateTopic,
-                deleteTopic = {
-                    deleteTopic()
-                    navigateBack()
-                },
-                dismissDialog = { dialogType = null },
-                dialogType = it,
-                saveSubtopic = { subtopic ->
-                    coroutineScope.launch {
-                        saveSubtopic(subtopic)
-                    }
+    dialogType?.let {
+        SubtopicsDialog(
+            topic = topic,
+            updateTopic = updateTopic,
+            deleteTopic = {
+                deleteTopic()
+                navigateBack()
+            },
+            dismissDialog = { dialogType = null },
+            dialogType = it,
+            saveSubtopic = { subtopic ->
+                coroutineScope.launch {
+                    saveSubtopic(subtopic)
                 }
-            )
-        }
+            }
+        )
+    }
+    if (!(isScreenWidthCompact && dialogType == SubtopicsDialogType.CREATE_SUBTOPIC)) {
         Scaffold(
             modifier = modifier,
             topBar = {

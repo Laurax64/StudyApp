@@ -1,5 +1,6 @@
 package com.example.studyapp.ui.components
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,21 +24,48 @@ fun AlertDialog(
     content: @Composable (Modifier) -> Unit,
 ) {
     AlertDialog(
+        title = stringResource(titleResId),
+        onDismiss = onDismiss,
+        onConfirm = onConfirm,
+        modifier = modifier,
+        properties = properties,
+        confirmButtonText = stringResource(id = confirmButtonTextResId),
+        dismissButtonText = stringResource(id = dismissButtonTextResId),
+        content = content,
+    )
+}
+
+
+@Composable
+fun AlertDialog(
+    title: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier,
+    confirmButtonText: String,
+    dismissButtonText: String,
+    properties: DialogProperties = DialogProperties(
+        dismissOnClickOutside = false,
+        dismissOnBackPress = false
+    ),
+    content: @Composable (Modifier) -> Unit,
+) {
+    AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(titleResId)) },
+        title = { Text(text = title) },
         properties = properties,
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(text = stringResource(id = confirmButtonTextResId))
+                Text(text = confirmButtonText)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(id = dismissButtonTextResId))
+                Text(text = dismissButtonText)
             }
         },
         text = {
-            content(modifier)
+            content(Modifier.fillMaxWidth())
         },
         modifier = modifier
     )
