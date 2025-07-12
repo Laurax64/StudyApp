@@ -15,18 +15,13 @@ import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studyapp.R
-import com.example.studyapp.ui.authentication.AuthenticationAlternativeType.GOOGLE
+import com.example.studyapp.ui.authentication.AuthenticationAlternative.GOOGLE
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-const val WEB_CLIENT_ID = ""
-
-// TODO: Replace with web client ID.
-const val TAG = "AuthentificationViewModel"
 
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor() : ViewModel() {
@@ -42,10 +37,10 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     fun initiateAuthentication(
-        authenticationAlternativeType: AuthenticationAlternativeType,
+        authenticationAlternative: AuthenticationAlternative,
         context: Context
     ) {
-        when (authenticationAlternativeType) {
+        when (authenticationAlternative) {
             GOOGLE -> createSignInWithGoogleFlow(context = context)
             else -> {}
         }
@@ -158,8 +153,12 @@ sealed interface AuthenticationUiState {
 /**
  * Represents the alternative authentication methods that can be used.
  * The standard authentication method is email and password.
+ *
+ * @property contentDescriptionResId The resource ID of the content description string for the button.
+ * @property lightIconResId The resource ID of the drawable for the button icon in case of light theme.
+ * @property darkIconResId The resource ID of the drawable for the button icon in case of dark theme.
  */
-enum class AuthenticationAlternativeType(
+enum class AuthenticationAlternative(
     val contentDescriptionResId: Int,
     val lightIconResId: Int,
     val darkIconResId: Int

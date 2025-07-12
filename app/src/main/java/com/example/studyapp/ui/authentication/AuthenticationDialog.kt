@@ -39,12 +39,6 @@ import com.example.studyapp.R
 import com.example.studyapp.ui.components.FullScreenDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 
-data class AuthenticationAlternative(
-    val type: AuthenticationAlternativeType,
-    val contentDescriptionResId: Int,
-    val iconResId: Int,
-    val initiateAuthentication: () -> Unit
-)
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
@@ -57,7 +51,7 @@ internal fun AuthenticationDialog(
     AuthenticationDialog(
         onConfirm = {
             viewModel.initiateAuthentication(
-                AuthenticationAlternativeType.GOOGLE,
+                AuthenticationAlternative.GOOGLE,
                 context
             )
         },
@@ -66,7 +60,7 @@ internal fun AuthenticationDialog(
         initiateAuthentication = {
             viewModel.initiateAuthentication(
                 context = context,
-                authenticationAlternativeType = it
+                authenticationAlternative = it
             )
         }
     )
@@ -78,12 +72,12 @@ private fun AuthenticationDialog(
     onConfirm: () -> Unit,
     navigateBack: () -> Unit,
     isSignedIn: Boolean,
-    initiateAuthentication: (AuthenticationAlternativeType) -> Unit,
+    initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val inputFields =
         @Composable { innerPadding: PaddingValues ->
-            AuthentificationInputFields(
+            AuthentificationInputColumn(
                 initialEmail = "",
                 initialPassword = "",
                 initiateAuthentication = initiateAuthentication,
@@ -111,10 +105,10 @@ private fun AuthenticationDialog(
 }
 
 @Composable
-private fun AuthentificationInputFields(
+private fun AuthentificationInputColumn(
     initialEmail: String,
     initialPassword: String,
-    initiateAuthentication: (AuthenticationAlternativeType) -> Unit,
+    initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var email by rememberSaveable { mutableStateOf(value = initialEmail) }
@@ -125,14 +119,7 @@ private fun AuthentificationInputFields(
     if (scrollState.isScrollInProgress) {
         keyboardController?.hide()
     }
-    val authenticationOptions = AuthenticationAlternativeType.entries.map {
-        AuthenticationAlternative(
-            contentDescriptionResId = it.contentDescriptionResId,
-            iconResId = if (isSystemInDarkTheme()) it.darkIconResId else it.lightIconResId,
-            initiateAuthentication = { initiateAuthentication(it) },
-            type = it
-        )
-    }
+    AuthenticationAlternative.entries
     Column(
         modifier = modifier
             .verticalScroll(state = scrollState)
@@ -153,9 +140,7 @@ private fun AuthentificationInputFields(
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.password)) }
         )
-        AuthentificationOptionsButtonGroup(
-            authenticationAlternatives = authenticationOptions,
-        )
+        AuthentificationOptionsButtonGroup(initiateAuthentication = initiateAuthentication)
 
     }
 }
@@ -164,20 +149,22 @@ private fun AuthentificationInputFields(
 @Composable
 private fun AuthentificationOptionsButtonGroup(
     modifier: Modifier = Modifier,
-    authenticationAlternatives: List<AuthenticationAlternative>,
+    initiateAuthentication: (AuthenticationAlternative) -> Unit,
 ) {
     ButtonGroup(
         modifier = modifier,
         overflowIndicator = {/*TODO*/ }
     ) {
-        authenticationAlternatives.forEach { option ->
+        AuthenticationAlternative.entries.forEach { authOption ->
             clickableItem(
-                onClick = option.initiateAuthentication,
+                onClick = { initiateAuthentication(authOption) },
                 label = "",
                 icon = {
                     Image(
-                        painter = painterResource(id = option.iconResId),
-                        contentDescription = "Localized description",
+                        painter = painterResource(
+                            id = if (isSystemInDarkTheme()) authOption.darkIconResId else authOption.lightIconResId
+                        ),
+                        contentDescription = stringResource(authOption.contentDescriptionResId)
                     )
                 }
             )
