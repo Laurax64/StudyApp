@@ -7,10 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -78,7 +76,7 @@ internal fun SaveSubtopicDialog(
         onDismiss()
     }
 
-    val inputFields = @Composable { innerPadding: PaddingValues ->
+    val inputFields = @Composable { dialogContentModifier: Modifier ->
         SubtopicInputFields(
             updateTitle = { title = it },
             updateDescription = { description = it },
@@ -88,10 +86,7 @@ internal fun SaveSubtopicDialog(
             imageUri = imageUri,
             checked = checked,
             updateChecked = { checked = it },
-            modifier = Modifier
-                .padding(paddingValues = innerPadding)
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth(),
+            modifier = dialogContentModifier
         )
     }
 
@@ -100,7 +95,7 @@ internal fun SaveSubtopicDialog(
             titleId = titleId,
             onDismiss = onDismiss,
             onConfirm = onSave,
-            modifier = modifier.padding(horizontal = 16.dp)
+            modifier = modifier
         ) { innerPadding ->
             inputFields(innerPadding)
         }
@@ -109,7 +104,7 @@ internal fun SaveSubtopicDialog(
             // Dialog should not close when clicking outside.
             onDismissRequest = {},
             title = { Text(stringResource(titleId)) },
-            text = { inputFields(PaddingValues(0.dp)) },
+            text = { inputFields(Modifier.fillMaxWidth()) },
             confirmButton = {
                 TextButton(onClick = onSave) {
                     Text(stringResource(R.string.save))

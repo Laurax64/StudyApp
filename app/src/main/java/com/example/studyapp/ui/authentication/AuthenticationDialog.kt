@@ -8,9 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -77,14 +75,11 @@ private fun AuthenticationDialog(
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val inputFields = @Composable { innerPadding: PaddingValues ->
+    val inputFields = @Composable { dialogContentModifier: Modifier ->
         AuthentificationInputColumn(
-            initialEmail = "",
-            initialPassword = "",
             initiateAuthentication = initiateAuthentication,
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 8.dp)
+            uiState = AuthenticationUiState.Success(),
+            modifier = dialogContentModifier
         )
     }
 
@@ -100,10 +95,9 @@ private fun AuthenticationDialog(
             onConfirm = onConfirm,
             modifier = modifier,
             confirmButtonStringRes = if (isSignedIn) R.string.sign_in else R.string.sign_up,
-            dismissIconRes = R.drawable.baseline_close_24
-        ) { innerPadding ->
-            inputFields(innerPadding)
-        }
+            dismissIconRes = R.drawable.baseline_close_24,
+            content = inputFields
+        )
     } else {
         // TODO: Implement alert dialog for medium and expanded screen width.
     }
@@ -111,44 +105,43 @@ private fun AuthenticationDialog(
 
 @Composable
 private fun AuthentificationInputColumn(
-    uiState: AuthenticationUiState = AuthenticationUiState.Success(),
-    initialEmail: String,
-    initialPassword: String,
+    uiState: AuthenticationUiState,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var email by rememberSaveable { mutableStateOf(value = initialEmail) }
-    var password by rememberSaveable { mutableStateOf(value = initialPassword) }
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val scrollState = rememberScrollState()
-    if (scrollState.isScrollInProgress) {
-        keyboardController?.hide()
-    }
-    AuthenticationAlternative.entries
-    Column(
-        modifier = modifier
-            .verticalScroll(state = scrollState)
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { focusManager.clearFocus() })
-            }, verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.email)) },
-        )
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.password)) })
-        AuthentificationOptionsButtonGroup(
-            initiateAuthentication = initiateAuthentication,
-            currentAuthOption = null
-        )
+    if (uiState is AuthenticationUiState.Success) {
+        var email by rememberSaveable { mutableStateOf(value = uiState.email) }
+        var password by rememberSaveable { mutableStateOf(value = uiState.password) }
+        val focusManager = LocalFocusManager.current
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val scrollState = rememberScrollState()
+        if (scrollState.isScrollInProgress) {
+            keyboardController?.hide()
+        }
+        AuthenticationAlternative.entries
+        Column(
+            modifier = modifier
+                .verticalScroll(state = scrollState)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { focusManager.clearFocus() })
+                }, verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text(stringResource(R.string.email)) },
+            )
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text(stringResource(R.string.password)) })
+            AuthentificationOptionsButtonGroup(
+                initiateAuthentication = initiateAuthentication
+            )
 
+        }
     }
 }
 
@@ -156,7 +149,6 @@ private fun AuthentificationInputColumn(
 @Composable
 private fun AuthentificationOptionsButtonGroup(
     modifier: Modifier = Modifier,
-    currentAuthOption: AuthenticationAlternative?,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
 ) {
     FlowRow(
