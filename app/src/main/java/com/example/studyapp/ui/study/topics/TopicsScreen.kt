@@ -1,5 +1,7 @@
 package com.example.studyapp.ui.study.topics
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
@@ -25,9 +28,11 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.example.studyapp.R
 import com.example.studyapp.data.study.Topic
 import com.example.studyapp.data.study.TopicWithProgress
+import com.example.studyapp.ui.authentication.AuthenticationDialog
 import com.example.studyapp.ui.study.components.AdaptiveFAB
 import com.example.studyapp.ui.study.components.DockedSearchBar
 import com.example.studyapp.ui.study.components.LoadingIndicatorBox
@@ -37,6 +42,13 @@ import com.example.studyapp.ui.study.components.SearchAppBar
 import com.example.studyapp.ui.study.components.TopicsLazyColumn
 import com.example.studyapp.ui.theme.StudyAppTheme
 
+private enum class TopicDialogType {
+    CREATE_TOPIC,
+    AUTHENTICATION
+}
+
+
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 internal fun TopicsScreen(
     topicsViewModel: TopicsViewModel,
@@ -52,6 +64,7 @@ internal fun TopicsScreen(
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @VisibleForTesting
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -75,6 +88,7 @@ fun TopicsScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 private fun TopicsScaffold(
@@ -83,76 +97,90 @@ private fun TopicsScaffold(
     navigateToSubtopics: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var dialogType by rememberSaveable { mutableStateOf<TopicDialogType?>(null) }
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     var showSearchView by rememberSaveable { mutableStateOf(false) }
-    var showDialog by rememberSaveable { mutableStateOf(false) }
-
-    if (showDialog) {
-        SaveTopicDialog(
-            onDismiss = { showDialog = false },
+    val isScreenWidthCompact = !currentWindowAdaptiveInfo().windowSizeClass
+        .isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
+    when (dialogType) {
+        TopicDialogType.CREATE_TOPIC -> SaveTopicDialog(
             topic = null,
+            onDismiss = { dialogType = null },
             onSave = {
                 saveTopic(it)
-                showDialog = false
+                dialogType = null
             }
         )
+
+        TopicDialogType.AUTHENTICATION -> AuthenticationDialog(
+            navigateBack = { dialogType = null },
+        )
+
+        null -> {}
     }
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            if (!showSearchView) {
-                SearchAppBar(
-                    placeholderText = stringResource(R.string.search_in_topics),
-                    openSearchView = { showSearchView = true },
-                    modifier = Modifier.fillMaxWidth()
+
+
+    if (!(dialogType == TopicDialogType.AUTHENTICATION && isScreenWidthCompact)) {
+        Scaffold(
+            modifier = modifier,
+            topBar = {
+                if (!showSearchView) {
+                    SearchAppBar(
+                        placeholderText = stringResource(R.string.search_in_topics),
+                        openSearchView = { showSearchView = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        showAuthenticationDialog = {
+                            dialogType = TopicDialogType.AUTHENTICATION
+                        }
+                    )
+                }
+            },
+            floatingActionButton = {
+                AdaptiveFAB(
+                    onClick = { dialogType = TopicDialogType.CREATE_TOPIC },
+                    iconId = R.drawable.baseline_add_24,
+                    contentDescriptionId = R.string.create_topic
                 )
-            }
-        },
-        floatingActionButton = {
-            AdaptiveFAB(
-                onClick = { showDialog = true },
-                iconId = R.drawable.baseline_add_24,
-                contentDescriptionId = R.string.create_topic
+            },
+        ) { innerPadding ->
+            NavigableListDetailPaneScaffold(
+                navigator = scaffoldNavigator,
+                listPane = {
+                    AnimatedPane {
+                        AnimatedContent(targetState = topicsWithProgress) {
+                            TopicsPaneContent(
+                                topicsWithProgress = it,
+                                navigateToTopic = { topicId ->
+                                    // Not scaffoldNavigator.navigateTo because the app needs to
+                                    // change more than just the detail pane
+                                    navigateToSubtopics(topicId)
+                                },
+                                closeSearchBar = { showSearchView = false },
+                                showSearchBar = showSearchView,
+                            )
+                        }
+                    }
+                },
+                detailPane = {
+                    AnimatedPane {
+                        AnimatedContent(targetState = topicsWithProgress) {
+                            PlaceholderColumn(
+                                textId = if (it.isEmpty()) {
+                                    R.string.no_subtopics_exist
+                                } else {
+                                    R.string.select_a_topic
+                                },
+                                iconId = R.drawable.outline_subtitles_24,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(horizontal = 16.dp)
             )
-        },
-    ) { innerPadding ->
-        NavigableListDetailPaneScaffold(
-            navigator = scaffoldNavigator,
-            listPane = {
-                AnimatedPane {
-                    AnimatedContent(targetState = topicsWithProgress) {
-                        TopicsPaneContent(
-                            topicsWithProgress = it,
-                            navigateToTopic = {
-                                // Not scaffoldNavigator.navigateTo because the app needs to
-                                // change more than just the detail pane
-                                navigateToSubtopics(it)
-                            },
-                            closeSearchBar = { showSearchView = false },
-                            showSearchBar = showSearchView,
-                        )
-                    }
-                }
-            },
-            detailPane = {
-                AnimatedPane {
-                    AnimatedContent(targetState = topicsWithProgress) {
-                        PlaceholderColumn(
-                            textId = if (it.isEmpty()) {
-                                R.string.no_subtopics_exist
-                            } else {
-                                R.string.select_a_topic
-                            },
-                            iconId = R.drawable.outline_subtitles_24,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                }
-            },
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-        )
+        }
     }
 }
 
@@ -215,6 +243,7 @@ private fun TopicsSearchBar(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Preview(showSystemUi = true)
 @PreviewLightDark
 @PreviewScreenSizes
@@ -274,6 +303,7 @@ private fun TopicsScreenPreview() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Preview(showSystemUi = true)
 @PreviewLightDark
 @PreviewScreenSizes

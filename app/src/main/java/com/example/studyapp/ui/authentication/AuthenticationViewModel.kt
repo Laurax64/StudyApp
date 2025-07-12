@@ -20,6 +20,11 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,8 +37,12 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
         const val TAG = "AuthentificationViewModel"
     }
 
-    // TODO: Replace with actual value.
-    val isSignedIn = false
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<AuthenticationUiState> = flowOf(AuthenticationUiState.Success()).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AuthenticationUiState.Loading
+    )
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     fun initiateAuthentication(
@@ -142,9 +151,9 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
 sealed interface AuthenticationUiState {
     object Loading : AuthenticationUiState
     data class Success(
-        val signedIn: Boolean,
-        val email: String,
-        val password: String,
+        val currentAuthenticationAlternative: AuthenticationAlternative? = null,
+        val email: String = "",
+        val password: String = ""
     ) : AuthenticationUiState
 
     object Error : AuthenticationUiState

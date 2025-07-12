@@ -7,13 +7,17 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -34,6 +38,7 @@ import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.example.studyapp.R
 import com.example.studyapp.ui.components.FullScreenDialog
@@ -42,25 +47,22 @@ import com.example.studyapp.ui.theme.StudyAppTheme
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-internal fun AuthenticationDialog(
-    viewModel: AuthenticationViewModel,
+fun AuthenticationDialog(
+    viewModel: AuthenticationViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
-    isSignedIn: Boolean
 ) {
     val context = LocalContext.current
     AuthenticationDialog(
         onConfirm = {
             viewModel.initiateAuthentication(
-                AuthenticationAlternative.GOOGLE,
-                context
+                AuthenticationAlternative.GOOGLE, context
             )
         },
         navigateBack = navigateBack,
-        isSignedIn = isSignedIn,
+        isSignedIn = true,
         initiateAuthentication = {
             viewModel.initiateAuthentication(
-                context = context,
-                authenticationAlternative = it
+                context = context, authenticationAlternative = it
             )
         }
     )
@@ -75,18 +77,21 @@ private fun AuthenticationDialog(
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val inputFields =
-        @Composable { innerPadding: PaddingValues ->
-            AuthentificationInputColumn(
-                initialEmail = "",
-                initialPassword = "",
-                initiateAuthentication = initiateAuthentication,
-                modifier = Modifier.padding(innerPadding)
-            )
-        }
+    val inputFields = @Composable { innerPadding: PaddingValues ->
+        AuthentificationInputColumn(
+            initialEmail = "",
+            initialPassword = "",
+            initiateAuthentication = initiateAuthentication,
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 8.dp)
+        )
+    }
 
-    val isScreenWidthCompact = !currentWindowAdaptiveInfo().windowSizeClass
-        .isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
+    val isScreenWidthCompact =
+        !currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(
+            WIDTH_DP_EXPANDED_LOWER_BOUND
+        )
 
     if (isScreenWidthCompact) {
         FullScreenDialog(
@@ -106,6 +111,7 @@ private fun AuthenticationDialog(
 
 @Composable
 private fun AuthentificationInputColumn(
+    uiState: AuthenticationUiState = AuthenticationUiState.Success(),
     initialEmail: String,
     initialPassword: String,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
@@ -125,8 +131,7 @@ private fun AuthentificationInputColumn(
             .verticalScroll(state = scrollState)
             .pointerInput(Unit) {
                 detectTapGestures(onTap = { focusManager.clearFocus() })
-            },
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            }, verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         OutlinedTextField(
             value = email,
@@ -138,9 +143,11 @@ private fun AuthentificationInputColumn(
             value = password,
             onValueChange = { password = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.password)) }
+            label = { Text(stringResource(R.string.password)) })
+        AuthentificationOptionsButtonGroup(
+            initiateAuthentication = initiateAuthentication,
+            currentAuthOption = null
         )
-        AuthentificationOptionsButtonGroup(initiateAuthentication = initiateAuthentication)
 
     }
 }
@@ -149,17 +156,20 @@ private fun AuthentificationInputColumn(
 @Composable
 private fun AuthentificationOptionsButtonGroup(
     modifier: Modifier = Modifier,
+    currentAuthOption: AuthenticationAlternative?,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
 ) {
-    ButtonGroup(
+    FlowRow(
         modifier = modifier,
-        overflowIndicator = {/*TODO*/ }
+        horizontalArrangement = ButtonGroupDefaults.HorizontalArrangement,
     ) {
         AuthenticationAlternative.entries.forEach { authOption ->
-            clickableItem(
-                onClick = { initiateAuthentication(authOption) },
-                label = "",
-                icon = {
+            IconButton(
+                modifier = Modifier
+                    .weight(1f)
+                    .size(IconButtonDefaults.smallContainerSize()),
+                onClick = { initiateAuthentication(authOption) }
+            ) {
                     Image(
                         painter = painterResource(
                             id = if (isSystemInDarkTheme()) authOption.darkIconResId else authOption.lightIconResId
@@ -167,10 +177,10 @@ private fun AuthentificationOptionsButtonGroup(
                         contentDescription = stringResource(authOption.contentDescriptionResId)
                     )
                 }
-            )
         }
     }
 }
+
 
 @Preview(showSystemUi = true)
 @PreviewLightDark
@@ -183,7 +193,6 @@ private fun AuthenticationDialogPreview() {
             onConfirm = {},
             navigateBack = {},
             isSignedIn = false,
-            initiateAuthentication = {}
-        )
+            initiateAuthentication = {})
     }
 }

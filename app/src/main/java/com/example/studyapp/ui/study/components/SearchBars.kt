@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
@@ -45,9 +46,10 @@ import com.example.studyapp.ui.theme.StudyAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchAppBar(
+internal fun SearchAppBar(
     modifier: Modifier = Modifier,
     openSearchView: () -> Unit,
+    showAuthenticationDialog: () -> Unit,
     placeholderText: String,
 ) {
     val query by rememberSaveable { mutableStateOf("") }
@@ -93,15 +95,16 @@ fun SearchAppBar(
                 )
             }
         )
-        Icon(
-            painter = painterResource(R.drawable.baseline_account_circle_24),
-            contentDescription = stringResource(R.string.open_login),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier
-                .clickable {/*TODO add login functionality and avatar display. */ }
-                .size(size = 48.dp)
+        IconButton(onClick = showAuthenticationDialog) {
+            Icon(
+                painter = painterResource(R.drawable.baseline_account_circle_24),
+                contentDescription = stringResource(R.string.open_login),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .size(size = 48.dp)
 
-        )
+            )
+        }
     }
 }
 
@@ -188,6 +191,7 @@ private fun SearchAppBarPreview() {
         SearchAppBar(
             openSearchView = {},
             placeholderText = "Search",
+            showAuthenticationDialog = {}
         )
     }
 }
