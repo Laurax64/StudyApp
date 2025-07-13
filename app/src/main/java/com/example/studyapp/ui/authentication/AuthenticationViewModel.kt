@@ -41,9 +41,8 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
         initialValue = AuthenticationUiState.Loading
     )
 
-    @VisibleForTesting
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    fun initiateAuthentication(
+    internal fun initiateAuthentication(
         authenticationAlternative: AuthenticationAlternative,
         context: Context
     ) {
@@ -119,6 +118,7 @@ sealed interface AuthenticationUiState {
     data class Success(
         val currentAuthenticationAlternative: AuthenticationAlternative? = null,
         val userHasAccount: Boolean = false,
+        val userIsSignedIn: Boolean = false,
         val email: String = "",
         val password: String = ""
     ) : AuthenticationUiState

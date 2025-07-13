@@ -113,7 +113,7 @@ private fun TopicsScaffold(
         )
 
         TopicDialogType.AUTHENTICATION -> AuthenticationDialog(
-            navigateBack = { dialogType = null },
+            closeDialog = { dialogType = null },
         )
 
         null -> {}
