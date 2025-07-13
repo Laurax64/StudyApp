@@ -9,14 +9,11 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
-import androidx.credentials.PasswordCredential
-import androidx.credentials.PublicKeyCredential
-import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studyapp.R
 import com.example.studyapp.ui.authentication.AuthenticationAlternative.GOOGLE
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,12 +28,12 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor() : ViewModel() {
     private companion object {
-        const val WEB_CLIENT_ID = ""
-
-        // TODO: Replace with web client ID.
+        const val WEB_CLIENT_ID =
+            "196684472942-5vjhqshte8vmb5loes1lc23t6qn8a85v.apps.googleusercontent.com"
         const val TAG = "AuthentificationViewModel"
     }
 
+    // TODO: Implement uiState. This is just a placeholder.
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<AuthenticationUiState> = flowOf(AuthenticationUiState.Success()).stateIn(
         scope = viewModelScope,
@@ -44,6 +41,7 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
         initialValue = AuthenticationUiState.Loading
     )
 
+    @VisibleForTesting
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     fun initiateAuthentication(
         authenticationAlternative: AuthenticationAlternative,
@@ -55,87 +53,54 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    internal fun createSignInWithGoogleFlow(context: Context) {
+    @VisibleForTesting
+    fun createSignInWithGoogleFlow(context: Context) {
         val credentialManager = CredentialManager.create(context = context)
-
-        // Retrieve the user's Google ID Token.
-        val googleIdOption: GetGoogleIdOption = getUsersGoogleIdToken()
-
-        // Retrieve the credentials.
+        val getSignInWithGoogleOption = getSignInWithGoogleOption()
         val request: GetCredentialRequest = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
+            .addCredentialOption(getSignInWithGoogleOption)
             .build()
+
         viewModelScope.launch {
-            try {
-                // Retrieve the user's available credentials
-                val result = credentialManager.getCredential(
-                    request = request,
-                    context = context
-                )
-                handleSignIn(result = result)
-            } catch (e: GetCredentialException) {
-                Log.e(TAG, "Error retrieving credentials", e)
-            }
+            val result = credentialManager.getCredential(
+                request = request,
+                context = context
+            )
+            handleSignIn(result = result)
         }
 
     }
 
     @VisibleForTesting
-    fun getUsersGoogleIdToken(): GetGoogleIdOption {
-        return GetGoogleIdOption.Builder()
-            // Check if the user has any accounts that have previously been used to sign in to the app
-            .setFilterByAuthorizedAccounts(true)
-            .setServerClientId(WEB_CLIENT_ID)
-            //Enable automatic sign-in for returning users
-            .setAutoSelectEnabled(true)
+    fun getSignInWithGoogleOption(): GetSignInWithGoogleOption {
+        return GetSignInWithGoogleOption.Builder(
+            serverClientId = WEB_CLIENT_ID
+        )
             // TODO: Set a nonce to improve security
             //       https://developer.android.com/identity/sign-in/credential-manager-siwg#set-nonce
             //.setNonce(<nonce string to use when generating a Google ID token>)
-
             .build()
+
     }
 
     @VisibleForTesting
     fun handleSignIn(result: GetCredentialResponse) {
         // Handle the successfully returned credential.
         val credential = result.credential
-        val responseJson: String
 
         when (credential) {
-
-            // Passkey credential
-            is PublicKeyCredential -> {
-                // Share responseJson such as a GetCredentialResponse to your server to validate and
-                // authenticate
-                responseJson = credential.authenticationResponseJson
-            }
-
-            // Password credential
-            is PasswordCredential -> {
-                // Send ID and password to your server to validate and authenticate.
-                credential.id
-                credential.password
-            }
-
-            // GoogleIdToken credential
             is CustomCredential -> {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     try {
-                        // Use googleIdTokenCredential and extract the ID to validate and
+                        // Use googleIdTokenCredential and extract id to validate and
                         // authenticate on your server.
                         GoogleIdTokenCredential
                             .createFrom(credential.data)
-                        // You can use the members of googleIdTokenCredential directly for UX
-                        // purposes, but don't use them to store or control access to user
-                        // data. For that you first need to validate the token:
-                        // pass googleIdTokenCredential.getIdToken() to the backend server.
-                        // see [validation instructions](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token)
                     } catch (e: GoogleIdTokenParsingException) {
                         Log.e(TAG, "Received an invalid google id token response", e)
                     }
                 } else {
-                    // Catch any unrecognized custom credential type here.
+                    // Catch any unrecognized credential type here.
                     Log.e(TAG, "Unexpected type of credential")
                 }
             }
@@ -146,6 +111,7 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
+
 }
 
 sealed interface AuthenticationUiState {
