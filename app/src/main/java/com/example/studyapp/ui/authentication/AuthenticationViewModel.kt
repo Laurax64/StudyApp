@@ -146,33 +146,33 @@ enum class AuthenticationAlternative(
     ),
     MICROSOFT(
         contentDescriptionResId = R.string.authenticate_with_microsoft,
-        lightIconResId = R.drawable.google_logo_light, // TODO: Remove and add light icon for each authentication type.
-        darkIconResId = R.drawable.google_logo_dark // TODO: Remove and add dark icon for each authentication type.
+        lightIconResId = R.drawable.microsoft_logo,
+        darkIconResId = R.drawable.microsoft_logo
     ),
     APPLE(
         contentDescriptionResId = R.string.authenticate_with_apple,
-        lightIconResId = R.drawable.google_logo_light, // TODO: Remove and add light icon for each authentication type.
-        darkIconResId = R.drawable.google_logo_dark // TODO: Remove and add dark icon for each authentication type.
+        lightIconResId = R.drawable.apple_logo_light,
+        darkIconResId = R.drawable.apple_logo_dark
     ),
     BIOMETRICS(
         contentDescriptionResId = R.string.authenticate_with_biometrics,
-        lightIconResId = R.drawable.google_logo_light, // TODO: Remove and add light icon for each authentication type.
-        darkIconResId = R.drawable.google_logo_dark // TODO: Remove and add dark icon for each authentication type.
+        lightIconResId = R.drawable.baseline_fingerprint_24,
+        darkIconResId = R.drawable.baseline_fingerprint_24
     ),
     X(
         contentDescriptionResId = R.string.authenticate_with_x,
-        lightIconResId = R.drawable.google_logo_light, // TODO: Remove and add light icon for each authentication type.
-        darkIconResId = R.drawable.google_logo_dark // TODO: Remove and add dark icon for each authentication type.
+        lightIconResId = R.drawable.x_logo_light,
+        darkIconResId = R.drawable.x_logo_dark
     ),
     FACEBOOK(
         contentDescriptionResId = R.string.authenticate_with_facebook,
-        lightIconResId = R.drawable.google_logo_light, // TODO: Remove and add light icon for each authentication type.
-        darkIconResId = R.drawable.google_logo_dark // TODO: Remove and add dark icon for each authentication type.
+        lightIconResId = R.drawable.facebook_logo,
+        darkIconResId = R.drawable.facebook_logo
     ),
     PHONE_NUMBER(
         contentDescriptionResId = R.string.authenticate_with_phone_number,
-        lightIconResId = R.drawable.google_logo_light, // TODO: Remove and add light icon for each authentication type.
-        darkIconResId = R.drawable.google_logo_dark // TODO: Remove and add dark icon for each authentication type.
+        lightIconResId = R.drawable.baseline_smartphone_24,
+        darkIconResId = R.drawable.baseline_smartphone_24
 
     )
 }
