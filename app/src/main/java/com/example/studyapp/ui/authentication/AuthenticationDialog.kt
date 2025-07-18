@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -131,6 +132,7 @@ private fun AuthentificationInputColumn(
             )
             PasswordTextField(password = password, modifier = Modifier.fillMaxWidth())
             AuthentificationOptionsButtonGroup(
+                modifier = Modifier.fillMaxWidth(),
                 initiateAuthentication = initiateAuthentication
             )
             if (uiState.userHasAccount) {
@@ -215,19 +217,54 @@ private fun AuthentificationOptionsButtonGroup(
         modifier = modifier,
         horizontalArrangement = ButtonGroupDefaults.HorizontalArrangement,
     ) {
-        AuthenticationAlternative.entries.forEach { authOption ->
-            OutlinedIconButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .size(IconButtonDefaults.smallContainerSize()),
-                onClick = { initiateAuthentication(authOption) }
-            ) {
-                Image(
-                    painter = painterResource(
-                        id = if (isSystemInDarkTheme()) authOption.darkIconResId else authOption.lightIconResId
-                    ),
-                    modifier = Modifier.size(IconButtonDefaults.smallIconSize),
-                    contentDescription = stringResource(authOption.contentDescriptionResId)
+        ButtonGroup(
+            overflowIndicator = { menuState ->
+                OutlinedIconButton(
+                    onClick = {
+                        if (menuState.isExpanded) {
+                            menuState.dismiss()
+                        } else {
+                            menuState.show()
+                        }
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_more_vert_24),
+                        contentDescription = "Localized description",
+                    )
+                }
+            }
+        ) {
+            AuthenticationAlternative.entries.forEach { authOption ->
+                customItem(
+                    buttonGroupContent = {
+                        OutlinedIconButton(
+                            onClick = { initiateAuthentication(authOption) },
+                            modifier = Modifier.size(IconButtonDefaults.smallContainerSize())
+                        ) {
+                            Image(
+                                painter = painterResource(
+                                    id = if (isSystemInDarkTheme()) authOption.darkIconResId else authOption.lightIconResId
+                                ),
+                                modifier = Modifier.size(IconButtonDefaults.smallIconSize),
+                                contentDescription = stringResource(authOption.contentDescriptionResId)
+                            )
+                        }
+                    },
+                    menuContent = {
+                        IconButton(
+                            onClick = { initiateAuthentication(authOption) },
+                            modifier = Modifier.size(IconButtonDefaults.smallContainerSize())
+                        ) {
+                            Image(
+                                painter = painterResource(
+                                    id = if (isSystemInDarkTheme()) authOption.darkIconResId else authOption.lightIconResId
+                                ),
+                                modifier = Modifier.size(IconButtonDefaults.smallIconSize),
+                                contentDescription = stringResource(authOption.contentDescriptionResId)
+                            )
+                        }
+                    }
                 )
             }
         }
