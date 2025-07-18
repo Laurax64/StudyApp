@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -44,7 +45,6 @@ import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studyapp.R
 import com.example.studyapp.ui.components.AdaptiveDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
@@ -216,7 +216,7 @@ private fun AuthentificationOptionsButtonGroup(
         horizontalArrangement = ButtonGroupDefaults.HorizontalArrangement,
     ) {
         AuthenticationAlternative.entries.forEach { authOption ->
-            IconButton(
+            OutlinedIconButton(
                 modifier = Modifier
                     .weight(1f)
                     .size(IconButtonDefaults.smallContainerSize()),
@@ -226,6 +226,7 @@ private fun AuthentificationOptionsButtonGroup(
                     painter = painterResource(
                         id = if (isSystemInDarkTheme()) authOption.darkIconResId else authOption.lightIconResId
                     ),
+                    modifier = Modifier.size(IconButtonDefaults.smallIconSize),
                     contentDescription = stringResource(authOption.contentDescriptionResId)
                 )
             }
