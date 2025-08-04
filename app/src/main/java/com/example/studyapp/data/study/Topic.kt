@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class Topic(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    val userId: String? = null,
     val title: String,
 )

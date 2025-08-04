@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
@@ -20,6 +23,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewDynamicColors
@@ -29,10 +34,14 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
+import coil.compose.AsyncImage
 import com.example.studyapp.R
 import com.example.studyapp.data.study.Topic
 import com.example.studyapp.data.study.TopicWithProgress
+import com.example.studyapp.ui.authentication.AuthenticationAlternative
 import com.example.studyapp.ui.authentication.AuthenticationDialog
+import com.example.studyapp.ui.authentication.AuthenticationUiState
+import com.example.studyapp.ui.authentication.AuthenticationViewModel
 import com.example.studyapp.ui.study.components.AdaptiveFAB
 import com.example.studyapp.ui.study.components.DockedSearchBar
 import com.example.studyapp.ui.study.components.LoadingIndicatorBox
@@ -48,53 +57,69 @@ private enum class TopicDialogType {
 }
 
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 internal fun TopicsScreen(
     topicsViewModel: TopicsViewModel,
+    authenticationViewModel: AuthenticationViewModel,
     navigateToTopic: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uiState by topicsViewModel.uiState.collectAsStateWithLifecycle()
+    val topicsUiState by topicsViewModel.uiState.collectAsStateWithLifecycle()
+    val authenticationUiState by authenticationViewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     TopicsScreen(
-        uiState = uiState,
+        topicsUiState = topicsUiState,
         addTopic = topicsViewModel::addTopic,
         navigateToSubtopics = navigateToTopic,
+        authenticationUiState = authenticationUiState,
+        initiateAuthentication = {
+            authenticationViewModel.initiateAuthentication(
+                context = context,
+                authenticationAlternative = it
+            )
+        },
         modifier = modifier
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @VisibleForTesting
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TopicsScreen(
-    uiState: TopicsUiState,
+    topicsUiState: TopicsUiState,
+    authenticationUiState: AuthenticationUiState,
     addTopic: (Topic) -> Unit,
     navigateToSubtopics: (Int) -> Unit,
+    initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    when (uiState) {
+    when (topicsUiState) {
         TopicsUiState.Loading ->
             LoadingIndicatorBox()
 
         is TopicsUiState.Success ->
-            TopicsScaffold(
-                topicsWithProgress = uiState.topicsWithProgress,
-                saveTopic = addTopic,
-                navigateToSubtopics = navigateToSubtopics,
-                modifier = modifier
-            )
+            if (authenticationUiState is AuthenticationUiState.Success) {
+                TopicsScaffold(
+                    topicsWithProgress = topicsUiState.topicsWithProgress,
+                    saveTopic = addTopic,
+                    navigateToSubtopics = navigateToSubtopics,
+                    modifier = modifier,
+                    authenticationUiState = authenticationUiState,
+                    initiateAuthentication = initiateAuthentication,
+                )
+            }
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 private fun TopicsScaffold(
     topicsWithProgress: List<TopicWithProgress>,
     saveTopic: (Topic) -> Unit,
     navigateToSubtopics: (Int) -> Unit,
+    authenticationUiState: AuthenticationUiState.Success,
+    initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var dialogType by rememberSaveable { mutableStateOf<TopicDialogType?>(null) }
@@ -114,8 +139,9 @@ private fun TopicsScaffold(
 
         TopicDialogType.AUTHENTICATION -> AuthenticationDialog(
             closeDialog = { dialogType = null },
-
-            )
+            authenticationUiState = authenticationUiState,
+            initiateAuthentication = initiateAuthentication
+        )
 
         null -> {}
     }
@@ -130,6 +156,12 @@ private fun TopicsScaffold(
                         placeholderText = stringResource(R.string.search_in_topics),
                         openSearchView = { showSearchView = true },
                         modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = {
+                            UserAvatarIcon(
+                                uiState = authenticationUiState,
+                                modifier = it
+                            )
+                        },
                         showAuthenticationDialog = {
                             dialogType = TopicDialogType.AUTHENTICATION
                         }
@@ -184,6 +216,40 @@ private fun TopicsScaffold(
         }
     }
 }
+
+@Composable
+private fun UserAvatarIcon(uiState: AuthenticationUiState, modifier: Modifier = Modifier) {
+    if (uiState is AuthenticationUiState.Success && uiState.userIsSignedIn) {
+        val userId = uiState.email ?: uiState.phoneNumber
+        if (uiState.profilePictureUri != null) {
+            AsyncImage(
+                model = uiState.profilePictureUri,
+                contentDescription =
+                    userId?.let {
+                        stringResource(R.string.signed_in_as, userId)
+                    },
+                modifier = modifier
+            )
+        } else if (uiState.email != null) {
+            Text(
+                text = uiState.email.first().toString(),
+                style = MaterialTheme.typography.displayMedium,
+                modifier = modifier
+            )
+        } else {
+            Text("?") // TODO: Fix this
+        }
+
+    } else {
+        Icon(
+            painter = painterResource(R.drawable.baseline_account_circle_24),
+            contentDescription = stringResource(R.string.open_login),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = modifier
+        )
+    }
+}
+
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -254,52 +320,59 @@ private fun TopicsSearchBar(
 private fun TopicsScreenPreview() {
     StudyAppTheme {
         TopicsScreen(
-            uiState = TopicsUiState.Success(
+            authenticationUiState = AuthenticationUiState.Success(
+                userIsSignedIn = false,
+                profilePictureUri = null,
+                email = "ExampleEmail@example.com",
+                phoneNumber = null,
+            ),
+            topicsUiState = TopicsUiState.Success(
                 topicsWithProgress = listOf(
                     TopicWithProgress(
-                        topic = Topic(1, "Dogs"),
+                        topic = Topic(id = 1, title = "Dogs"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(2, "Cats"),
+                        topic = Topic(2, title = "Cats"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(3, "Horses"),
+                        topic = Topic(3, title = "Horses"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(4, "Rabbits"),
+                        topic = Topic(4, title = "Rabbits"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(5, "Fish"),
+                        topic = Topic(5, title = "Fish"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(6, "Birds"),
+                        topic = Topic(6, title = "Birds"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(7, "Hamsters"),
+                        topic = Topic(7, title = "Hamsters"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(8, "Guinea pigs"),
+                        topic = Topic(8, title = "Guinea pigs"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(9, "Turtles"),
+                        topic = Topic(9, title = "Turtles"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(10, "Elephants"),
+                        topic = Topic(10, title = "Elephants"),
                         checked = false
                     )
                 )
             ),
             addTopic = {},
             navigateToSubtopics = {},
+            initiateAuthentication = { }
         )
     }
 }
@@ -314,7 +387,9 @@ private fun TopicsScreenPreview() {
 private fun TopicsScreenLoadingPreview() {
     StudyAppTheme {
         TopicsScreen(
-            uiState = TopicsUiState.Loading,
+            authenticationUiState = AuthenticationUiState.Loading,
+            topicsUiState = TopicsUiState.Loading,
+            initiateAuthentication = {},
             navigateToSubtopics = {},
             addTopic = {},
         )

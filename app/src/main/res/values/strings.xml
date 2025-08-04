@@ -80,5 +80,5 @@
     <string name="email_placerholder">xyz</string>
     <string name="show_password">Show password</string>
     <string name="hide_password">Hide password</string>
-
+    <string name="signed_in_as">Signed in as %s</string>
 </resources>

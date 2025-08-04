@@ -1,27 +1,24 @@
 package com.example.studyapp.ui.authentication
 
 import android.content.Context
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
+import android.net.Uri
 import androidx.annotation.VisibleForTesting
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
+import androidx.credentials.PasswordCredential
+import androidx.credentials.PublicKeyCredential
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studyapp.R
 import com.example.studyapp.ui.authentication.AuthenticationAlternative.GOOGLE
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,50 +27,43 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
     private companion object {
         const val WEB_CLIENT_ID =
             "196684472942-5vjhqshte8vmb5loes1lc23t6qn8a85v.apps.googleusercontent.com"
-        const val TAG = "AuthentificationViewModel"
     }
 
     // TODO: Implement uiState. This is just a placeholder.
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<AuthenticationUiState> = flowOf(AuthenticationUiState.Success()).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = AuthenticationUiState.Loading
-    )
+    val uiState: MutableStateFlow<AuthenticationUiState> =
+        MutableStateFlow(AuthenticationUiState.Success())
 
     /**
      * Initiate the authentication flow.
      *
      * @return The first letter of the user name
      */
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     internal fun initiateAuthentication(
         authenticationAlternative: AuthenticationAlternative,
         context: Context
-    ): String? {
+    ) {
         return when (authenticationAlternative) {
             GOOGLE -> createSignInWithGoogleFlow(context = context)
-            else -> null
+            else -> {}
         }
     }
 
     @VisibleForTesting
-    fun createSignInWithGoogleFlow(context: Context): String? {
+    fun createSignInWithGoogleFlow(context: Context) {
         val credentialManager = CredentialManager.create(context = context)
         val getSignInWithGoogleOption = getSignInWithGoogleOption()
         val request: GetCredentialRequest = GetCredentialRequest.Builder()
             .addCredentialOption(getSignInWithGoogleOption)
             .build()
-        var userInitial: String? = null
+
         viewModelScope.launch {
             val result = credentialManager.getCredential(
                 request = request,
                 context = context
             )
-            userInitial = handleSignIn(result = result)
+            handleSignIn(result = result)
         }
-        return userInitial
-
     }
 
     @VisibleForTesting
@@ -89,44 +79,60 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
     }
 
     @VisibleForTesting
-    fun handleSignIn(result: GetCredentialResponse): String? {
-        // Handle the successfully returned credential.
+    fun handleSignIn(result: GetCredentialResponse) {
         val credential = result.credential
-
         when (credential) {
-            is CustomCredential -> {
-                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                    try {
-                        // Use googleIdTokenCredential and extract id to validate and
-                        // authenticate on your server.
-                        return GoogleIdTokenCredential.createFrom(credential.data).givenName
-                    } catch (e: GoogleIdTokenParsingException) {
-                        Log.e(TAG, "Received an invalid google id token response", e)
-                    }
-                } else {
-                    // Catch any unrecognized credential type here.
-                    Log.e(TAG, "Unexpected type of credential")
+            is PublicKeyCredential -> {
+                credential.authenticationResponseJson
+                // Share responseJson i.e. a GetCredentialResponse on your server to
+                // validate and  authenticate
+            }
+
+            is PasswordCredential -> {
+                val id = credential.id
+                val password = credential.password
+                // Use id and password to send to your server to validate
+                // and authenticate
+                uiState.update {
+                    AuthenticationUiState.Success(
+                        userIsSignedIn = true,
+                        email = id,
+                        password = password,
+                    )
                 }
             }
 
-            else -> {
-                // Catch any unrecognized credential type here.
-                Log.e(TAG, "Unexpected type of credential")
+            is CustomCredential -> {
+                when (credential.type) {
+                    GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
+                        val result = GoogleIdTokenCredential.createFrom(credential.data)
+                        uiState.update {
+                            AuthenticationUiState.Success(
+                                userIsSignedIn = true,
+                                email = result.id,
+                                currentAuthenticationAlternative = GOOGLE,
+                                profilePictureUri = result.profilePictureUri
+                            )
+                        }
+                    }
+                }
             }
         }
-        return null
     }
-
 }
 
 sealed interface AuthenticationUiState {
     object Loading : AuthenticationUiState
+
     data class Success(
         val currentAuthenticationAlternative: AuthenticationAlternative? = null,
         val userHasAccount: Boolean = false,
         val userIsSignedIn: Boolean = false,
-        val email: String = "",
-        val password: String = ""
+        val phoneNumber: String? = null,
+        val userId: String? = null,
+        val email: String? = null,
+        val password: String? = null,
+        val profilePictureUri: Uri? = null
     ) : AuthenticationUiState
 
     object Error : AuthenticationUiState

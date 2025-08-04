@@ -1,7 +1,5 @@
 package com.example.studyapp.ui.authentication
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -22,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -34,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -44,34 +42,27 @@ import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studyapp.R
 import com.example.studyapp.ui.components.AdaptiveDialog
 import com.example.studyapp.ui.theme.StudyAppTheme
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun AuthenticationDialog(
-    viewModel: AuthenticationViewModel = hiltViewModel(),
-    setUserInitial: (String?) -> Unit,
+    authenticationUiState: AuthenticationUiState,
+    initiateAuthentication: (AuthenticationAlternative) -> Unit,
     closeDialog: () -> Unit,
 ) {
-    val context = LocalContext.current
-    AuthenticationDialog(
-        onConfirm = {
-            // TODO: Add sign in in case of email and password authentication
-            closeDialog()
-        },
-        navigateBack = closeDialog,
-        userHasAccount = true,
-        initiateAuthentication = {
-            setUserInitial(
-                viewModel.initiateAuthentication(
-                    context = context, authenticationAlternative = it
-                )
-            )
-        }
-    )
+    if (authenticationUiState is AuthenticationUiState.Success) {
+        AuthenticationDialog(
+            onConfirm = {
+                // TODO: Add sign in in case of email and password authentication
+                closeDialog()
+            },
+            navigateBack = closeDialog,
+            authenticationUiState = authenticationUiState,
+            initiateAuthentication = initiateAuthentication,
+        )
+    }
 }
 
 
@@ -79,19 +70,19 @@ fun AuthenticationDialog(
 private fun AuthenticationDialog(
     onConfirm: () -> Unit,
     navigateBack: () -> Unit,
-    userHasAccount: Boolean,
+    authenticationUiState: AuthenticationUiState.Success,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val titleResId =
-        if (userHasAccount) R.string.sign_into_your_account else R.string.create_a_new_account
+        if (authenticationUiState.userHasAccount) R.string.sign_into_your_account else R.string.create_a_new_account
 
     AdaptiveDialog(
         titleResId = titleResId,
         onDismiss = navigateBack,
         onConfirm = onConfirm,
         modifier = modifier.fillMaxSize(),
-        confirmButtonTextResId = if (userHasAccount) R.string.sign_in else R.string.sign_up,
+        confirmButtonTextResId = if (authenticationUiState.userHasAccount) R.string.sign_in else R.string.sign_up,
         dismissIconResId = R.drawable.baseline_close_24,
         content = { dialogContentModifier ->
             AuthentificationInputColumn(
@@ -110,8 +101,8 @@ private fun AuthentificationInputColumn(
     modifier: Modifier = Modifier,
 ) {
     if (uiState is AuthenticationUiState.Success) {
-        var email by rememberSaveable { mutableStateOf(value = uiState.email) }
-        var password by rememberSaveable { mutableStateOf(value = uiState.password) }
+        var email by rememberSaveable { mutableStateOf(value = uiState.email ?: "") }
+        var password by rememberSaveable { mutableStateOf(value = uiState.password ?: "") }
         val focusManager = LocalFocusManager.current
         val keyboardController = LocalSoftwareKeyboardController.current
         val scrollState = rememberScrollState()
@@ -134,7 +125,8 @@ private fun AuthentificationInputColumn(
             )
             PasswordTextField(password = password, modifier = Modifier.fillMaxWidth())
             AuthentificationOptionsButtonGroup(
-                initiateAuthentication = initiateAuthentication
+                initiateAuthentication = initiateAuthentication,
+                currentAuthenticationAlternative = uiState.currentAuthenticationAlternative
             )
             if (uiState.userHasAccount) {
                 TextTextButtonRow(
@@ -212,6 +204,7 @@ private fun TextTextButtonRow(
 @Composable
 private fun AuthentificationOptionsButtonGroup(
     modifier: Modifier = Modifier,
+    currentAuthenticationAlternative: AuthenticationAlternative?,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
 ) {
     ButtonGroup(
@@ -237,8 +230,9 @@ private fun AuthentificationOptionsButtonGroup(
         AuthenticationAlternative.entries.forEach { authOption ->
             customItem(
                 buttonGroupContent = {
-                    OutlinedIconButton(
-                        onClick = { initiateAuthentication(authOption) },
+                    OutlinedIconToggleButton(
+                        checked = currentAuthenticationAlternative == authOption,
+                        onCheckedChange = { initiateAuthentication(authOption) },
                         modifier = Modifier.size(IconButtonDefaults.smallContainerSize())
                     ) {
                         Image(
@@ -279,7 +273,13 @@ private fun AuthenticationDialogPreview() {
         AuthenticationDialog(
             onConfirm = {},
             navigateBack = {},
-            userHasAccount = false,
-            initiateAuthentication = {})
+            authenticationUiState = AuthenticationUiState.Success(
+                currentAuthenticationAlternative = AuthenticationAlternative.GOOGLE,
+                email = "email",
+                password = "password",
+                userHasAccount = true,
+            ),
+            initiateAuthentication = {}
+        )
     }
 }
