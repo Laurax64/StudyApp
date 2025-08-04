@@ -1,5 +1,6 @@
 package com.example.studyapp.ui.study.topics
 
+import androidx.credentials.CredentialManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studyapp.data.study.Topic
@@ -35,12 +36,26 @@ class TopicsViewModel @Inject constructor(
         }
     }
 
+    internal fun setUserInitial(userName: String) {
+        viewModelScope.launch {
+            CredentialManager.topicsRepository.setUserName(userName = userName)
+        }
+    }
+
 
 }
 
 sealed interface TopicsUiState {
     object Loading : TopicsUiState
+
+    /**
+     * A data class representing the success state of the topics screen.
+     *
+     * @property topicsWithProgress A list of topics with their progress.
+     * @property userInitial The first letter of the user's name.
+     */
     data class Success(
         val topicsWithProgress: List<TopicWithProgress>,
+        val userInitial: String? = null
     ) : TopicsUiState
 }

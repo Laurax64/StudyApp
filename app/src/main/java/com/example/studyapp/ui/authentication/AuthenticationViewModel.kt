@@ -41,32 +41,38 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
         initialValue = AuthenticationUiState.Loading
     )
 
+    /**
+     * Initiate the authentication flow.
+     *
+     * @return The first letter of the user name
+     */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     internal fun initiateAuthentication(
         authenticationAlternative: AuthenticationAlternative,
         context: Context
-    ) {
-        when (authenticationAlternative) {
+    ): String? {
+        return when (authenticationAlternative) {
             GOOGLE -> createSignInWithGoogleFlow(context = context)
-            else -> {}
+            else -> null
         }
     }
 
     @VisibleForTesting
-    fun createSignInWithGoogleFlow(context: Context) {
+    fun createSignInWithGoogleFlow(context: Context): String? {
         val credentialManager = CredentialManager.create(context = context)
         val getSignInWithGoogleOption = getSignInWithGoogleOption()
         val request: GetCredentialRequest = GetCredentialRequest.Builder()
             .addCredentialOption(getSignInWithGoogleOption)
             .build()
-
+        var userInitial: String? = null
         viewModelScope.launch {
             val result = credentialManager.getCredential(
                 request = request,
                 context = context
             )
-            handleSignIn(result = result)
+            userInitial = handleSignIn(result = result)
         }
+        return userInitial
 
     }
 
@@ -83,7 +89,7 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
     }
 
     @VisibleForTesting
-    fun handleSignIn(result: GetCredentialResponse) {
+    fun handleSignIn(result: GetCredentialResponse): String? {
         // Handle the successfully returned credential.
         val credential = result.credential
 
@@ -93,8 +99,7 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
                     try {
                         // Use googleIdTokenCredential and extract id to validate and
                         // authenticate on your server.
-                        GoogleIdTokenCredential
-                            .createFrom(credential.data)
+                        return GoogleIdTokenCredential.createFrom(credential.data).givenName
                     } catch (e: GoogleIdTokenParsingException) {
                         Log.e(TAG, "Received an invalid google id token response", e)
                     }
@@ -109,6 +114,7 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
                 Log.e(TAG, "Unexpected type of credential")
             }
         }
+        return null
     }
 
 }

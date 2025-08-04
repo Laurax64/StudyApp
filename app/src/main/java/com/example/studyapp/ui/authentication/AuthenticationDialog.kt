@@ -53,6 +53,7 @@ import com.example.studyapp.ui.theme.StudyAppTheme
 @Composable
 fun AuthenticationDialog(
     viewModel: AuthenticationViewModel = hiltViewModel(),
+    setUserInitial: (String?) -> Unit,
     closeDialog: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -64,8 +65,10 @@ fun AuthenticationDialog(
         navigateBack = closeDialog,
         userHasAccount = true,
         initiateAuthentication = {
-            viewModel.initiateAuthentication(
-                context = context, authenticationAlternative = it
+            setUserInitial(
+                viewModel.initiateAuthentication(
+                    context = context, authenticationAlternative = it
+                )
             )
         }
     )

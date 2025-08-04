@@ -114,7 +114,8 @@ private fun TopicsScaffold(
 
         TopicDialogType.AUTHENTICATION -> AuthenticationDialog(
             closeDialog = { dialogType = null },
-        )
+
+            )
 
         null -> {}
     }
