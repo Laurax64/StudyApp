@@ -10,10 +10,12 @@ import com.example.studyapp.data.study.TopicWithProgress
 import com.example.studyapp.data.study.TopicsRepository
 import com.example.studyapp.domain.study.GetTopicsWithProgressUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,18 +26,18 @@ class SubtopicsViewModel @Inject constructor(
     private val topicsRepository: TopicsRepository,
     private val subtopicsRepository: SubtopicsRepository,
 ) : ViewModel() {
+    private val userId: MutableStateFlow<String?> = MutableStateFlow(null)
     private val topicId: Int = savedStateHandle["topicId"] ?: -1
-
     val uiState: StateFlow<SubtopicsUiState> = combine(
         topicsRepository.getTopic(topicId),
-        getTopicsWithProgressUseCase(),
+        getTopicsWithProgressUseCase(userId = userId),
         subtopicsRepository.getAllSubtopics(),
     ) { selectedTopic, topics, subtopics ->
         if (selectedTopic != null) {
             SubtopicsUiState.Success(
                 selectedTopic = selectedTopic,
                 topicsWithProgress = topics,
-                subtopics = subtopics.filter { it.topicId == topicId }
+                subtopics = subtopics.filter { it.topicId == topicId },
             )
         } else {
             SubtopicsUiState.Loading
@@ -46,16 +48,19 @@ class SubtopicsViewModel @Inject constructor(
         initialValue = SubtopicsUiState.Loading
     )
 
+    internal fun updateUserId(newUserId: String) {
+        userId.update { newUserId }
+    }
 
     internal fun addSubtopic(subtopic: Subtopic) {
         viewModelScope.launch {
-            subtopicsRepository.insertSubtopic(subtopic)
+            subtopicsRepository.insertSubtopic(subtopic.copy(userId = userId.value))
         }
     }
 
     internal fun updateTopic(updatedTopic: Topic) {
         viewModelScope.launch {
-            topicsRepository.updateTopic(topic = updatedTopic)
+            topicsRepository.updateTopic(topic = updatedTopic.copy(userId = userId.value))
         }
     }
 
@@ -72,6 +77,6 @@ sealed interface SubtopicsUiState {
     data class Success(
         val selectedTopic: Topic,
         val topicsWithProgress: List<TopicWithProgress>,
-        val subtopics: List<Subtopic>
+        val subtopics: List<Subtopic>,
     ) : SubtopicsUiState
 }

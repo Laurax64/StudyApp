@@ -15,15 +15,20 @@ class GetTopicsWithProgressUseCase @Inject constructor(
     private val subtopicsRepository: SubtopicsRepository
 ) {
     /**
-     * Returns a list of topics with their associated progress.
+     * Returns a list of topics with their associated progress. When a user is logged in, the list
+     * is filtered by the user ID. Otherwise, the list is not filtered since the app does not require
+     * users to sign in.
+     *
+     * @param userId The user ID of the current user or null if no user is logged in.
      */
-    operator fun invoke(): Flow<List<TopicWithProgress>> =
+    operator fun invoke(userId: Flow<String?>): Flow<List<TopicWithProgress>> =
         combine(
+            userId,
             topicsRepository.getAllTopics(),
-            subtopicsRepository.getAllSubtopics()
-        ) { topics, subtopics ->
-            val subtopicsByTopic = subtopics.groupBy { it.topicId }
-            topics.map { topic ->
+            subtopicsRepository.getAllSubtopics(),
+        ) { userId, topics, subtopics ->
+            val subtopicsByTopic = subtopics.filter { it.userId == userId }.groupBy { it.topicId }
+            topics.filter { it.userId == userId }.map { topic ->
                 val topicSubtopics = subtopicsByTopic[topic.id].orEmpty()
                 TopicWithProgress(
                     topic = topic,

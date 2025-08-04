@@ -7,9 +7,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.studyapp.ui.StudyAppState
+import com.example.studyapp.ui.authentication.AuthenticationViewModel
 import com.example.studyapp.ui.study.subtopic.SubtopicScreen
 import com.example.studyapp.ui.study.subtopics.SubtopicsScreen
 import com.example.studyapp.ui.study.topics.TopicsScreen
+import com.example.studyapp.ui.study.topics.TopicsViewModel
 
 @Composable
 fun StudyAppNavHost(
@@ -44,7 +46,8 @@ fun StudyAppNavHost(
 fun NavGraphBuilder.topicsScreen(navigateToTopic: (Int) -> Unit) {
     composable<TopicsRoute> {
         TopicsScreen(
-            topicsViewModel = hiltViewModel(),
+            topicsViewModel = hiltViewModel<TopicsViewModel>(),
+            authenticationViewModel = hiltViewModel<AuthenticationViewModel>(),
             navigateToTopic = navigateToTopic
         )
     }

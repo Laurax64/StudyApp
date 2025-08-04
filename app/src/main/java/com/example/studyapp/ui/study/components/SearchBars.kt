@@ -49,6 +49,7 @@ import com.example.studyapp.ui.theme.StudyAppTheme
 internal fun SearchAppBar(
     modifier: Modifier = Modifier,
     openSearchView: () -> Unit,
+    trailingIcon: (@Composable (Modifier) -> Unit)? = null,
     showAuthenticationDialog: () -> Unit,
     placeholderText: String,
 ) {
@@ -95,15 +96,10 @@ internal fun SearchAppBar(
                 )
             }
         )
-        IconButton(onClick = showAuthenticationDialog) {
-            Icon(
-                painter = painterResource(R.drawable.baseline_account_circle_24),
-                contentDescription = stringResource(R.string.open_login),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .size(size = 48.dp)
-
-            )
+        trailingIcon?.let {
+            IconButton(onClick = showAuthenticationDialog) {
+                trailingIcon(Modifier.size(size = 48.dp))
+            }
         }
     }
 }

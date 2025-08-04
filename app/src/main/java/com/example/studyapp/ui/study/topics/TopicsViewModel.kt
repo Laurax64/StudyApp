@@ -1,6 +1,5 @@
 package com.example.studyapp.ui.study.topics
 
-import androidx.credentials.CredentialManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studyapp.data.study.Topic
@@ -9,10 +8,12 @@ import com.example.studyapp.data.study.TopicsRepository
 import com.example.studyapp.domain.study.GetTopicsWithProgressUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,7 +23,9 @@ class TopicsViewModel @Inject constructor(
     private val topicsRepository: TopicsRepository
 ) : ViewModel() {
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<TopicsUiState> = getTopicsWithProgressUseCase().map {
+    private val userId: MutableStateFlow<String?> = MutableStateFlow(null)
+
+    val uiState: StateFlow<TopicsUiState> = getTopicsWithProgressUseCase(userId = userId).map {
         TopicsUiState.Success(topicsWithProgress = it)
     }.stateIn(
         scope = viewModelScope,
@@ -30,32 +33,20 @@ class TopicsViewModel @Inject constructor(
         initialValue = TopicsUiState.Loading
     )
 
+    internal fun updateUserId(newUserId: String) {
+        userId.update { newUserId }
+    }
+
     internal fun addTopic(topic: Topic) {
         viewModelScope.launch {
-            topicsRepository.insertTopic(topic = topic)
+            topicsRepository.insertTopic(topic = topic.copy(userId = userId.value))
         }
     }
-
-    internal fun setUserInitial(userName: String) {
-        viewModelScope.launch {
-            CredentialManager.topicsRepository.setUserName(userName = userName)
-        }
-    }
-
-
 }
 
 sealed interface TopicsUiState {
     object Loading : TopicsUiState
-
-    /**
-     * A data class representing the success state of the topics screen.
-     *
-     * @property topicsWithProgress A list of topics with their progress.
-     * @property userInitial The first letter of the user's name.
-     */
     data class Success(
         val topicsWithProgress: List<TopicWithProgress>,
-        val userInitial: String? = null
     ) : TopicsUiState
 }
