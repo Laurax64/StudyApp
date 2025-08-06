@@ -25,6 +25,7 @@ class TopicsViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val userId: MutableStateFlow<String?> = MutableStateFlow(null)
 
+    // TODO: Fix filtering of topics by logged-in user.
     val uiState: StateFlow<TopicsUiState> = getTopicsWithProgressUseCase(userId = userId).map {
         TopicsUiState.Success(topicsWithProgress = it)
     }.stateIn(
