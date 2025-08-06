@@ -7,7 +7,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -83,7 +82,6 @@ internal fun TopicsScreen(
 }
 
 @VisibleForTesting
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TopicsScreen(
     topicsUiState: TopicsUiState,
@@ -252,7 +250,6 @@ private fun UserAvatarIcon(uiState: AuthenticationUiState, modifier: Modifier = 
 
 
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun TopicsPaneContent(
     topicsWithProgress: List<TopicWithProgress>,
