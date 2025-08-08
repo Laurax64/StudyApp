@@ -23,6 +23,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -100,7 +101,7 @@ class AuthenticationViewModel @Inject constructor(
             .addCredentialOption(getSignInWithGoogleOption)
             .build()
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val result = credentialManager.getCredential(
                     request = request,
@@ -186,7 +187,6 @@ class AuthenticationViewModel @Inject constructor(
         val verifier = GoogleIdTokenVerifier.Builder(transport, jsonFactory)
             .setAudience(Collections.singletonList(WEB_CLIENT_ID))
             .build()
-
         return verifier.verify(idTokenString).payload
     }
 }
