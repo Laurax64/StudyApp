@@ -3,40 +3,54 @@ package com.example.studyapp.ui.study.subtopics
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.studyapp.data.authentication.UserPreferencesRepository
 import com.example.studyapp.data.study.Subtopic
 import com.example.studyapp.data.study.SubtopicsRepository
 import com.example.studyapp.data.study.Topic
 import com.example.studyapp.data.study.TopicWithProgress
 import com.example.studyapp.data.study.TopicsRepository
-import com.example.studyapp.domain.study.GetTopicsWithProgressUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SubtopicsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    getTopicsWithProgressUseCase: GetTopicsWithProgressUseCase,
     private val topicsRepository: TopicsRepository,
     private val subtopicsRepository: SubtopicsRepository,
+    userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
-    private val userId: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val userId = userPreferencesRepository.userPreferencesFlow.map {
+        it.userId
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = null
+    )
+
     private val topicId: Int = savedStateHandle["topicId"] ?: -1
     val uiState: StateFlow<SubtopicsUiState> = combine(
+        userPreferencesRepository.userPreferencesFlow,
         topicsRepository.getTopic(topicId),
-        getTopicsWithProgressUseCase(userId = userId),
+        topicsRepository.getAllTopics(),
         subtopicsRepository.getAllSubtopics(),
-    ) { selectedTopic, topics, subtopics ->
+    ) { userPreferences, selectedTopic, topics, subtopics ->
+        val userId = userPreferences.userId
         if (selectedTopic != null) {
             SubtopicsUiState.Success(
                 selectedTopic = selectedTopic,
-                topicsWithProgress = topics,
+                topicsWithProgress = topics.filter { it.userId == userId }.map { topic ->
+                    val topicSubtopics = subtopics.filter { it.topicId == topic.id }
+                    TopicWithProgress(
+                        topic = topic,
+                        checked = topicSubtopics.all { it.checked }
+                    )
+                },
                 subtopics = subtopics.filter { it.topicId == topicId },
             )
         } else {
@@ -47,10 +61,6 @@ class SubtopicsViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = SubtopicsUiState.Loading
     )
-
-    internal fun updateUserId(newUserId: String) {
-        userId.update { newUserId }
-    }
 
     internal fun addSubtopic(subtopic: Subtopic) {
         viewModelScope.launch {

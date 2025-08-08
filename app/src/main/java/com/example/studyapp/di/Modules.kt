@@ -1,9 +1,12 @@
 package com.example.studyapp.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.example.studyapp.data.AppDatabase
+import com.example.studyapp.data.authentication.UserPreferencesRepository
 import com.example.studyapp.data.study.SubtopicDao
 import com.example.studyapp.data.study.SubtopicsRepository
 import com.example.studyapp.data.study.SubtopicsRepositoryImpl
@@ -46,13 +49,15 @@ object Modules {
     fun provideSubtopicsRepository(subtopicDao: SubtopicDao): SubtopicsRepository =
         SubtopicsRepositoryImpl(subtopicDao = subtopicDao)
 
+    @Provides
+    @Singleton
+    fun providesUserPreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
+        preferencesDataStore(name = USER_PREFERENCES_NAME).getValue(context, context::javaClass)
+
 
     @Provides
     @Singleton
-    fun providesUserPreferencesDataStore(context: Context) =
-        preferencesDataStore(name = USER_PREFERENCES_NAME)
-
-
-
+    fun providesUserPreferencesRepository(dataStore: DataStore<Preferences>) =
+        UserPreferencesRepository(dataStore = dataStore)
 
 }
