@@ -65,6 +65,8 @@ import com.example.studyapp.R
 import com.example.studyapp.data.study.Subtopic
 import com.example.studyapp.data.study.Topic
 import com.example.studyapp.data.study.TopicWithProgress
+import com.example.studyapp.ui.authentication.AuthenticationUiState
+import com.example.studyapp.ui.authentication.AuthenticationViewModel
 import com.example.studyapp.ui.study.components.DockedSearchBar
 import com.example.studyapp.ui.study.components.LoadingIndicatorBox
 import com.example.studyapp.ui.study.components.PlaceholderColumn
@@ -84,14 +86,17 @@ private enum class SubtopicsDialogType {
 @Composable
 internal fun SubtopicsScreen(
     subtopicsViewModel: SubtopicsViewModel,
+    authenticationViewModel: AuthenticationViewModel,
     navigateToSubtopic: (Int) -> Unit,
     navigateToTopic: (Int) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uiState by subtopicsViewModel.uiState.collectAsStateWithLifecycle()
+    val subtopicsUiState by subtopicsViewModel.uiState.collectAsStateWithLifecycle()
+    val authenticationUiState by authenticationViewModel.uiState.collectAsStateWithLifecycle()
     SubtopicsScreen(
-        uiState = uiState,
+        subtopicsUiState = subtopicsUiState,
+        authenticationUiState = authenticationUiState,
         saveSubtopic = subtopicsViewModel::addSubtopic,
         deleteTopic = subtopicsViewModel::deleteTopic,
         updateTopic = subtopicsViewModel::updateTopic,
@@ -106,7 +111,8 @@ internal fun SubtopicsScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SubtopicsScreen(
-    uiState: SubtopicsUiState,
+    subtopicsUiState: SubtopicsUiState,
+    authenticationUiState: AuthenticationUiState,
     saveSubtopic: (Subtopic) -> Unit,
     deleteTopic: () -> Unit,
     updateTopic: (Topic) -> Unit,
@@ -115,21 +121,24 @@ fun SubtopicsScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    when (uiState) {
+    when (subtopicsUiState) {
         SubtopicsUiState.Loading ->
             LoadingIndicatorBox()
 
         is SubtopicsUiState.Success ->
-            SubtopicsScaffold(
-                uiState = uiState,
-                navigateToSubtopic = navigateToSubtopic,
-                navigateToTopic = navigateToTopic,
-                saveSubtopic = saveSubtopic,
-                deleteTopic = deleteTopic,
-                updateTopic = updateTopic,
-                navigateBack = navigateBack,
-                modifier = modifier.fillMaxWidth()
-            )
+            if (authenticationUiState is AuthenticationUiState.SignedIn) {
+                val userId = authenticationUiState.userId
+                SubtopicsScaffold(
+                    uiState = subtopicsUiState,
+                    navigateToSubtopic = navigateToSubtopic,
+                    navigateToTopic = navigateToTopic,
+                    saveSubtopic = { subtopic -> saveSubtopic(subtopic.copy(userId = userId)) },
+                    deleteTopic = deleteTopic,
+                    updateTopic = { topic -> updateTopic(topic.copy(userId = userId)) },
+                    navigateBack = navigateBack,
+                    modifier = modifier.fillMaxWidth()
+                )
+            }
     }
 }
 
@@ -610,7 +619,7 @@ private fun SubtopicListItem(subtopic: Subtopic, modifier: Modifier) {
 private fun SubtopicsScreenPreview() {
     StudyAppTheme {
         SubtopicsScreen(
-            uiState = SubtopicsUiState.Success(
+            subtopicsUiState = SubtopicsUiState.Success(
                 subtopics = listOf(
                     Subtopic(
                         id = 1,
@@ -721,6 +730,12 @@ private fun SubtopicsScreenPreview() {
                 ),
                 selectedTopic = Topic(id = 0, title = "Android Taint Analysis", userId = "user id")
             ),
+            authenticationUiState = AuthenticationUiState.SignedIn(
+                userId = "user id",
+                userAvatarUri = null,
+                email = null,
+                phoneNumber = null,
+            ),
             navigateToSubtopic = {},
             navigateToTopic = {},
             navigateBack = {},
@@ -740,7 +755,8 @@ private fun SubtopicsScreenPreview() {
 private fun SubtopicsScreenLoadingPreview() {
     StudyAppTheme {
         SubtopicsScreen(
-            uiState = SubtopicsUiState.Loading,
+            subtopicsUiState = SubtopicsUiState.Loading,
+            authenticationUiState = AuthenticationUiState.Loading,
             navigateToSubtopic = {},
             navigateToTopic = {},
             navigateBack = {},

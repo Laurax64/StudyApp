@@ -61,6 +61,7 @@ fun NavGraphBuilder.subtopicsScreen(
     composable<SubtopicsRoute> {
         SubtopicsScreen(
             subtopicsViewModel = hiltViewModel(),
+            authenticationViewModel = hiltViewModel(),
             navigateToSubtopic = navigateToSubtopic,
             navigateToTopic = navigateToTopic,
             navigateBack = navigateBack
