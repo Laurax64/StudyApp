@@ -78,12 +78,19 @@ dependencies {
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.material3)
     implementation(libs.androidx.core.splashscreen)
+
     // Credentials
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     // Google authentication
     implementation(libs.googleid)
     implementation(libs.androidx.core.ktx)
+    // Google token validation
+    implementation(libs.google.api.client)
+    implementation(libs.google.oauth.client)
+    implementation(libs.google.http.client.gson)
+    implementation(libs.gson)
+
     // Preference datastore
     implementation(libs.androidx.datastore.preferences)
     debugImplementation(libs.androidx.ui.tooling)
