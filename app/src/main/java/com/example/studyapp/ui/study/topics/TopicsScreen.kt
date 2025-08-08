@@ -107,6 +107,7 @@ fun TopicsScreen(
             } else if (authenticationUiState is AuthenticationUiState.NotSignedIn) {
                 AuthenticationDialog(
                     closeDialog = { },
+                    modifier = Modifier.fillMaxWidth(),
                     authenticationUiState = authenticationUiState,
                     initiateAuthentication = initiateAuthentication
                 )
@@ -145,6 +146,7 @@ private fun TopicsScaffold(
         TopicDialogType.AUTHENTICATION -> AuthenticationDialog(
             closeDialog = { dialogType = null },
             authenticationUiState = authenticationUiState,
+            modifier = modifier.fillMaxWidth(),
             initiateAuthentication = {
                 initiateAuthentication(it)
                 dialogType = null

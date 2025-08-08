@@ -6,7 +6,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -50,6 +49,7 @@ import com.example.studyapp.ui.theme.StudyAppTheme
 fun AuthenticationDialog(
     authenticationUiState: AuthenticationUiState,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
+    modifier: Modifier = Modifier,
     closeDialog: () -> Unit,
 ) {
     AuthenticationDialog(
@@ -58,6 +58,7 @@ fun AuthenticationDialog(
             closeDialog()
         },
         navigateBack = closeDialog,
+        modifier = modifier,
         uiState = authenticationUiState,
         initiateAuthentication = initiateAuthentication,
     )
@@ -86,7 +87,7 @@ private fun AuthenticationDialog(
             titleResId = titleResId,
             onDismiss = navigateBack,
             onConfirm = onConfirm,
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier.fillMaxWidth(),
             confirmButtonTextResId = titleResId,
             dismissIconResId = R.drawable.baseline_close_24,
             content = { dialogContentModifier ->
@@ -142,6 +143,7 @@ private fun AuthentificationInputColumn(
             PasswordTextField(password = password, modifier = Modifier.fillMaxWidth())
             AuthentificationOptionsButtonGroup(
                 initiateAuthentication = initiateAuthentication,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
                 currentAuthenticationAlternative =
                     if (uiState is AuthenticationUiState.SignedIn) {
                         uiState.currentAuthenticationAlternative
