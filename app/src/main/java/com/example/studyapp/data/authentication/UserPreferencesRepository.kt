@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 data class UserPreferences(
-    val userInitial: String
+    val userId: String?
 )
 
 /**
@@ -17,16 +17,16 @@ data class UserPreferences(
  */
 class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
     private object PreferencesKeys {
-        val USER_INITIAL = stringPreferencesKey("user_initial")
+        val USER_ID = stringPreferencesKey("user_id")
     }
 
     val userPreferencesFlow: Flow<UserPreferences> = dataStore.data.map { preferences ->
         mapUserPreferences(preferences)
     }
 
-    suspend fun updateUserInitial(userInitial: String) {
+    suspend fun updateUserId(userId: String) {
         dataStore.edit { preferences ->
-            preferences[PreferencesKeys.USER_INITIAL] = userInitial
+            preferences[PreferencesKeys.USER_ID] = userId
         }
     }
 
@@ -35,7 +35,7 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
 
 
     private fun mapUserPreferences(preferences: Preferences): UserPreferences {
-        val userInitial = preferences[PreferencesKeys.USER_INITIAL] ?: ""
+        val userInitial = preferences[PreferencesKeys.USER_ID]
         return UserPreferences(userInitial)
     }
 }
