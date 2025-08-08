@@ -145,7 +145,10 @@ private fun TopicsScaffold(
         TopicDialogType.AUTHENTICATION -> AuthenticationDialog(
             closeDialog = { dialogType = null },
             authenticationUiState = authenticationUiState,
-            initiateAuthentication = initiateAuthentication
+            initiateAuthentication = {
+                initiateAuthentication(it)
+                dialogType = null
+            }
         )
 
         null -> {}
