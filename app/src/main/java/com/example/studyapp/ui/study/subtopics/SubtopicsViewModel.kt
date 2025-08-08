@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -41,7 +42,7 @@ class SubtopicsViewModel @Inject constructor(
         subtopicsRepository.getAllSubtopics(),
     ) { userPreferences, selectedTopic, topics, subtopics ->
         val userId = userPreferences.userId
-        if (selectedTopic != null) {
+        if (selectedTopic != null && userId != null) {
             SubtopicsUiState.Success(
                 selectedTopic = selectedTopic,
                 topicsWithProgress = topics.filter { it.userId == userId }.map { topic ->
@@ -64,13 +65,17 @@ class SubtopicsViewModel @Inject constructor(
 
     internal fun addSubtopic(subtopic: Subtopic) {
         viewModelScope.launch {
-            subtopicsRepository.insertSubtopic(subtopic.copy(userId = userId.value))
+            userId.first()?.let {
+                subtopicsRepository.insertSubtopic(subtopic.copy(userId = it))
+            }
         }
     }
 
     internal fun updateTopic(updatedTopic: Topic) {
         viewModelScope.launch {
-            topicsRepository.updateTopic(topic = updatedTopic.copy(userId = userId.value))
+            userId.first()?.let {
+                topicsRepository.updateTopic(topic = updatedTopic.copy(userId = it))
+            }
         }
     }
 

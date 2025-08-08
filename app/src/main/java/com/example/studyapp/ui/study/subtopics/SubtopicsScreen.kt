@@ -238,7 +238,7 @@ private fun SubtopicsDialog(
                 onSave = {
                     updateTopic(it)
                     dismissDialog()
-                }
+                },
             )
 
         SubtopicsDialogType.DELETE_TOPIC ->
@@ -619,7 +619,8 @@ private fun SubtopicsScreenPreview() {
                         description = "Friendly, intelligent, and great with families.",
                         checked = false,
                         bookmarked = false,
-                        imageUri = null
+                        imageUri = null,
+                        userId = "user id"
                     ),
                     Subtopic(
                         id = 2,
@@ -628,7 +629,8 @@ private fun SubtopicsScreenPreview() {
                         description = "Outgoing, loyal, and super trainable.",
                         checked = false,
                         bookmarked = false,
-                        imageUri = null
+                        imageUri = null,
+                        userId = "user id"
                     ),
                     Subtopic(
                         id = 3,
@@ -637,7 +639,8 @@ private fun SubtopicsScreenPreview() {
                         description = "Brave, confident, and excellent working dogs.",
                         checked = false,
                         bookmarked = false,
-                        imageUri = null
+                        imageUri = null,
+                        userId = "user id"
                     ),
                     Subtopic(
                         id = 4,
@@ -646,7 +649,8 @@ private fun SubtopicsScreenPreview() {
                         description = "Small, fluffy, and full of personality.",
                         checked = false,
                         bookmarked = false,
-                        imageUri = null
+                        imageUri = null,
+                        userId = "user id"
                     ),
                     Subtopic(
                         id = 5,
@@ -655,7 +659,8 @@ private fun SubtopicsScreenPreview() {
                         description = "Highly energetic and the smartest of all breeds.",
                         checked = false,
                         bookmarked = false,
-                        imageUri = null
+                        imageUri = null,
+                        userId = "user id"
                     ),
                     Subtopic(
                         id = 6,
@@ -664,7 +669,8 @@ private fun SubtopicsScreenPreview() {
                         description = "Long-bodied and playful with a bold attitude.",
                         checked = false,
                         bookmarked = false,
-                        imageUri = null
+                        imageUri = null,
+                        userId = "user id"
                     ),
                     Subtopic(
                         id = 7,
@@ -673,7 +679,8 @@ private fun SubtopicsScreenPreview() {
                         description = "Compact and charming with a lovable snort.",
                         checked = false,
                         bookmarked = false,
-                        imageUri = null
+                        imageUri = null,
+                        userId = "user id"
                     ),
                     Subtopic(
                         id = 8,
@@ -682,7 +689,8 @@ private fun SubtopicsScreenPreview() {
                         description = "Gentle, sweet, and always ready to cuddle.",
                         checked = false,
                         bookmarked = false,
-                        imageUri = null
+                        imageUri = null,
+                        userId = "user id"
                     ),
                     Subtopic(
                         id = 9,
@@ -691,7 +699,8 @@ private fun SubtopicsScreenPreview() {
                         description = "A gentle giant with a calm and loving nature.",
                         checked = false,
                         bookmarked = false,
-                        imageUri = null
+                        imageUri = null,
+                        userId = "user id"
                     ),
                     Subtopic(
                         id = 10,
@@ -700,16 +709,17 @@ private fun SubtopicsScreenPreview() {
                         description = "Beautiful, energetic, and known for their striking blue eyes.",
                         checked = false,
                         bookmarked = false,
-                        imageUri = null
+                        imageUri = null,
+                        userId = "user id"
                     )
                 ),
                 topicsWithProgress = listOf(
                     TopicWithProgress(
-                        topic = Topic(id = 0, title = "Topic 0"),
+                        topic = Topic(id = 0, title = "Topic 0", userId = "user id"),
                         checked = true
                     )
                 ),
-                selectedTopic = Topic(id = 0, title = "Android Taint Analysis")
+                selectedTopic = Topic(id = 0, title = "Android Taint Analysis", userId = "user id")
             ),
             navigateToSubtopic = {},
             navigateToTopic = {},

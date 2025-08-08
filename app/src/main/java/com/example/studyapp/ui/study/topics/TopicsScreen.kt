@@ -96,16 +96,14 @@ fun TopicsScreen(
             LoadingIndicatorBox()
 
         is TopicsUiState.Success ->
-            if (authenticationUiState is AuthenticationUiState.Success) {
-                TopicsScaffold(
-                    topicsWithProgress = topicsUiState.topicsWithProgress,
-                    saveTopic = addTopic,
-                    navigateToSubtopics = navigateToSubtopics,
-                    modifier = modifier,
-                    authenticationUiState = authenticationUiState,
-                    initiateAuthentication = initiateAuthentication,
-                )
-            }
+            TopicsScaffold(
+                topicsWithProgress = topicsUiState.topicsWithProgress,
+                saveTopic = addTopic,
+                navigateToSubtopics = navigateToSubtopics,
+                modifier = modifier,
+                authenticationUiState = authenticationUiState,
+                initiateAuthentication = initiateAuthentication,
+            )
     }
 }
 
@@ -116,11 +114,15 @@ private fun TopicsScaffold(
     topicsWithProgress: List<TopicWithProgress>,
     saveTopic: (Topic) -> Unit,
     navigateToSubtopics: (Int) -> Unit,
-    authenticationUiState: AuthenticationUiState.Success,
+    authenticationUiState: AuthenticationUiState,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var dialogType by rememberSaveable { mutableStateOf<TopicDialogType?>(null) }
+    var dialogType by rememberSaveable {
+        mutableStateOf(
+            if (authenticationUiState is AuthenticationUiState.NotSignedIn) TopicDialogType.AUTHENTICATION else null
+        )
+    }
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     var showSearchView by rememberSaveable { mutableStateOf(false) }
     val isScreenWidthCompact = !currentWindowAdaptiveInfo().windowSizeClass
@@ -143,9 +145,7 @@ private fun TopicsScaffold(
 
         null -> {}
     }
-
-
-    if (!(dialogType == TopicDialogType.AUTHENTICATION && isScreenWidthCompact)) {
+    if (!(isScreenWidthCompact && (dialogType == TopicDialogType.AUTHENTICATION))) {
         Scaffold(
             modifier = modifier,
             topBar = {
@@ -217,7 +217,7 @@ private fun TopicsScaffold(
 
 @Composable
 private fun UserAvatarIcon(uiState: AuthenticationUiState, modifier: Modifier = Modifier) {
-    if (uiState is AuthenticationUiState.Success && uiState.userIsSignedIn) {
+    if (uiState is AuthenticationUiState.SignedIn) {
         val userId = uiState.email ?: uiState.phoneNumber
         if (uiState.profilePictureUri != null) {
             AsyncImage(
@@ -247,7 +247,6 @@ private fun UserAvatarIcon(uiState: AuthenticationUiState, modifier: Modifier = 
         )
     }
 }
-
 
 
 @Composable
@@ -317,52 +316,58 @@ private fun TopicsSearchBar(
 private fun TopicsScreenPreview() {
     StudyAppTheme {
         TopicsScreen(
-            authenticationUiState = AuthenticationUiState.Success(
-                userIsSignedIn = false,
+            authenticationUiState = AuthenticationUiState.SignedIn(
                 profilePictureUri = null,
                 email = "ExampleEmail@example.com",
                 phoneNumber = null,
+                userId = "user id"
             ),
             topicsUiState = TopicsUiState.Success(
                 topicsWithProgress = listOf(
                     TopicWithProgress(
-                        topic = Topic(id = 1, title = "Dogs"),
+                        topic = Topic(id = 1, title = "Dogs", userId = "user id"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(2, title = "Cats"),
+                        topic = Topic(2, title = "Cats", userId = "user id"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(3, title = "Horses"),
+                        topic = Topic(3, title = "Horses", userId = "user id"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(4, title = "Rabbits"),
+                        topic = Topic(
+                            4, title = "Rabbits",
+                            userId = "user id"
+                        ),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(5, title = "Fish"),
+                        topic = Topic(
+                            5, title = "Fish",
+                            userId = "user id"
+                        ),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(6, title = "Birds"),
+                        topic = Topic(6, title = "Birds", userId = "user id"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(7, title = "Hamsters"),
+                        topic = Topic(7, title = "Hamsters", userId = "user id"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(8, title = "Guinea pigs"),
+                        topic = Topic(8, title = "Guinea pigs", userId = "user id"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(9, title = "Turtles"),
+                        topic = Topic(9, title = "Turtles", userId = "user id"),
                         checked = false
                     ),
                     TopicWithProgress(
-                        topic = Topic(10, title = "Elephants"),
+                        topic = Topic(10, title = "Elephants", userId = "user id"),
                         checked = false
                     )
                 )

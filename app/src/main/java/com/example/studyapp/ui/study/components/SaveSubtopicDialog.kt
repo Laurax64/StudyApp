@@ -67,6 +67,7 @@ internal fun SaveSubtopicDialog(
             imageUri = imageUri,
             checked = checked == true,
             bookmarked = false,
+            userId = "user id",
             topicId = topicId
         )
         saveSubtopic(subtopicToSave)

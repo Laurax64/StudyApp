@@ -12,27 +12,57 @@ import androidx.credentials.PublicKeyCredential
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studyapp.R
+import com.example.studyapp.data.authentication.UserPreferencesRepository
 import com.example.studyapp.ui.authentication.AuthenticationAlternative.GOOGLE
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthenticationViewModel @Inject constructor() : ViewModel() {
+class AuthenticationViewModel @Inject constructor(
+    userPreferencesRepository: UserPreferencesRepository
+) : ViewModel() {
     private companion object {
         const val WEB_CLIENT_ID =
             "196684472942-5vjhqshte8vmb5loes1lc23t6qn8a85v.apps.googleusercontent.com"
     }
 
-    // TODO: Implement uiState. This is just a placeholder.
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: MutableStateFlow<AuthenticationUiState> =
-        MutableStateFlow(AuthenticationUiState.Success())
+    val userId = userPreferencesRepository.userPreferencesFlow.map {
+        it.userId
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = null
+    )
+
+    private val _uiState: MutableStateFlow<AuthenticationUiState> =
+        MutableStateFlow(AuthenticationUiState.Loading)
+    val uiState: StateFlow<AuthenticationUiState> = _uiState
+
+    init {
+        initializeUiState()
+    }
+
+    fun initializeUiState() {
+        viewModelScope.launch {
+            userId.first()?.let { id ->
+                _uiState.update {
+                    AuthenticationUiState.SignedIn(userId = id)
+                }
+            } ?: _uiState.update {
+                AuthenticationUiState.NotSignedIn() // TODO: Check whether the user has an account
+            }
+        }
+    }
 
     /**
      * Initiate the authentication flow.
@@ -93,9 +123,9 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
                 val password = credential.password
                 // Use id and password to send to your server to validate
                 // and authenticate
-                uiState.update {
-                    AuthenticationUiState.Success(
-                        userIsSignedIn = true,
+                _uiState.update {
+                    AuthenticationUiState.SignedIn(
+                        userId = id,
                         email = id,
                         password = password,
                     )
@@ -106,12 +136,12 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
                 when (credential.type) {
                     GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
                         val result = GoogleIdTokenCredential.createFrom(credential.data)
-                        uiState.update {
-                            AuthenticationUiState.Success(
-                                userIsSignedIn = true,
+                        _uiState.update {
+                            AuthenticationUiState.SignedIn(
                                 email = result.id,
+                                userId = result.id,
                                 currentAuthenticationAlternative = GOOGLE,
-                                profilePictureUri = result.profilePictureUri
+                                profilePictureUri = result.profilePictureUri,
                             )
                         }
                     }
@@ -124,18 +154,18 @@ class AuthenticationViewModel @Inject constructor() : ViewModel() {
 sealed interface AuthenticationUiState {
     object Loading : AuthenticationUiState
 
-    data class Success(
+    data class SignedIn(
         val currentAuthenticationAlternative: AuthenticationAlternative? = null,
-        val userHasAccount: Boolean = false,
-        val userIsSignedIn: Boolean = false,
         val phoneNumber: String? = null,
-        val userId: String? = null,
+        val userId: String,
         val email: String? = null,
         val password: String? = null,
         val profilePictureUri: Uri? = null
     ) : AuthenticationUiState
 
-    object Error : AuthenticationUiState
+    data class NotSignedIn(
+        val userHasAccount: Boolean = false,
+    ) : AuthenticationUiState
 }
 
 /**

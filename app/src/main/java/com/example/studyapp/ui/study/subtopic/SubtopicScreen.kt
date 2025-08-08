@@ -569,6 +569,7 @@ private fun SubtopicScreenSuccessPreview() {
                     bookmarked = false,
                     topicId = 1,
                     imageUri = null,
+                    userId = "user id"
                 ),
                 previousSubtopicId = 0,
                 nextSubtopicId = 2,

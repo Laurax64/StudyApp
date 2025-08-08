@@ -57,7 +57,9 @@ class TopicsViewModel @Inject constructor(
 
     internal fun addTopic(topic: Topic) {
         viewModelScope.launch {
-            topicsRepository.insertTopic(topic = topic.copy(userId = userId.first()))
+            userId.first()?.let {
+                topicsRepository.insertTopic(topic = topic.copy(userId = it))
+            }
         }
     }
 }

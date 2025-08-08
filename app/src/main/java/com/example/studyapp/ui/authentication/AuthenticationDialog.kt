@@ -52,17 +52,15 @@ fun AuthenticationDialog(
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
     closeDialog: () -> Unit,
 ) {
-    if (authenticationUiState is AuthenticationUiState.Success) {
-        AuthenticationDialog(
-            onConfirm = {
-                // TODO: Add sign in in case of email and password authentication
-                closeDialog()
-            },
-            navigateBack = closeDialog,
-            authenticationUiState = authenticationUiState,
-            initiateAuthentication = initiateAuthentication,
-        )
-    }
+    AuthenticationDialog(
+        onConfirm = {
+            // TODO: Add sign in in case of email and password authentication
+            closeDialog()
+        },
+        navigateBack = closeDialog,
+        uiState = authenticationUiState,
+        initiateAuthentication = initiateAuthentication,
+    )
 }
 
 
@@ -70,28 +68,36 @@ fun AuthenticationDialog(
 private fun AuthenticationDialog(
     onConfirm: () -> Unit,
     navigateBack: () -> Unit,
-    authenticationUiState: AuthenticationUiState.Success,
+    uiState: AuthenticationUiState,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val titleResId =
-        if (authenticationUiState.userHasAccount) R.string.sign_into_your_account else R.string.create_a_new_account
+    if (uiState !is AuthenticationUiState.Loading) {
+        val titleResId =
+            if (uiState is AuthenticationUiState.SignedIn ||
+                uiState is AuthenticationUiState.NotSignedIn && uiState.userHasAccount
+            ) {
+                R.string.sign_in
+            } else {
+                R.string.sign_up
+            }
 
-    AdaptiveDialog(
-        titleResId = titleResId,
-        onDismiss = navigateBack,
-        onConfirm = onConfirm,
-        modifier = modifier.fillMaxSize(),
-        confirmButtonTextResId = if (authenticationUiState.userHasAccount) R.string.sign_in else R.string.sign_up,
-        dismissIconResId = R.drawable.baseline_close_24,
-        content = { dialogContentModifier ->
-            AuthentificationInputColumn(
-                initiateAuthentication = initiateAuthentication,
-                uiState = AuthenticationUiState.Success(),
-                modifier = dialogContentModifier
-            )
-        }
-    )
+        AdaptiveDialog(
+            titleResId = titleResId,
+            onDismiss = navigateBack,
+            onConfirm = onConfirm,
+            modifier = modifier.fillMaxSize(),
+            confirmButtonTextResId = titleResId,
+            dismissIconResId = R.drawable.baseline_close_24,
+            content = { dialogContentModifier ->
+                AuthentificationInputColumn(
+                    initiateAuthentication = initiateAuthentication,
+                    uiState = uiState,
+                    modifier = dialogContentModifier
+                )
+            }
+        )
+    }
 }
 
 @Composable
@@ -100,9 +106,19 @@ private fun AuthentificationInputColumn(
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (uiState is AuthenticationUiState.Success) {
-        var email by rememberSaveable { mutableStateOf(value = uiState.email ?: "") }
-        var password by rememberSaveable { mutableStateOf(value = uiState.password ?: "") }
+
+    if (uiState !is AuthenticationUiState.Loading) {
+        var email by rememberSaveable {
+            mutableStateOf(
+                value = if (uiState is AuthenticationUiState.SignedIn) uiState.email ?: "" else ""
+            )
+        }
+        var password by rememberSaveable {
+            mutableStateOf(
+                value = if (uiState is AuthenticationUiState.SignedIn) uiState.password
+                    ?: "" else ""
+            )
+        }
         val focusManager = LocalFocusManager.current
         val keyboardController = LocalSoftwareKeyboardController.current
         val scrollState = rememberScrollState()
@@ -126,17 +142,22 @@ private fun AuthentificationInputColumn(
             PasswordTextField(password = password, modifier = Modifier.fillMaxWidth())
             AuthentificationOptionsButtonGroup(
                 initiateAuthentication = initiateAuthentication,
-                currentAuthenticationAlternative = uiState.currentAuthenticationAlternative
+                currentAuthenticationAlternative =
+                    if (uiState is AuthenticationUiState.SignedIn) {
+                        uiState.currentAuthenticationAlternative
+                    } else {
+                        null
+                    }
             )
-            if (uiState.userHasAccount) {
+
+            if (uiState is AuthenticationUiState.NotSignedIn) {
                 TextTextButtonRow(
                     textResId = R.string.already_have_an_account,
                     textButtonResId = R.string.sign_in,
                     onClick = { /*TODO*/ },
                     modifier = Modifier.fillMaxWidth()
                 )
-            }
-            if (!uiState.userHasAccount) {
+            } else {
                 TextTextButtonRow(
                     textResId = R.string.do_not_have_an_account,
                     textButtonResId = R.string.sign_up,
@@ -273,11 +294,11 @@ private fun AuthenticationDialogPreview() {
         AuthenticationDialog(
             onConfirm = {},
             navigateBack = {},
-            authenticationUiState = AuthenticationUiState.Success(
+            uiState = AuthenticationUiState.SignedIn(
                 currentAuthenticationAlternative = AuthenticationAlternative.GOOGLE,
                 email = "email",
                 password = "password",
-                userHasAccount = true,
+                userId = "userId"
             ),
             initiateAuthentication = {}
         )
