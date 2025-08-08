@@ -49,7 +49,7 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/{AL2.0,LGPL2.1,INDEX.LIST,DEPENDENCIES}"
         }
     }
 }
@@ -78,12 +78,15 @@ dependencies {
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.material3)
     implementation(libs.androidx.core.splashscreen)
+
     // Credentials
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     // Google authentication
     implementation(libs.googleid)
-    implementation(libs.androidx.core.ktx)
+    // Google token validation
+    implementation(libs.google.api.client)
+
     // Preference datastore
     implementation(libs.androidx.datastore.preferences)
     debugImplementation(libs.androidx.ui.tooling)

@@ -3,6 +3,7 @@ agp = "8.12.0"
 coilCompose = "2.7.0"
 coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.7"
+googleApiClient = "2.8.0"
 googleid = "1.1.1"
 junitJupiterApi = "5.13.4"
 junitJupiterEngine = "5.13.4"
@@ -14,7 +15,6 @@ activityCompose = "1.10.1"
 composeBom = "2025.07.00"
 material3 = "1.5.0-alpha01"
 mockk = "1.14.5"
-msal = "7.0.0"
 room = "2.7.2"
 hilt = "2.57"
 ksp = "2.2.0-2.0.2"
@@ -49,13 +49,13 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+google-api-client = { module = "com.google.api-client:google-api-client", version.ref = "googleApiClient" }
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitJupiterApi" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitJupiterEngine" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-msal = { module = "com.microsoft.identity.client:msal", version.ref = "msal" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }

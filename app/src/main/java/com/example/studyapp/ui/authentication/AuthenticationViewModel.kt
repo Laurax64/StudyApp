@@ -10,17 +10,24 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.PasswordCredential
 import androidx.credentials.PublicKeyCredential
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.GetCredentialInterruptedException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studyapp.R
 import com.example.studyapp.data.authentication.UserPreferencesRepository
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.gson.GsonFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Collections
 import javax.inject.Inject
 
 @HiltViewModel
@@ -94,11 +101,18 @@ class AuthenticationViewModel @Inject constructor(
             .build()
 
         viewModelScope.launch {
-            val result = credentialManager.getCredential(
-                request = request,
-                context = context
-            )
-            handleSignIn(result = result)
+            try {
+                val result = credentialManager.getCredential(
+                    request = request,
+                    context = context
+                )
+                handleSignIn(result = result)
+            } catch (e: GetCredentialException) {
+                if (e is GetCredentialInterruptedException) {
+                    // Try again in case of an interruption
+                    createSignInWithGoogleFlow(context)
+                }
+            }
         }
     }
 
@@ -116,12 +130,12 @@ class AuthenticationViewModel @Inject constructor(
 
     @VisibleForTesting
     fun handleSignIn(result: GetCredentialResponse) {
-        var currentAuthenticationAlternative: String = ""
+        var currentAuthenticationAlternative = ""
         var phoneNumber = ""
         var userId = ""
-        var email: String = ""
-        var password: String = ""
-        var userAvatarUri: String = ""
+        var email = ""
+        var password = ""
+        var userAvatarUri = ""
 
         val credential = result.credential
         when (credential) {
@@ -143,10 +157,10 @@ class AuthenticationViewModel @Inject constructor(
                 when (credential.type) {
                     GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
                         val result = GoogleIdTokenCredential.createFrom(credential.data)
-                        userId = result.id
-                        email = result.id
-                        phoneNumber = result.phoneNumber ?: ""
-                        userAvatarUri = result.profilePictureUri?.toString() ?: ""
+                        val payload = verifyGoogleIdToken(result.idToken)
+                        userId = payload.subject
+                        email = payload.email
+                        userAvatarUri = payload.get("picture") as String? ?: ""
                         currentAuthenticationAlternative = AuthenticationAlternative.GOOGLE.name
                     }
                 }
@@ -162,6 +176,18 @@ class AuthenticationViewModel @Inject constructor(
                 userAvatarUri = userAvatarUri
             )
         }
+    }
+
+
+    fun verifyGoogleIdToken(idTokenString: String): GoogleIdToken.Payload {
+        val transport = NetHttpTransport()
+        val jsonFactory = GsonFactory.getDefaultInstance()
+
+        val verifier = GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+            .setAudience(Collections.singletonList(WEB_CLIENT_ID))
+            .build()
+
+        return verifier.verify(idTokenString).payload
     }
 }
 
