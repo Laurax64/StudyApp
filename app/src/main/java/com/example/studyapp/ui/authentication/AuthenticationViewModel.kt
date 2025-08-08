@@ -3,6 +3,7 @@ package com.example.studyapp.ui.authentication
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.VisibleForTesting
+import androidx.core.net.toUri
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -13,53 +14,57 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studyapp.R
 import com.example.studyapp.data.authentication.UserPreferencesRepository
-import com.example.studyapp.ui.authentication.AuthenticationAlternative.GOOGLE
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
-    userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
     private companion object {
         const val WEB_CLIENT_ID =
             "196684472942-5vjhqshte8vmb5loes1lc23t6qn8a85v.apps.googleusercontent.com"
     }
 
-    val userId = userPreferencesRepository.userPreferencesFlow.map {
-        it.userId
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = null
-    )
-
+    private val userPreferences = userPreferencesRepository.userPreferencesFlow
     private val _uiState: MutableStateFlow<AuthenticationUiState> =
         MutableStateFlow(AuthenticationUiState.Loading)
     val uiState: StateFlow<AuthenticationUiState> = _uiState
 
     init {
-        initializeUiState()
+        observeUserPreferences()
     }
 
-    fun initializeUiState() {
+    @VisibleForTesting
+    fun observeUserPreferences() {
         viewModelScope.launch {
-            userId.first()?.let { id ->
+            userPreferences.collect { userPreferences ->
+                val userId = userPreferences.userId
                 _uiState.update {
-                    AuthenticationUiState.SignedIn(userId = id)
+                    if (userId.isNullOrEmpty()) {
+                        AuthenticationUiState.NotSignedIn()
+                    } else {
+                        val userAvatarUri = userPreferences.userAvatarUri?.toUri()
+                        val currentAuthenticationAlternative =
+                            userPreferences.currentAuthenticationAlternative?.let {
+                                AuthenticationAlternative.valueOf(it)
+                            }
+                        AuthenticationUiState.SignedIn(
+                            userId = userId,
+                            userAvatarUri = userAvatarUri,
+                            currentAuthenticationAlternative = currentAuthenticationAlternative,
+                            phoneNumber = userPreferences.phoneNumber,
+                            email = userPreferences.email,
+                            password = userPreferences.password
+                        )
+                    }
                 }
-            } ?: _uiState.update {
-                AuthenticationUiState.NotSignedIn() // TODO: Check whether the user has an account
             }
         }
     }
@@ -74,10 +79,11 @@ class AuthenticationViewModel @Inject constructor(
         context: Context
     ) {
         return when (authenticationAlternative) {
-            GOOGLE -> createSignInWithGoogleFlow(context = context)
+            AuthenticationAlternative.GOOGLE -> createSignInWithGoogleFlow(context = context)
             else -> {}
         }
     }
+
 
     @VisibleForTesting
     fun createSignInWithGoogleFlow(context: Context) {
@@ -110,6 +116,13 @@ class AuthenticationViewModel @Inject constructor(
 
     @VisibleForTesting
     fun handleSignIn(result: GetCredentialResponse) {
+        var currentAuthenticationAlternative: String = ""
+        var phoneNumber = ""
+        var userId = ""
+        var email: String = ""
+        var password: String = ""
+        var userAvatarUri: String = ""
+
         val credential = result.credential
         when (credential) {
             is PublicKeyCredential -> {
@@ -119,37 +132,39 @@ class AuthenticationViewModel @Inject constructor(
             }
 
             is PasswordCredential -> {
-                val id = credential.id
-                val password = credential.password
+                userId = credential.id
+                email = credential.id
+                password = credential.password
                 // Use id and password to send to your server to validate
                 // and authenticate
-                _uiState.update {
-                    AuthenticationUiState.SignedIn(
-                        userId = id,
-                        email = id,
-                        password = password,
-                    )
-                }
             }
 
             is CustomCredential -> {
                 when (credential.type) {
                     GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
                         val result = GoogleIdTokenCredential.createFrom(credential.data)
-                        _uiState.update {
-                            AuthenticationUiState.SignedIn(
-                                email = result.id,
-                                userId = result.id,
-                                currentAuthenticationAlternative = GOOGLE,
-                                profilePictureUri = result.profilePictureUri,
-                            )
-                        }
+                        userId = result.id
+                        email = result.id
+                        phoneNumber = result.phoneNumber ?: ""
+                        userAvatarUri = result.profilePictureUri?.toString() ?: ""
+                        currentAuthenticationAlternative = AuthenticationAlternative.GOOGLE.name
                     }
                 }
             }
         }
+        viewModelScope.launch {
+            userPreferencesRepository.updateUserPreferences(
+                currentAuthenticationAlternative = currentAuthenticationAlternative,
+                phoneNumber = phoneNumber,
+                userId = userId,
+                email = email,
+                password = password,
+                userAvatarUri = userAvatarUri
+            )
+        }
     }
 }
+
 
 sealed interface AuthenticationUiState {
     object Loading : AuthenticationUiState
@@ -160,7 +175,7 @@ sealed interface AuthenticationUiState {
         val userId: String,
         val email: String? = null,
         val password: String? = null,
-        val profilePictureUri: Uri? = null
+        val userAvatarUri: Uri? = null
     ) : AuthenticationUiState
 
     data class NotSignedIn(

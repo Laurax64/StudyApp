@@ -11,8 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,14 +21,6 @@ class TopicsViewModel @Inject constructor(
     subtopicsRepository: SubtopicsRepository,
     userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
-
-    private val userId = userPreferencesRepository.userPreferencesFlow.map {
-        it.userId
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = null
-    )
 
     val uiState: StateFlow<TopicsUiState> =
         combine(
@@ -49,17 +39,15 @@ class TopicsViewModel @Inject constructor(
                     )
                 }
             )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = TopicsUiState.Loading
-    )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = TopicsUiState.Loading
+        )
 
     internal fun addTopic(topic: Topic) {
         viewModelScope.launch {
-            userId.first()?.let {
-                topicsRepository.insertTopic(topic = topic.copy(userId = it))
-            }
+            topicsRepository.insertTopic(topic = topic)
         }
     }
 }

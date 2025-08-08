@@ -14,6 +14,7 @@ activityCompose = "1.10.1"
 composeBom = "2025.07.00"
 material3 = "1.5.0-alpha01"
 mockk = "1.14.5"
+msal = "7.0.0"
 room = "2.7.2"
 hilt = "2.57"
 ksp = "2.2.0-2.0.2"
@@ -54,6 +55,7 @@ junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+msal = { module = "com.microsoft.identity.client:msal", version.ref = "msal" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }

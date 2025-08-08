@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
@@ -96,14 +95,22 @@ fun TopicsScreen(
             LoadingIndicatorBox()
 
         is TopicsUiState.Success ->
-            TopicsScaffold(
-                topicsWithProgress = topicsUiState.topicsWithProgress,
-                saveTopic = addTopic,
-                navigateToSubtopics = navigateToSubtopics,
-                modifier = modifier,
-                authenticationUiState = authenticationUiState,
-                initiateAuthentication = initiateAuthentication,
-            )
+            if (authenticationUiState is AuthenticationUiState.SignedIn) {
+                TopicsScaffold(
+                    topicsWithProgress = topicsUiState.topicsWithProgress,
+                    saveTopic = addTopic,
+                    navigateToSubtopics = navigateToSubtopics,
+                    modifier = modifier,
+                    authenticationUiState = authenticationUiState,
+                    initiateAuthentication = initiateAuthentication,
+                )
+            } else if (authenticationUiState is AuthenticationUiState.NotSignedIn) {
+                AuthenticationDialog(
+                    closeDialog = { },
+                    authenticationUiState = authenticationUiState,
+                    initiateAuthentication = initiateAuthentication
+                )
+            }
     }
 }
 
@@ -114,14 +121,12 @@ private fun TopicsScaffold(
     topicsWithProgress: List<TopicWithProgress>,
     saveTopic: (Topic) -> Unit,
     navigateToSubtopics: (Int) -> Unit,
-    authenticationUiState: AuthenticationUiState,
+    authenticationUiState: AuthenticationUiState.SignedIn,
     initiateAuthentication: (AuthenticationAlternative) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var dialogType by rememberSaveable {
-        mutableStateOf(
-            if (authenticationUiState is AuthenticationUiState.NotSignedIn) TopicDialogType.AUTHENTICATION else null
-        )
+        mutableStateOf<TopicDialogType?>(null)
     }
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
     var showSearchView by rememberSaveable { mutableStateOf(false) }
@@ -132,7 +137,7 @@ private fun TopicsScaffold(
             topic = null,
             onDismiss = { dialogType = null },
             onSave = {
-                saveTopic(it)
+                saveTopic(it.copy(userId = authenticationUiState.userId))
                 dialogType = null
             }
         )
@@ -219,25 +224,16 @@ private fun TopicsScaffold(
 private fun UserAvatarIcon(uiState: AuthenticationUiState, modifier: Modifier = Modifier) {
     if (uiState is AuthenticationUiState.SignedIn) {
         val userId = uiState.email ?: uiState.phoneNumber
-        if (uiState.profilePictureUri != null) {
+        if (uiState.userAvatarUri != null) {
             AsyncImage(
-                model = uiState.profilePictureUri,
+                model = uiState.userAvatarUri,
                 contentDescription =
                     userId?.let {
                         stringResource(R.string.signed_in_as, userId)
                     },
                 modifier = modifier
             )
-        } else if (uiState.email != null) {
-            Text(
-                text = uiState.email.first().toString(),
-                style = MaterialTheme.typography.displayMedium,
-                modifier = modifier
-            )
-        } else {
-            Text("?") // TODO: Fix this
         }
-
     } else {
         Icon(
             painter = painterResource(R.drawable.baseline_account_circle_24),
@@ -317,7 +313,7 @@ private fun TopicsScreenPreview() {
     StudyAppTheme {
         TopicsScreen(
             authenticationUiState = AuthenticationUiState.SignedIn(
-                profilePictureUri = null,
+                userAvatarUri = null,
                 email = "ExampleEmail@example.com",
                 phoneNumber = null,
                 userId = "user id"

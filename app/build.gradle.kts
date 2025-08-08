@@ -81,7 +81,9 @@ dependencies {
     // Credentials
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
+    // Google authentication
     implementation(libs.googleid)
+    implementation(libs.androidx.core.ktx)
     // Preference datastore
     implementation(libs.androidx.datastore.preferences)
     debugImplementation(libs.androidx.ui.tooling)
