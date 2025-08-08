@@ -1,6 +1,7 @@
 package com.example.studyapp.di
 
 import android.content.Context
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.example.studyapp.data.AppDatabase
 import com.example.studyapp.data.study.SubtopicDao
@@ -15,6 +16,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+
+private const val USER_PREFERENCES_NAME = "user_preferences"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -42,5 +45,14 @@ object Modules {
     @Provides
     fun provideSubtopicsRepository(subtopicDao: SubtopicDao): SubtopicsRepository =
         SubtopicsRepositoryImpl(subtopicDao = subtopicDao)
+
+
+    @Provides
+    @Singleton
+    fun providesUserPreferencesDataStore(context: Context) =
+        preferencesDataStore(name = USER_PREFERENCES_NAME)
+
+
+
 
 }
