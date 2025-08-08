@@ -1,16 +1,18 @@
 package com.example.studyapp.ui.components
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,45 +26,55 @@ import androidx.compose.ui.unit.dp
 import com.example.studyapp.R
 import com.example.studyapp.ui.theme.StudyAppTheme
 
+private val horizontalContentPadding = 24.dp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FullScreenDialog(
-    titleId: Int,
+    titleResId: Int,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
-    confirmButtonStringRes: Int = R.string.save,
-    dismissIconRes: Int = R.drawable.baseline_close_24,
-    content: @Composable (PaddingValues) -> Unit,
+    confirmButtonTextResId: Int = R.string.save,
+    dismissIconResId: Int = R.drawable.baseline_close_24,
+    content: @Composable (Modifier) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(id = titleId),
+                        text = stringResource(id = titleResId),
                         modifier = Modifier.padding(start = 16.dp)
                     )
                 },
                 navigationIcon = {
-                    Icon(
-                        painter = painterResource(id = dismissIconRes),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        contentDescription = stringResource(R.string.cancel),
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable { onDismiss() }
-                    )
+                    IconButton(
+                        onClick = onDismiss,
+                    ) {
+                        Icon(
+                            painter = painterResource(id = dismissIconResId),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            contentDescription = stringResource(R.string.cancel),
+                            modifier = Modifier
+                                .size(24.dp)
+                        )
+                    }
                 },
                 actions = {
-                    TextButton(onClick = onConfirm) { Text(stringResource(id = confirmButtonStringRes)) }
+                    TextButton(onClick = onConfirm) { Text(stringResource(id = confirmButtonTextResId)) }
                 },
                 modifier = Modifier.fillMaxWidth()
             )
         },
         modifier = modifier,
     ) { innerPadding ->
-        content(innerPadding)
+        content(
+            Modifier
+                .padding(innerPadding)
+                .padding(horizontal = horizontalContentPadding)
+                .fillMaxWidth()
+        )
     }
 }
 
@@ -75,11 +87,28 @@ fun FullScreenDialog(
 private fun SubtopicFullScreenDialogPreview() {
     StudyAppTheme {
         FullScreenDialog(
-            titleId = R.string.create_subtopic,
+            titleResId = R.string.create_subtopic,
             onConfirm = {},
             onDismiss = {},
-            content = {
-                Text(text = "Content")
+            content = { modifier ->
+                Column(
+                    modifier = modifier,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    TextField(
+                        value = "TextField 1",
+                        onValueChange = {},
+                        label = { Text("Label 1") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    TextField(
+                        value = "TextField 2",
+                        onValueChange = {},
+                        label = { Text("Label 2") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
             }
         )
     }

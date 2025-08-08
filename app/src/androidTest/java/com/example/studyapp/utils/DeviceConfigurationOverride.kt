@@ -13,7 +13,7 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOW
 enum class DeviceSize(val dpSize: DpSize) {
     COMPACT_WIDTH_EXPANDED_HEIGHT(
         dpSize = DpSize(
-            width = (WIDTH_DP_MEDIUM_LOWER_BOUND - 10).dp,
+            width = (WIDTH_DP_MEDIUM_LOWER_BOUND - 100).dp,
             height = HEIGHT_DP_EXPANDED_LOWER_BOUND.dp
         )
     ),
@@ -26,7 +26,7 @@ enum class DeviceSize(val dpSize: DpSize) {
     EXPANDED_WIDTH_COMPACT_HEIGHT(
         dpSize = DpSize(
             width = WIDTH_DP_EXPANDED_LOWER_BOUND.dp,
-            height = (HEIGHT_DP_MEDIUM_LOWER_BOUND - 10).dp
+            height = (HEIGHT_DP_MEDIUM_LOWER_BOUND - 100).dp
         )
     )
 }

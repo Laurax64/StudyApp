@@ -8,18 +8,18 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.example.studyapp.data.Subtopic
-import com.example.studyapp.data.Topic
-import com.example.studyapp.data.TopicWithProgress
-import com.example.studyapp.ui.subtopics.SubtopicsScreen
-import com.example.studyapp.ui.subtopics.SubtopicsUiState
+import com.example.studyapp.data.study.Subtopic
+import com.example.studyapp.data.study.Topic
+import com.example.studyapp.data.study.TopicWithProgress
+import com.example.studyapp.ui.study.subtopics.SubtopicsScreen
+import com.example.studyapp.ui.study.subtopics.SubtopicsUiState
 import com.example.studyapp.utils.DeviceConfigurationOverride
 import com.example.studyapp.utils.DeviceSize
 import org.junit.Rule
 import org.junit.Test
 
 /**
- * Tests for [com.example.studyapp.ui.subtopics.SubtopicsScreen].
+ * Tests for [SubtopicsScreen].
  *
  * It contains methods for each relevant screen height and width for the different uiStates.
  * The assertions in each method are grouped by the different views defined in the
@@ -100,7 +100,7 @@ class SubtopicsScreenTest {
         composeTestRule.onNodeWithText("Bookmarked").assertIsNotSelected()
         // Edit
         composeTestRule.onNodeWithContentDescription("Open edit topic dialog").performClick()
-        composeTestRule.onNodeWithText("Edit topic")
+        composeTestRule.onNodeWithText("Edit topic").assertIsDisplayed()
         composeTestRule.onNodeWithText("Cancel").performClick()
         composeTestRule.onNodeWithText("Open edit topic dialog").assertIsNotDisplayed()
         // Delete

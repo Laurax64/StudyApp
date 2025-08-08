@@ -5,16 +5,16 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.example.studyapp.data.Subtopic
-import com.example.studyapp.ui.subtopic.SubtopicScreen
-import com.example.studyapp.ui.subtopic.SubtopicUiState
+import com.example.studyapp.data.study.Subtopic
+import com.example.studyapp.ui.study.subtopic.SubtopicScreen
+import com.example.studyapp.ui.study.subtopic.SubtopicUiState
 import com.example.studyapp.utils.DeviceConfigurationOverride
 import com.example.studyapp.utils.DeviceSize
 import org.junit.Rule
 import org.junit.Test
 
 /**
- * Tests for [com.example.studyapp.ui.subtopic.SubtopicScreen].
+ * Tests for [SubtopicScreen].
  *
  * It contains methods for each relevant screen height and width for the different uiStates.
  * The assertions in each method are grouped by the different views defined in the
@@ -60,7 +60,7 @@ class SubtopicScreenTest {
         // Base
         composeTestRule.onNodeWithText("Subtopic Title").assertExists()
         composeTestRule.onNodeWithText("Subtopic Description").assertExists()
-        composeTestRule.onNodeWithTag("SubtopicFloatingToolbar")
+        composeTestRule.onNodeWithTag("SubtopicToolbar").assertExists()
         // Delete
         composeTestRule.onNodeWithContentDescription("Open delete subtopic dialog").performClick()
         composeTestRule.onNodeWithText("Delete subtopic?").assertExists()
@@ -111,15 +111,16 @@ class SubtopicScreenTest {
         // Base
         composeTestRule.onNodeWithText("Subtopic Title").assertExists()
         composeTestRule.onNodeWithText("Subtopic Description").assertExists()
-        composeTestRule.onNodeWithTag("SubtopicFloatingToolbarRow")
+        composeTestRule.onNodeWithTag("SubtopicToolbarsRow").assertExists()
         // Delete
         composeTestRule.onNodeWithContentDescription("Open delete subtopic dialog").performClick()
         composeTestRule.onNodeWithText("Delete subtopic?").assertExists()
         composeTestRule.onNodeWithText("Cancel").performClick()
+
         // Edit
         composeTestRule.onNodeWithContentDescription("Open edit subtopic dialog").performClick()
         composeTestRule.onNodeWithText("Edit subtopic").assertExists()
-        composeTestRule.onNodeWithContentDescription("Cancel").performClick()
+        composeTestRule.onNodeWithText("Cancel").performClick()
     }
 
     @Test
@@ -139,7 +140,7 @@ class SubtopicScreenTest {
             }
         }
         // Loading
-        composeTestRule.onNodeWithTag("SubtopicFloatingToolbarRow").assertDoesNotExist()
+        composeTestRule.onNodeWithTag("SubtopicToolbarsRow").assertDoesNotExist()
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertExists()
     }
 
@@ -162,7 +163,7 @@ class SubtopicScreenTest {
         // Base
         composeTestRule.onNodeWithText("Subtopic Title").assertExists()
         composeTestRule.onNodeWithText("Subtopic Description").assertExists()
-        composeTestRule.onNodeWithTag("SubtopicFloatingToolbarRow")
+        composeTestRule.onNodeWithTag("SubtopicToolbarsRow")
         // Delete
         composeTestRule.onNodeWithContentDescription("Open delete subtopic dialog").performClick()
         composeTestRule.onNodeWithText("Delete subtopic?").assertExists()
@@ -190,7 +191,10 @@ class SubtopicScreenTest {
             }
         }
         // Loading
-        composeTestRule.onNodeWithTag("SubtopicFloatingToolbarRow").assertDoesNotExist()
+        composeTestRule.onNodeWithTag(
+            "SubtopicToolbarsRow" +
+                    ""
+        ).assertDoesNotExist()
         composeTestRule.onNodeWithTag("LoadingIndicatorBox").assertExists()
     }
 }

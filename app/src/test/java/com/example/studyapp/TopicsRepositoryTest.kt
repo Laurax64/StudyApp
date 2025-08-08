@@ -1,9 +1,9 @@
 package com.example.studyapp
 
-import com.example.studyapp.data.Topic
-import com.example.studyapp.data.TopicDao
-import com.example.studyapp.data.TopicsRepository
-import com.example.studyapp.data.TopicsRepositoryImpl
+import com.example.studyapp.data.study.Topic
+import com.example.studyapp.data.study.TopicDao
+import com.example.studyapp.data.study.TopicsRepository
+import com.example.studyapp.data.study.TopicsRepositoryImpl
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
