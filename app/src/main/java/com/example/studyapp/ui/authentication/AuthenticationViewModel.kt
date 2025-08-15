@@ -22,6 +22,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
+import com.microsoft.quickauth.signin.ClientCreatedListener
+import com.microsoft.quickauth.signin.MSQASignInClient
+import com.microsoft.quickauth.signin.MSQASignInOptions
+import com.microsoft.quickauth.signin.error.MSQAException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,12 +90,32 @@ class AuthenticationViewModel @Inject constructor(
         authenticationAlternative: AuthenticationAlternative,
         context: Context
     ) {
-        return when (authenticationAlternative) {
+        when (authenticationAlternative) {
             AuthenticationAlternative.GOOGLE -> createSignInWithGoogleFlow(context = context)
+            AuthenticationAlternative.MICROSOFT -> createSignInWithMicrosoftFlow(context = context)
             else -> {}
         }
     }
 
+    @VisibleForTesting
+    fun createSignInWithMicrosoftFlow(context: Context) {
+
+        val signInOptions: MSQASignInOptions = MSQASignInOptions.Builder()
+            .setConfigResourceId(R.raw.auth_config_single_account)
+            .build()
+
+        MSQASignInClient.create(context, signInOptions, object : ClientCreatedListener {
+            override fun onCreated(client: MSQASignInClient) {
+                // use client
+
+            }
+
+            override fun onError(error: MSQAException) {
+                // handle error
+            }
+        })
+
+    }
 
     @VisibleForTesting
     fun createSignInWithGoogleFlow(context: Context) {
@@ -164,6 +188,7 @@ class AuthenticationViewModel @Inject constructor(
                         userAvatarUri = payload.get("picture") as String? ?: ""
                         currentAuthenticationAlternative = AuthenticationAlternative.GOOGLE.name
                     }
+
                 }
             }
         }

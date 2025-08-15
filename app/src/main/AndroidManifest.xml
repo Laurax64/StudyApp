@@ -18,6 +18,17 @@
             android:exported="true"
             android:theme="@style/Theme.StudyApp.Starting">
             <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="com.example.studyapp"
+                    android:path="/msauth://com.example.studyapp/gYfucgrOlZ3FLWgYctqk1bCxZbo%3D"
+                    android:scheme="msauth" />
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />

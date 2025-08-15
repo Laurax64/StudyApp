@@ -86,6 +86,9 @@ dependencies {
     implementation(libs.googleid)
     // Google token validation
     implementation(libs.google.api.client)
+    // Microsoft authentication
+    implementation(libs.quickauth)
+    implementation(libs.msal)
 
     // Preference datastore
     implementation(libs.androidx.datastore.preferences)

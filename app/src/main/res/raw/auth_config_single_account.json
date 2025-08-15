@@ -1,0 +1,13 @@
+{
+  "client_id": "f18a4f65-1780-4fac-93d0-68a403ce4b8a",
+  "authorization_user_agent": "DEFAULT",
+  "redirect_uri": "msauth://com.example.studyapp/gYfucgrOlZ3FLWgYctqk1bCxZbo%3D",
+  "account_mode": "SINGLE",
+  "broker_redirect_uri_registered": true,
+  "authorities": [
+    {
+      "type": "CIAM",
+      "authority_url": "https://StudyAppLaurax64.ciamlogin.com/3959ed12-f0e1-4257-a3e9-44efd991327e"
+    }
+  ]
+}

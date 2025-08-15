@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
 import com.example.studyapp.data.study.Topic
 import com.example.studyapp.data.study.TopicWithProgress
+import com.example.studyapp.ui.authentication.AuthenticationUiState
 import com.example.studyapp.ui.study.topics.TopicsScreen
 import com.example.studyapp.ui.study.topics.TopicsUiState
 import com.example.studyapp.utils.DeviceConfigurationOverride
@@ -30,15 +31,15 @@ class TopicsScreenTest {
     private val successUiState = TopicsUiState.Success(
         topicsWithProgress = listOf(
             TopicWithProgress(
-                topic = Topic(1, "Dogs"),
+                topic = Topic(id = 1, title = "Dogs"),
                 checked = false
             ),
             TopicWithProgress(
-                topic = Topic(2, "Cats"),
+                topic = Topic(id = 2, title = "Cats"),
                 checked = false
             ),
             TopicWithProgress(
-                topic = Topic(3, "Horses"),
+                topic = Topic(id = 3, title = "Horses"),
                 checked = false
             )
         )
@@ -46,6 +47,9 @@ class TopicsScreenTest {
 
     private val loadingUiState = TopicsUiState.Loading
 
+    private val authenticationUiState = AuthenticationUiState.SignedIn(
+        userId = ""
+    )
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -61,7 +65,9 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.COMPACT_WIDTH_EXPANDED_HEIGHT,
             ) {
                 TopicsScreen(
-                    uiState = successUiState,
+                    authenticationUiState = authenticationUiState,
+                    topicsUiState = successUiState,
+                    initiateAuthentication = {},
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
@@ -96,7 +102,9 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.COMPACT_WIDTH_EXPANDED_HEIGHT,
             ) {
                 TopicsScreen(
-                    uiState = loadingUiState,
+                    topicsUiState = loadingUiState,
+                    authenticationUiState = authenticationUiState,
+                    initiateAuthentication = {},
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
@@ -119,7 +127,9 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.MEDIUM_WIDTH_EXPANDED_HEIGHT,
             ) {
                 TopicsScreen(
-                    uiState = successUiState,
+                    authenticationUiState = authenticationUiState,
+                    topicsUiState = successUiState,
+                    initiateAuthentication = {},
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
@@ -148,7 +158,9 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.MEDIUM_WIDTH_EXPANDED_HEIGHT
             ) {
                 TopicsScreen(
-                    uiState = TopicsUiState.Loading,
+                    topicsUiState = TopicsUiState.Loading,
+                    authenticationUiState = authenticationUiState,
+                    initiateAuthentication = {},
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
@@ -167,7 +179,9 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.EXPANDED_WIDTH_COMPACT_HEIGHT
             ) {
                 TopicsScreen(
-                    uiState = successUiState,
+                    authenticationUiState = authenticationUiState,
+                    initiateAuthentication = {},
+                    topicsUiState = successUiState,
                     addTopic = {},
                     navigateToSubtopics = {},
                 )
@@ -196,7 +210,9 @@ class TopicsScreenTest {
                 deviceSize = DeviceSize.MEDIUM_WIDTH_EXPANDED_HEIGHT
             ) {
                 TopicsScreen(
-                    uiState = TopicsUiState.Loading,
+                    authenticationUiState = authenticationUiState,
+                    topicsUiState = TopicsUiState.Loading,
+                    initiateAuthentication = {},
                     addTopic = {},
                     navigateToSubtopics = {},
                 )

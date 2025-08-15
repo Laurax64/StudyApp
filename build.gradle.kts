@@ -6,3 +6,14 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
 }
+
+allprojects {
+    repositories {
+        mavenCentral()
+        google()
+        maven {
+            url =
+                uri("https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1")
+        }
+    }
+}
