@@ -56,6 +56,8 @@ android {
 
 dependencies {
 
+    implementation(project(":shared"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -78,7 +80,6 @@ dependencies {
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.material3)
     implementation(libs.androidx.core.splashscreen)
-
     // Credentials
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
@@ -86,7 +87,6 @@ dependencies {
     implementation(libs.googleid)
     // Google token validation
     implementation(libs.google.api.client)
-
     // Preference datastore
     implementation(libs.androidx.datastore.preferences)
     debugImplementation(libs.androidx.ui.tooling)
