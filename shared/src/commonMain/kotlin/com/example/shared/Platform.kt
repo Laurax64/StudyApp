@@ -1,3 +1,8 @@
 package com.example.shared
 
-expect fun platform(): String
+interface Platform {
+    val name: String
+}
+
+expect fun getPlatform(): Platform
+
