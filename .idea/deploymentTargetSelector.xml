@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="deploymentTargetSelector">
+    <selectionStates>
+      <SelectionState runConfigName="data">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="app">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-07-26T13:00:28.682947Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/lauravoetzsch/.android/avd/Resizable_Experimental.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="SubtopicScreenTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+    </selectionStates>
+  </component>
+</project>
