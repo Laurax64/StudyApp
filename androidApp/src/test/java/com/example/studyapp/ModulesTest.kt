@@ -2,8 +2,8 @@ package com.example.studyapp
 
 import android.content.Context
 import androidx.room.Room
-import com.example.studyapp.data.AppDatabase
-import com.example.studyapp.data.AppDatabase_Impl
+import com.example.shared.Database
+import com.example.studyapp.data.Database_Impl
 import com.example.studyapp.data.study.SubtopicDao
 import com.example.studyapp.data.study.SubtopicsRepositoryImpl
 import com.example.studyapp.data.study.TopicDao
@@ -26,7 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 class ModulesTest {
 
     @MockK
-    private lateinit var appDatabase: AppDatabase_Impl
+    private lateinit var appDatabase: Database_Impl
 
     @MockK
     private lateinit var topicDao: TopicDao
@@ -49,12 +49,12 @@ class ModulesTest {
         coEvery { context.getSystemService(any()) } returns mockk()
         mockkStatic(Room::class)
         every {
-            Room.databaseBuilder(context, AppDatabase::class.java, "app-database").build()
+            Room.databaseBuilder(context, Database::class.java, "app-database").build()
         } returns appDatabase
 
 
         assertEquals(appDatabase, modules.providesAppDatabase(context))
-        verify { Room.databaseBuilder(context, AppDatabase::class.java, "app-database").build() }
+        verify { Room.databaseBuilder(context, Database::class.java, "app-database").build() }
     }
 
     @Test

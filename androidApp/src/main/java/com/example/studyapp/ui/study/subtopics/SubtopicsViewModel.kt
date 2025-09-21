@@ -3,7 +3,7 @@ package com.example.studyapp.ui.study.subtopics
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.studyapp.data.authentication.UserPreferencesRepository
+import com.example.shared.data.authentication.UserPreferencesRepository
 import com.example.studyapp.data.study.Subtopic
 import com.example.studyapp.data.study.SubtopicsRepository
 import com.example.studyapp.data.study.Topic

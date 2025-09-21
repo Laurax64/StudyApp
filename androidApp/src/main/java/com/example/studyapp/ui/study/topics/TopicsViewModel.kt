@@ -2,7 +2,7 @@ package com.example.studyapp.ui.study.topics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.studyapp.data.authentication.UserPreferencesRepository
+import com.example.shared.data.authentication.UserPreferencesRepository
 import com.example.studyapp.data.study.SubtopicsRepository
 import com.example.studyapp.data.study.Topic
 import com.example.studyapp.data.study.TopicWithProgress

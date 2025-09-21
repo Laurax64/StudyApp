@@ -5,8 +5,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
-import com.example.studyapp.data.AppDatabase
-import com.example.studyapp.data.authentication.UserPreferencesRepository
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.example.shared.Database
+import com.example.shared.data.authentication.UserPreferencesRepository
 import com.example.studyapp.data.study.SubtopicDao
 import com.example.studyapp.data.study.SubtopicsRepository
 import com.example.studyapp.data.study.SubtopicsRepositoryImpl
@@ -25,21 +26,21 @@ private const val USER_PREFERENCES_NAME = "user_preferences"
 @Module
 @InstallIn(SingletonComponent::class)
 object Modules {
+
     @Provides
     @Singleton
-    fun providesAppDatabase(
-        @ApplicationContext context: Context,
-    ): AppDatabase = Room.databaseBuilder(
-        context,
-        AppDatabase::class.java,
-        "app-database",
-    ).build()
+    fun providesAppDatabase(@ApplicationContext context: Context): Database {
+        val dbFile = context.getDatabasePath("app-database.db")
+        return Room.databaseBuilder<Database>(context, dbFile.absolutePath)
+            .setDriver(BundledSQLiteDriver())
+            .build()
+    }
 
     @Provides
-    fun provideTopicDao(appDatabase: AppDatabase) = appDatabase.topicDao()
+    fun provideTopicDao(database: Database) = database.topicDao()
 
     @Provides
-    fun provideSubtopicDao(appDatabase: AppDatabase) = appDatabase.subtopicDao()
+    fun provideSubtopicDao(database: Database) = database.subtopicDao()
 
     @Provides
     fun provideTopicsRepository(topicDao: TopicDao): TopicsRepository =

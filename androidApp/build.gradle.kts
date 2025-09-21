@@ -64,7 +64,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.room.runtime)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.navigation.compose)
@@ -76,25 +75,21 @@ dependencies {
     implementation(libs.androidx.adaptive)
     implementation(libs.androidx.adaptive.layout)
     implementation(libs.androidx.adaptive.navigation)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.material3)
     implementation(libs.androidx.core.splashscreen)
-    // Credentials
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
-    // Google authentication
     implementation(libs.googleid)
-    // Google token validation
     implementation(libs.google.api.client)
-    // Preference datastore
-    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.sqlite.bundled)
+    implementation(libs.androidx.room.ktx)
     debugImplementation(libs.androidx.ui.tooling)
     ksp(libs.hilt.compiler)
-    ksp(libs.room.runtime)
-    ksp(libs.room.compiler)
-    // UI behavior tests
+    ksp(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.test.manifest)
-    // Unit tests
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.junit.jupiter.api)

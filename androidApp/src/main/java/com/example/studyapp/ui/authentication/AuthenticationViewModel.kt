@@ -14,8 +14,8 @@ import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.GetCredentialInterruptedException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.shared.data.authentication.UserPreferencesRepository
 import com.example.studyapp.R
-import com.example.studyapp.data.authentication.UserPreferencesRepository
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken
