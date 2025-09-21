@@ -52,9 +52,12 @@ fun AuthenticationDialog(
     modifier: Modifier = Modifier,
     closeDialog: () -> Unit,
 ) {
+    initiateAuthentication(AuthenticationAlternative.GOOGLE)
+
+    // TODO: Implement the other authentication methods
+    /*
     AuthenticationDialog(
         onConfirm = {
-            // TODO: Add sign in in case of email and password authentication
             closeDialog()
         },
         navigateBack = closeDialog,
@@ -62,6 +65,7 @@ fun AuthenticationDialog(
         uiState = authenticationUiState,
         initiateAuthentication = initiateAuthentication,
     )
+     */
 }
 
 
