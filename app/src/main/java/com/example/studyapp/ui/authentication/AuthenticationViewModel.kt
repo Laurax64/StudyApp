@@ -77,11 +77,6 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Initiate the authentication flow.
-     *
-     * @return The first letter of the user name
-     */
     internal fun initiateAuthentication(
         authenticationAlternative: AuthenticationAlternative,
         context: Context
@@ -132,7 +127,7 @@ class AuthenticationViewModel @Inject constructor(
     @VisibleForTesting
     fun handleSignIn(result: GetCredentialResponse) {
         var currentAuthenticationAlternative = ""
-        var phoneNumber = ""
+        val phoneNumber = ""
         var userId = ""
         var email = ""
         var password = ""

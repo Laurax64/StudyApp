@@ -2,7 +2,7 @@ package com.example.studyapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
+import  androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,6 +10,7 @@ import com.example.studyapp.ui.StudyAppState
 import com.example.studyapp.ui.authentication.AuthenticationViewModel
 import com.example.studyapp.ui.study.subtopic.SubtopicScreen
 import com.example.studyapp.ui.study.subtopics.SubtopicsScreen
+import com.example.studyapp.ui.study.subtopics.SubtopicsViewModel
 import com.example.studyapp.ui.study.topics.TopicsScreen
 import com.example.studyapp.ui.study.topics.TopicsViewModel
 
@@ -60,8 +61,8 @@ fun NavGraphBuilder.subtopicsScreen(
 ) {
     composable<SubtopicsRoute> {
         SubtopicsScreen(
-            subtopicsViewModel = hiltViewModel(),
-            authenticationViewModel = hiltViewModel(),
+            subtopicsViewModel = hiltViewModel<SubtopicsViewModel>(),
+            authenticationViewModel = hiltViewModel<AuthenticationViewModel>(),
             navigateToSubtopic = navigateToSubtopic,
             navigateToTopic = navigateToTopic,
             navigateBack = navigateBack

@@ -204,6 +204,14 @@ private fun PasswordTextField(password: String, modifier: Modifier = Modifier) {
     )
 }
 
+/**
+ * A row of text and a text button.
+ *
+ * @param modifier The [Modifier] to be applied to the row.
+ * @param textResId The resource ID of the text to be displayed.
+ * @param textButtonResId The resource ID of the text button to be displayed.
+ * @param onClick The action to be performed when the text button is clicked.
+ */
 @Composable
 private fun TextTextButtonRow(
     modifier: Modifier = Modifier,

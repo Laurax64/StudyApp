@@ -1,9 +1,9 @@
 package com.example.studyapp
 
+import com.example.studyapp.data.authentication.UserPreferencesRepository
+import com.example.studyapp.data.study.SubtopicsRepository
 import com.example.studyapp.data.study.Topic
-import com.example.studyapp.data.study.TopicWithProgress
 import com.example.studyapp.data.study.TopicsRepository
-import com.example.studyapp.domain.study.GetTopicsWithProgressUseCase
 import com.example.studyapp.ui.study.topics.TopicsViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -21,25 +21,35 @@ class TopicsViewModelTest {
     @MockK
     private lateinit var topicsRepository: TopicsRepository
     @MockK
-    private lateinit var getTopicsWithProgressUseCase: GetTopicsWithProgressUseCase
+    private lateinit var subtopicsRepository: SubtopicsRepository
+
+    @MockK
+    private lateinit var userPreferencesRepository: UserPreferencesRepository
+
     private lateinit var viewModel: TopicsViewModel
     private val topic = Topic(title = "Test Topic")
-    private val topicsWithProgress: Flow<List<TopicWithProgress>> = flowOf(
+    private val topics: Flow<List<Topic>> = flowOf(
         listOf(
-            TopicWithProgress(
-                topic = Topic(title = "Test Topic"),
-                checked = true
-            )
+            Topic(title = "Test Topic"),
         )
     )
 
+
     @BeforeEach
     fun setup() {
+        coEvery { subtopicsRepository.getAllSubtopics() } returns flowOf(emptyList())
+        coEvery { topicsRepository.getAllTopics() } returns topics
         coEvery { topicsRepository.insertTopic(topic) } returns Unit
-        coEvery { getTopicsWithProgressUseCase.invoke() } returns topicsWithProgress
+        coEvery { userPreferencesRepository.userPreferencesFlow } returns flowOf(
+            com.example.studyapp.data.authentication.UserPreferences(
+                userId = "Example@gmail.com"
+            )
+        )
+
         viewModel = TopicsViewModel(
-            getTopicsWithProgressUseCase = getTopicsWithProgressUseCase,
-            topicsRepository = topicsRepository
+            topicsRepository = topicsRepository,
+            subtopicsRepository = subtopicsRepository,
+            userPreferencesRepository = userPreferencesRepository
         )
     }
 
