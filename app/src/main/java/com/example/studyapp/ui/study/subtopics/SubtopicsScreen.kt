@@ -78,9 +78,7 @@ import kotlinx.coroutines.launch
 
 
 private enum class SubtopicsDialogType {
-    EDIT_TOPIC,
-    DELETE_TOPIC,
-    CREATE_SUBTOPIC,
+    EDIT_TOPIC, DELETE_TOPIC, CREATE_SUBTOPIC,
 }
 
 @Composable
@@ -122,23 +120,21 @@ fun SubtopicsScreen(
     modifier: Modifier = Modifier,
 ) {
     when (subtopicsUiState) {
-        SubtopicsUiState.Loading ->
-            LoadingIndicatorBox()
+        SubtopicsUiState.Loading -> LoadingIndicatorBox()
 
-        is SubtopicsUiState.Success ->
-            if (authenticationUiState is AuthenticationUiState.SignedIn) {
-                val userId = authenticationUiState.userId
-                SubtopicsScaffold(
-                    uiState = subtopicsUiState,
-                    navigateToSubtopic = navigateToSubtopic,
-                    navigateToTopic = navigateToTopic,
-                    saveSubtopic = { subtopic -> saveSubtopic(subtopic.copy(userId = userId)) },
-                    deleteTopic = deleteTopic,
-                    updateTopic = { topic -> updateTopic(topic.copy(userId = userId)) },
-                    navigateBack = navigateBack,
-                    modifier = modifier.fillMaxWidth()
-                )
-            }
+        is SubtopicsUiState.Success -> if (authenticationUiState is AuthenticationUiState.SignedIn) {
+            val userId = authenticationUiState.userId
+            SubtopicsScaffold(
+                uiState = subtopicsUiState,
+                navigateToSubtopic = navigateToSubtopic,
+                navigateToTopic = navigateToTopic,
+                saveSubtopic = { subtopic -> saveSubtopic(subtopic.copy(userId = userId)) },
+                deleteTopic = deleteTopic,
+                updateTopic = { topic -> updateTopic(topic.copy(userId = userId)) },
+                navigateBack = navigateBack,
+                modifier = modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -166,21 +162,14 @@ private fun SubtopicsScaffold(
             WIDTH_DP_MEDIUM_LOWER_BOUND
         )
     dialogType?.let {
-        SubtopicsDialog(
-            topic = topic,
-            updateTopic = updateTopic,
-            deleteTopic = {
-                deleteTopic()
-                navigateBack()
-            },
-            dismissDialog = { dialogType = null },
-            dialogType = it,
-            saveSubtopic = { subtopic ->
-                coroutineScope.launch {
-                    saveSubtopic(subtopic)
-                }
+        SubtopicsDialog(topic = topic, updateTopic = updateTopic, deleteTopic = {
+            deleteTopic()
+            navigateBack()
+        }, dismissDialog = { dialogType = null }, dialogType = it, saveSubtopic = { subtopic ->
+            coroutineScope.launch {
+                saveSubtopic(subtopic)
             }
-        )
+        })
     }
     if (!(isScreenWidthCompact && dialogType == SubtopicsDialogType.CREATE_SUBTOPIC)) {
         Scaffold(
@@ -210,18 +199,16 @@ private fun SubtopicsScaffold(
                         .floatingToolbarVerticalNestedScroll(
                             expanded = expanded,
                             onExpand = { expanded = true },
-                            onCollapse = { expanded = false }
-                        )
+                            onCollapse = { expanded = false })
                 )
                 SubtopicsToolbar(
                     onDelete = { dialogType = SubtopicsDialogType.DELETE_TOPIC },
                     onEdit = { dialogType = SubtopicsDialogType.EDIT_TOPIC },
                     onCreate = { dialogType = SubtopicsDialogType.CREATE_SUBTOPIC },
                     expanded = expanded,
-                    modifier =
-                        Modifier
-                            .align(Alignment.BottomEnd)
-                            .offset(x = -ScreenOffset, y = -ScreenOffset),
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = -ScreenOffset, y = -ScreenOffset),
                 )
             }
         }
@@ -239,32 +226,29 @@ private fun SubtopicsDialog(
     modifier: Modifier = Modifier
 ) {
     when (dialogType) {
-        SubtopicsDialogType.EDIT_TOPIC ->
-            SaveTopicDialog(
-                modifier = modifier,
-                topic = topic,
-                onDismiss = dismissDialog,
-                onSave = {
-                    updateTopic(it)
-                    dismissDialog()
-                },
-            )
+        SubtopicsDialogType.EDIT_TOPIC -> SaveTopicDialog(
+            modifier = modifier,
+            topic = topic,
+            onDismiss = dismissDialog,
+            onSave = {
+                updateTopic(it)
+                dismissDialog()
+            },
+        )
 
-        SubtopicsDialogType.DELETE_TOPIC ->
-            DeleteTopicDialog(
-                modifier = modifier,
-                onDismiss = dismissDialog,
-                deleteTopic = deleteTopic,
-                topicTitle = topic.title
-            )
+        SubtopicsDialogType.DELETE_TOPIC -> DeleteTopicDialog(
+            modifier = modifier,
+            onDismiss = dismissDialog,
+            deleteTopic = deleteTopic,
+            topicTitle = topic.title
+        )
 
-        SubtopicsDialogType.CREATE_SUBTOPIC ->
-            SaveSubtopicDialog(
-                modifier = modifier,
-                onDismiss = dismissDialog,
-                saveSubtopic = saveSubtopic,
-                topicId = topic.id
-            )
+        SubtopicsDialogType.CREATE_SUBTOPIC -> SaveSubtopicDialog(
+            modifier = modifier,
+            onDismiss = dismissDialog,
+            saveSubtopic = saveSubtopic,
+            topicId = topic.id
+        )
     }
 }
 
@@ -283,8 +267,7 @@ private fun <T> SubtopicsNavigableListDetailPaneScaffold(
     val topic = uiState.selectedTopic
     val subtopics = uiState.subtopics
     NavigableListDetailPaneScaffold(
-        navigator = scaffoldNavigator,
-        listPane = {
+        navigator = scaffoldNavigator, listPane = {
             AnimatedPane {
                 if (paneAdaptedValue == PaneAdaptedValue.Expanded) {
                     TopicsLazyColumn(
@@ -304,8 +287,7 @@ private fun <T> SubtopicsNavigableListDetailPaneScaffold(
                     }
                 }
             }
-        },
-        detailPane = {
+        }, detailPane = {
             AnimatedPane {
                 AnimatedContent(targetState = subtopics) {
                     SubtopicsPaneContent(
@@ -317,8 +299,7 @@ private fun <T> SubtopicsNavigableListDetailPaneScaffold(
                     )
                 }
             }
-        },
-        modifier = modifier
+        }, modifier = modifier
     )
 }
 
@@ -339,9 +320,7 @@ private fun DeleteTopicDialog(
                 onClick = {
                     deleteTopic()
                     onDismiss()
-                }
-            )
-            {
+                }) {
                 Text(stringResource(R.string.delete))
             }
         },
@@ -368,8 +347,7 @@ private fun SubtopicsAppBar(
                     contentDescription = stringResource(R.string.go_back_to_topics),
                 )
             }
-        },
-        actions = {
+        }, actions = {
             IconButton(onClick = onSearch) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_search_24),
@@ -383,9 +361,7 @@ private fun SubtopicsAppBar(
                     contentDescription = null
                 )
             }
-        },
-        title = { Text(text = topicTitle, overflow = Ellipsis) },
-        modifier = modifier
+        }, title = { Text(text = topicTitle, overflow = Ellipsis) }, modifier = modifier
     )
 }
 
@@ -422,8 +398,7 @@ private fun SubtopicsToolbar(
                     contentDescription = stringResource(R.string.open_edit_topic_dialog)
                 )
             }
-        }
-    )
+        })
 }
 
 @Composable
@@ -450,9 +425,7 @@ fun SubtopicsPaneContent(
             )
         } else {
             FilterableSubtopicsColumn(
-                subtopics = subtopics,
-                navigateToSubtopic = navigateToSubtopic,
-                modifier = modifier
+                subtopics = subtopics, navigateToSubtopic = navigateToSubtopic, modifier = modifier
             )
         }
     }
@@ -460,9 +433,7 @@ fun SubtopicsPaneContent(
 
 @Composable
 private fun FilterableSubtopicsColumn(
-    subtopics: List<Subtopic>,
-    navigateToSubtopic: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    subtopics: List<Subtopic>, navigateToSubtopic: (Int) -> Unit, modifier: Modifier = Modifier
 ) {
     var showOnlyNotChecked by rememberSaveable { mutableStateOf(false) }
     var showOnlyBookmarked by rememberSaveable { mutableStateOf(false) }
@@ -534,8 +505,7 @@ private fun FilteredChipsRow(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         FilterChip(
             onClick = toggleShowOnlyNotChecked,
@@ -570,8 +540,7 @@ private fun SubtopicsLazyColumn(
                 subtopic = subtopic,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { navigateToSubtopic(subtopic.id) }
-            )
+                    .clickable { navigateToSubtopic(subtopic.id) })
         }
     }
 }
@@ -589,9 +558,7 @@ private fun SubtopicListItem(subtopic: Subtopic, modifier: Modifier) {
                     } else {
                         R.drawable.baseline_bookmark_border_24
                     }
-                ),
-                modifier = Modifier,
-                contentDescription = stringResource(
+                ), modifier = Modifier, contentDescription = stringResource(
                     id = if (subtopic.bookmarked) {
                         R.string.bookmarked
                     } else {
@@ -630,8 +597,7 @@ private fun SubtopicsScreenPreview() {
                         bookmarked = false,
                         imageUri = null,
                         userId = "user id"
-                    ),
-                    Subtopic(
+                    ), Subtopic(
                         id = 2,
                         topicId = 0,
                         title = "Labrador Retriever",
@@ -640,8 +606,7 @@ private fun SubtopicsScreenPreview() {
                         bookmarked = false,
                         imageUri = null,
                         userId = "user id"
-                    ),
-                    Subtopic(
+                    ), Subtopic(
                         id = 3,
                         topicId = 0,
                         title = "German Shepherd",
@@ -650,8 +615,7 @@ private fun SubtopicsScreenPreview() {
                         bookmarked = false,
                         imageUri = null,
                         userId = "user id"
-                    ),
-                    Subtopic(
+                    ), Subtopic(
                         id = 4,
                         topicId = 0,
                         title = "Pomeranian",
@@ -660,8 +624,7 @@ private fun SubtopicsScreenPreview() {
                         bookmarked = false,
                         imageUri = null,
                         userId = "user id"
-                    ),
-                    Subtopic(
+                    ), Subtopic(
                         id = 5,
                         topicId = 0,
                         title = "Border Collie",
@@ -670,8 +633,7 @@ private fun SubtopicsScreenPreview() {
                         bookmarked = false,
                         imageUri = null,
                         userId = "user id"
-                    ),
-                    Subtopic(
+                    ), Subtopic(
                         id = 6,
                         topicId = 0,
                         title = "Dachshund",
@@ -680,8 +642,7 @@ private fun SubtopicsScreenPreview() {
                         bookmarked = false,
                         imageUri = null,
                         userId = "user id"
-                    ),
-                    Subtopic(
+                    ), Subtopic(
                         id = 7,
                         topicId = 0,
                         title = "French Bulldog",
@@ -690,8 +651,7 @@ private fun SubtopicsScreenPreview() {
                         bookmarked = false,
                         imageUri = null,
                         userId = "user id"
-                    ),
-                    Subtopic(
+                    ), Subtopic(
                         id = 8,
                         topicId = 0,
                         title = "Cocker Spaniel",
@@ -700,8 +660,7 @@ private fun SubtopicsScreenPreview() {
                         bookmarked = false,
                         imageUri = null,
                         userId = "user id"
-                    ),
-                    Subtopic(
+                    ), Subtopic(
                         id = 9,
                         topicId = 0,
                         title = "Great Dane",
@@ -710,8 +669,7 @@ private fun SubtopicsScreenPreview() {
                         bookmarked = false,
                         imageUri = null,
                         userId = "user id"
-                    ),
-                    Subtopic(
+                    ), Subtopic(
                         id = 10,
                         topicId = 0,
                         title = "Siberian Husky",
@@ -724,8 +682,7 @@ private fun SubtopicsScreenPreview() {
                 ),
                 topicsWithProgress = listOf(
                     TopicWithProgress(
-                        topic = Topic(id = 0, title = "Topic 0", userId = "user id"),
-                        checked = true
+                        topic = Topic(id = 0, title = "Topic 0", userId = "user id"), checked = true
                     )
                 ),
                 selectedTopic = Topic(id = 0, title = "Android Taint Analysis", userId = "user id")
@@ -741,8 +698,7 @@ private fun SubtopicsScreenPreview() {
             navigateBack = {},
             saveSubtopic = {},
             deleteTopic = {},
-            updateTopic = {}
-        )
+            updateTopic = {})
     }
 }
 

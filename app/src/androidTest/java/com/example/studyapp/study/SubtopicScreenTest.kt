@@ -31,6 +31,7 @@ class SubtopicScreenTest {
             bookmarked = false,
             topicId = 1,
             imageUri = null,
+            userId = "Example@gmail.com"
         ),
         previousSubtopicId = 0,
         nextSubtopicId = 2,

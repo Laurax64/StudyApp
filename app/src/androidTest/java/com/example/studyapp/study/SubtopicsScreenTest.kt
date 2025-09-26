@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performClick
 import com.example.studyapp.data.study.Subtopic
 import com.example.studyapp.data.study.Topic
 import com.example.studyapp.data.study.TopicWithProgress
+import com.example.studyapp.ui.authentication.AuthenticationUiState
 import com.example.studyapp.ui.study.subtopics.SubtopicsScreen
 import com.example.studyapp.ui.study.subtopics.SubtopicsUiState
 import com.example.studyapp.utils.DeviceConfigurationOverride
@@ -35,7 +36,8 @@ class SubtopicsScreenTest {
             description = "Friendly, intelligent, and great with families.",
             checked = false,
             bookmarked = false,
-            imageUri = null
+            imageUri = null,
+            userId = "Example@gmail.com"
         ),
         Subtopic(
             id = 2,
@@ -44,7 +46,8 @@ class SubtopicsScreenTest {
             description = "Outgoing, loyal, and super trainable.",
             checked = false,
             bookmarked = false,
-            imageUri = null
+            imageUri = null,
+            userId = "Example@gmail.com"
         ),
         Subtopic(
             id = 3,
@@ -53,7 +56,8 @@ class SubtopicsScreenTest {
             description = "Brave, confident, and excellent working dogs.",
             checked = false,
             bookmarked = false,
-            imageUri = null
+            imageUri = null,
+            userId = "Example@gmail.com"
         )
     )
 
@@ -68,6 +72,10 @@ class SubtopicsScreenTest {
         selectedTopic = Topic(id = 0, title = "Dogs")
     )
 
+    private val authenticationUiState = AuthenticationUiState.SignedIn(
+        userId = "Example@gmail.com"
+    )
+
     private val loadingUiState = SubtopicsUiState.Loading
 
     @get:Rule
@@ -80,16 +88,18 @@ class SubtopicsScreenTest {
                 deviceSize = DeviceSize.COMPACT_WIDTH_EXPANDED_HEIGHT,
             ) {
                 SubtopicsScreen(
-                    uiState = successUiState,
+                    subtopicsUiState = successUiState,
+                    authenticationUiState = authenticationUiState,
+                    saveSubtopic = { },
+                    deleteTopic = {},
                     navigateToSubtopic = {},
                     navigateToTopic = {},
                     navigateBack = {},
-                    saveSubtopic = {},
-                    deleteTopic = {},
                     updateTopic = {},
                 )
             }
         }
+
         // Base
         composeTestRule.onNodeWithTag("SubtopicsToolbar").assertIsDisplayed()
         composeTestRule.onNodeWithText(text = "Golden Retriever").assertIsDisplayed()
@@ -125,12 +135,13 @@ class SubtopicsScreenTest {
                 deviceSize = DeviceSize.COMPACT_WIDTH_EXPANDED_HEIGHT,
             ) {
                 SubtopicsScreen(
-                    uiState = loadingUiState,
+                    subtopicsUiState = loadingUiState,
+                    authenticationUiState = authenticationUiState,
+                    saveSubtopic = { },
+                    deleteTopic = {},
                     navigateToSubtopic = {},
                     navigateToTopic = {},
                     navigateBack = {},
-                    saveSubtopic = {},
-                    deleteTopic = {},
                     updateTopic = {},
                 )
             }

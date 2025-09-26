@@ -53,49 +53,6 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun updateUserId(userId: String) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.USER_ID] = userId
-        }
-    }
-
-    suspend fun updateUserAvatarUri(avatarUri: String) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.USER_AVATAR_URI] = avatarUri
-        }
-    }
-
-    suspend fun updateCurrentAuthenticationAlternative(currentAuthenticationAlternative: String) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.CURRENT_AUTHENTICATION_ALTERNATIVE] =
-                currentAuthenticationAlternative
-        }
-    }
-
-    suspend fun updatePhoneNumber(phoneNumber: String) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.PHONE_NUMBER] = phoneNumber
-        }
-    }
-
-    suspend fun updateEmail(email: String) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.EMAIL] = email
-        }
-    }
-
-    suspend fun updatePassword(password: String) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.PASSWORD] = password
-        }
-    }
-
-    suspend fun clearUserPreferences() {
-        dataStore.edit { preferences ->
-            preferences.clear()
-        }
-    }
-
     private fun mapUserPreferences(preferences: Preferences): UserPreferences {
         return UserPreferences(
             currentAuthenticationAlternative = preferences[PreferencesKeys.CURRENT_AUTHENTICATION_ALTERNATIVE],
