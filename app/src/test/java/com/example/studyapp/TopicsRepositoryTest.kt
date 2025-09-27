@@ -21,7 +21,7 @@ class TopicsRepositoryTest {
     private lateinit var topicDao: TopicDao
     private lateinit var topicsRepository: TopicsRepository
     private val topic1 = Topic(id = 0, title = "Test Topic")
-    private val topic2 = //Topic(id = 1, title = "Test Topic")
+    private val topic2 = Topic(id = 1, title = "Test Topic")
     private val topicsFlow = flowOf(listOf(topic1, topic2))
 
     @BeforeEach
