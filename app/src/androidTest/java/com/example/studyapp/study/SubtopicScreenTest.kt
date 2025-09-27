@@ -24,7 +24,7 @@ import org.junit.Test
 class SubtopicScreenTest {
     private val successUiState = SubtopicUiState.Success(
         subtopic = Subtopic(
-            id = 1,
+            //id = 1,
             title = "Subtopic Title",
             description = "Subtopic Description",
             checked = false,
