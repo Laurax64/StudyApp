@@ -31,7 +31,7 @@ class TopicsScreenTest {
     private val successUiState = TopicsUiState.Success(
         topicsWithProgress = listOf(
             TopicWithProgress(
-                topic = Topic(id = 1, userId = "Example@gmail.com", title = "Dogs"),
+                //     topic = Topic(id = 1, userId = "Example@gmail.com", title = "Dogs"),
                 checked = false
             ),
             TopicWithProgress(

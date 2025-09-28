@@ -47,7 +47,7 @@ class TopicsViewModelTest {
         )
 
         viewModel = TopicsViewModel(
-            topicsRepository = topicsRepository,
+            //  topicsRepository = topicsRepository,
             subtopicsRepository = subtopicsRepository,
             userPreferencesRepository = userPreferencesRepository
         )
