@@ -1,27 +1,25 @@
 name: Android CI
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ main ]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - name: set up JDK 17
+
+      - name: Setup JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'temurin'
-          cache: gradle
+          java-version: 17
+          cache: 'gradle'
 
-      - name: Grant execute permission for gradlew
+      - name: Grant execute permissions for gradlew
         run: chmod +x gradlew
-      - name: Build with Gradle
-        run: ./gradlew clean testDebug
 
+      - name: Run unit tests
+        run: ./gradlew clean testDebug
