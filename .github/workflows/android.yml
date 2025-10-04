@@ -12,11 +12,11 @@ jobs:
     strategy:
       matrix:
         task:
-          - name: "Build"
+          - name: "Build with Gradle"
             command: "build -x lint -x test"
-          - name: "Lint"
+          - name: "Check lint"
             command: "lint"
-          - name: "Test"
+          - name: "Run local tests"
             command: "test"
     steps:
       - name: Checkout repository
