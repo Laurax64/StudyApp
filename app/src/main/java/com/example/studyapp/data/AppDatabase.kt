@@ -7,7 +7,7 @@ import com.example.studyapp.data.study.SubtopicDao
 import com.example.studyapp.data.study.Topic
 import com.example.studyapp.data.study.TopicDao
 
-@Database(entities = [Topic::class, Subtopic::class], version = 1)
+@Database(entities = [Topic::class, Subtopic::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun topicDao(): TopicDao
     abstract fun subtopicDao(): SubtopicDao
