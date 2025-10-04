@@ -17,6 +17,7 @@ jobs:
           distribution: 'temurin'
       - name: Build with gradle
         run: ./gradlew build -x lint -x test
+
   lint:
     runs-on: ubuntu-latest
     steps:
