@@ -1,6 +1,4 @@
-# StudyApp
-
-Under development
+# StudyApp - Under Development
 
 [Wiki](https://github.com/Laurax64/StudyApp/wiki)
 [Figma Design](https://www.figma.com/design/PFv6qgJRGjVoNkekrOewZM/StudyApp?node-id=1-3&p=f&t=l4eznY3a3RgkSKgE-0)
