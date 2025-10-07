@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
 data class UserPreferences(
     val currentAuthenticationAlternative: String? = null,
     val phoneNumber: String? = null,
-    val userId: String?,
+    val userId: String? = null,
     val email: String? = null,
     val password: String? = null,
     val userAvatarUri: String? = null

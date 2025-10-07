@@ -5,6 +5,7 @@ coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.7"
 googleApiClient = "2.8.1"
 googleid = "1.1.1"
+javaxJson = "1.1.4"
 junitJupiterApi = "5.13.4"
 junitJupiterEngine = "5.13.4"
 kotlin = "2.2.20"
@@ -51,6 +52,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 google-api-client = { module = "com.google.api-client:google-api-client", version.ref = "googleApiClient" }
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
+javax-json = { module = "org.glassfish:javax.json", version.ref = "javaxJson" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitJupiterApi" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitJupiterEngine" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }

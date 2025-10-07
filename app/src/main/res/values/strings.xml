@@ -81,4 +81,5 @@
     <string name="show_password">Show password</string>
     <string name="hide_password">Hide password</string>
     <string name="signed_in_as">Signed in as %s</string>
+    <string name="authenticate_with_passkey">Authenticate with passkey</string>
 </resources>

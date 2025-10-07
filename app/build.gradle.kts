@@ -1,4 +1,5 @@
 @file:Suppress("UnstableApiUsage")
+
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -84,25 +85,18 @@ dependencies {
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.material3)
     implementation(libs.androidx.core.splashscreen)
-
-    // Credentials
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
-    // Google authentication
     implementation(libs.googleid)
-    // Google token validation
     implementation(libs.google.api.client)
-
-    // Preference datastore
+    implementation(libs.javax.json)
     implementation(libs.androidx.datastore.preferences)
     debugImplementation(libs.androidx.ui.tooling)
     ksp(libs.hilt.compiler)
     ksp(libs.room.runtime)
     ksp(libs.room.compiler)
-    // UI behavior tests
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.test.manifest)
-    // Unit tests
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.junit.jupiter.api)
