@@ -8,9 +8,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -33,39 +31,31 @@ class TopicsRepositoryTest {
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testInsertTopic() = runTest {
         coEvery { topicDao.insert(topic = topic1) } returns Unit
         topicsRepository.insertTopic(topic = topic1)
-        advanceUntilIdle()
         coVerify { topicDao.insert(topic = topic1) }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testDeleteTopic() = runTest {
         coEvery { topicDao.delete(topicId = 0) } returns Unit
         topicsRepository.deleteTopic(topicId = 0)
-        advanceUntilIdle()
         coVerify { topicDao.delete(topicId = 0) }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testUpdateTopic() = runTest {
         coEvery { topicDao.update(topic = topic1) } returns Unit
         topicsRepository.updateTopic(topic = topic1)
-        advanceUntilIdle()
         coVerify { topicDao.update(topic = topic1) }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testGetTopic() = runTest {
         val topic1Flow = flowOf(topic1)
         coEvery { topicDao.getTopic(topicId = 0) } returns topic1Flow
-        advanceUntilIdle()
         assertEquals(topic1Flow, topicsRepository.getTopic(id = 0))
     }
 
