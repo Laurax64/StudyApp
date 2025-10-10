@@ -9,7 +9,9 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -45,16 +47,20 @@ class SubtopicViewModelTest {
         )
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testUpdateSubtopic() = runTest {
         val newSubtopic = subtopic.copy(title = "New Title")
         viewModel.updateSubtopic(newSubtopic)
+        advanceUntilIdle()
         coVerify { subtopicsRepository.updateSubtopic(subtopic = newSubtopic) }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testDeleteSubtopic() = runTest {
         viewModel.deleteSubtopic()
+        advanceUntilIdle()
         coVerify { subtopicsRepository.deleteSubtopic(subtopicId = 0) }
     }
 
