@@ -16,7 +16,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.studyapp"
+        applicationId = "com.voetzsch.studyapp"
         minSdk = 27
         targetSdk = 36
         versionCode = 1
