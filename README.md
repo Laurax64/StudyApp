@@ -1,4 +1,6 @@
 # StudyApp 
+Under development
+
 An Android app for creating and storing flashcards, with Google Sign-In and CI setup.
 
 [Wiki](https://github.com/Laurax64/StudyApp/wiki)
