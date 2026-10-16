@@ -1,7 +1,6 @@
 package com.example.studyapp.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
@@ -26,7 +25,6 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOW
 import com.example.studyapp.navigation.StudyAppNavHost
 import kotlin.reflect.KClass
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun StudyApp(
     appState: StudyAppState,

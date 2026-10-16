@@ -7,7 +7,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.studyapp.ui.StudyAppState
+import com.example.studyapp.ui.aiAssistant.AIAssistantScreen
 import com.example.studyapp.ui.authentication.AuthenticationViewModel
+import com.example.studyapp.ui.dates.DatesScreen
 import com.example.studyapp.ui.study.subtopic.SubtopicScreen
 import com.example.studyapp.ui.study.subtopics.SubtopicsScreen
 import com.example.studyapp.ui.study.subtopics.SubtopicsViewModel
@@ -86,9 +88,13 @@ fun NavGraphBuilder.subtopicScreen(
 }
 
 fun NavGraphBuilder.datesScreen() {
-    composable<DatesRoute> {/* TODO: Implement Dates screen */ }
+    composable<DatesRoute> {
+        DatesScreen()
+    }
 }
 
 fun NavGraphBuilder.aIAssistantScreen() {
-    composable<AIAssistantRoute> {/* TODO: Implement AI Assistant screen */ }
+    composable<AIAssistantRoute> {
+        AIAssistantScreen()
+    }
 }
