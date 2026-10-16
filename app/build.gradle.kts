@@ -12,11 +12,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.studyapp"
+    namespace = "com.voetzsch.studyapp"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.studyapp"
+        applicationId = "com.voetzsch.studyapp"
         minSdk = 27
         targetSdk = 36
         versionCode = 1
