@@ -12,7 +12,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.studyapp"
+    namespace = "com.voetzsch.studyapp"
     compileSdk = 36
 
     defaultConfig {
